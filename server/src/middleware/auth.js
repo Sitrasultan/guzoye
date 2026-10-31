@@ -9,15 +9,12 @@ export const requireAuth = asyncHandler(async (req, res, next) => {
   const token = req.cookies[COOKIE_NAME];
   if (!token) throw new ApiError(401, 'Please log in to continue.');
   let payload;
-  try {
-    payload = jwt.verify(token, env.jwtSecret, { algorithms: ['HS256'], issuer: 'wondu-api', audience: 'wondu-web' });
-  } catch { throw new ApiError(401, 'Your session has expired or is invalid. Please log in again.'); }
+  try { payload = jwt.verify(token, env.jwtSecret, { algorithms: ['HS256'], issuer: 'wondu-api', audience: 'wondu-web' }); }
+  catch { throw new ApiError(401, 'Your session has expired or is invalid. Please log in again.'); }
   if (typeof payload.sub !== 'string' || !/^[a-f0-9]{24}$/i.test(payload.sub)) throw new ApiError(401, 'Invalid session.');
   const user = await User.findById(payload.sub).select('+tokenVersion');
-  if (!user || payload.ver !== (user.tokenVersion || 0)) throw new ApiError(401, 'Your session is no longer active. Please log in again.');
-  // Roles are read from MongoDB for every request, not trusted from JWT claims.
-  req.user = user;
-  next();
+  if (!user || user.isActive === false || payload.ver !== (user.tokenVersion || 0)) throw new ApiError(401, 'Your session is no longer active. Please log in again.');
+  req.user = user; next();
 });
 export const requireRoles = (...roles) => (req, _res, next) => {
   if (!req.user) return next(new ApiError(401, 'Please log in to continue.'));
@@ -25,8 +22,7 @@ export const requireRoles = (...roles) => (req, _res, next) => {
   next();
 };
 export const requireApprovedGuide = asyncHandler(async (req, _res, next) => {
-  const guide = await Guide.findOne({ user: req.user._id, status: 'approved' });
-  if (!guide) throw new ApiError(403, 'Your guide account is pending admin approval.');
-  req.guide = guide;
-  next();
+  const guide = await Guide.findOne({ user: req.user._id, status: 'approved', isActive: { $ne: false } });
+  if (!guide) throw new ApiError(403, 'Your guide account must be approved and active.');
+  req.guide = guide; next();
 });

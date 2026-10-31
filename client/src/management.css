@@ -1,0 +1,41 @@
+/* Guide/admin additions reuse Wondu's existing design tokens. */
+.management-section { margin-top:38px; }
+.management-split { display:grid; grid-template-columns:1fr; gap:28px; }
+.management-form fieldset { border:0; padding:0; margin:0; min-width:0; }
+.management-form label { margin-bottom:20px; }
+.management-form textarea { display:block; width:100%; margin-top:9px; border:1px solid var(--line); border-radius:8px; padding:12px; background:var(--cream); color:var(--ink); font:inherit; resize:vertical; min-height:90px; }
+.management-form textarea:focus-visible { outline:3px solid var(--terracotta); outline-offset:3px; }
+.management-form .btn { margin:8px 8px 20px 0; }
+.management-form h2 { margin-top:28px; font-size:1.4rem; }
+.management-form small { display:block; color:var(--muted); line-height:1.7; }
+.form-columns,.departure-row { display:grid; gap:15px; grid-template-columns:1fr; align-items:end; }
+.departure-row { margin-top:20px; }
+.departure-row .btn { align-self:center; }
+.itinerary-editor { border:1px solid var(--line); padding:22px; border-radius:12px; margin-bottom:20px; }
+.departure-list { list-style:none; padding:0; }
+.departure-list li { display:flex; align-items:center; justify-content:space-between; gap:20px; padding:18px 0; border-bottom:1px solid var(--line); }
+.departure-list small { color:var(--muted); }
+.stats-grid { display:grid; gap:15px; grid-template-columns:repeat(2,minmax(0,1fr)); margin:25px 0; }
+.stat-card { border:1px solid var(--line); background:var(--surface); padding:22px; border-radius:var(--radius); }
+.stat-card span { display:block; font-size:.72rem; color:var(--muted); text-transform:capitalize; line-height:1.7; }
+.stat-card strong { display:block; font-size:1.9rem; color:var(--green); margin-top:9px; overflow-wrap:anywhere; }
+.guide-workspace-header { padding:32px; border-radius:var(--radius); background:var(--sage); }
+.guide-workspace-header h1 { font-size:clamp(2rem,4vw,3rem); }
+.owned-tour-grid { display:grid; gap:20px; }
+.owned-tour h3 { margin-top:15px; }
+.management-tabs { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:30px; }
+.management-tabs button { border:1px solid var(--line); border-radius:9px; background:white; color:var(--green); padding:12px 18px; text-transform:capitalize; font-weight:600; }
+.management-tabs button.active { background:var(--green); color:white; }
+.charts-grid { display:grid; gap:20px; margin:25px 0; }
+.chart-panel { padding:25px; border-radius:var(--radius); border:1px solid var(--line); background:white; }
+.chart-panel h2 { font-size:1.15rem; }
+.bar-chart { list-style:none; padding:0; }
+.bar-chart li { display:grid; grid-template-columns:minmax(90px,1fr) 2fr 35px; gap:10px; align-items:center; margin:15px 0; font-size:.75rem; }
+.bar-chart li>span { overflow-wrap:anywhere; text-transform:capitalize; }
+.bar-track { height:13px; border-radius:20px; background:var(--sage); overflow:hidden; }
+.bar-track>div { height:100%; border-radius:20px; background:var(--terracotta); }
+.audit-details { white-space:pre-wrap; overflow-wrap:anywhere; max-width:420px; font-size:.7rem; }
+.preview-bio { margin-top:20px; padding:25px; }
+@media(min-width:700px) { .form-columns { grid-template-columns:repeat(3,minmax(0,1fr)); } .departure-row { grid-template-columns:2fr 1fr auto; } .owned-tour-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media(min-width:1000px) { .management-split { grid-template-columns:1.5fr 1fr; } .stats-grid { grid-template-columns:repeat(4,minmax(0,1fr)); } .charts-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media(prefers-reduced-motion:reduce) { .bar-track>div { transition:none; } }

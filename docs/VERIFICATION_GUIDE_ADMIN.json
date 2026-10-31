@@ -1,0 +1,73 @@
+{
+  "scope": "Part A and Part C implementation; Part B missing; Part D incomplete; documentation supplied with limitations",
+  "existing_files_replaced": [
+    "README.md",
+    "client/src/App.jsx",
+    "client/src/pages/AdminDashboard.jsx",
+    "client/src/pages/Dashboard.jsx",
+    "client/src/pages/GuideProfile.jsx",
+    "server/.env.example",
+    "server/src/app.js",
+    "server/src/controllers/adminController.js",
+    "server/src/controllers/authController.js",
+    "server/src/controllers/catalogController.js",
+    "server/src/middleware/auth.js",
+    "server/src/models/Guide.js",
+    "server/src/models/Tour.js",
+    "server/src/models/User.js",
+    "server/src/routes/adminRoutes.js",
+    "server/src/seed.js",
+    "server/src/services/bookingService.js"
+  ],
+  "package_json_files_supplied": 0,
+  "package_json_files_changed": 0,
+  "manifest_verification": "Run scripts/verify-guide-admin.mjs against your existing three manifests.",
+  "new_dependencies": [],
+  "new_environment_variables": [
+    "DEMO_GUIDE_PASSWORD"
+  ],
+  "javascript_syntax_passed": [
+    "server/src/models/Guide.js",
+    "server/src/models/User.js",
+    "server/src/models/Tour.js",
+    "server/src/models/AuditLog.js",
+    "server/src/middleware/managementValidation.js",
+    "server/src/services/management.js",
+    "server/src/controllers/guideManagementController.js",
+    "server/src/routes/guideManagementRoutes.js",
+    "server/src/controllers/adminController.js",
+    "server/src/routes/adminRoutes.js",
+    "server/src/middleware/auth.js",
+    "server/src/controllers/authController.js",
+    "server/src/app.js",
+    "server/src/controllers/catalogController.js",
+    "server/src/services/bookingService.js",
+    "server/src/seed.js",
+    "client/src/services/management.js",
+    "server/test/managementValidation.test.js",
+    "server/test/management.integration.test.js",
+    "scripts/verify-guide-admin.mjs",
+    "scripts/check-guide-admin-source.mjs"
+  ],
+  "pure_validation_tests": {
+    "passed": 6,
+    "failed": 0
+  },
+  "source_invariants": "Guide/admin authentication + roles and CSRF on every new write passed static checks.",
+  "not_executed": [
+    "npm install",
+    "Vite JSX production build",
+    "Supertest HTTP tests",
+    "MongoDB integration/transaction/concurrency tests",
+    "browser responsive/keyboard/accessibility/E2E tests",
+    "deployment"
+  ],
+  "important_limitations": [
+    "No verified reviews/aggregates or review mutation",
+    "No persisted wishlist",
+    "No soonest/available-spots filters",
+    "No per-route metadata pass",
+    "No production admin provisioning",
+    "No actual payments/image uploads/notifications"
+  ]
+}

@@ -1,200 +1,252 @@
-# Wondu — Phase 3 Authentication and Roles upgrade
+# Wondu — Ethiopia, with a local
 
-This is a complete-file overlay for the Phase 2 project, NOT a new standalone application.
-Keep the existing shared/catalog.json, tour pages, components, server models/routes, and
-styles.css unless this bundle explicitly replaces them. Copy this bundle's wondu folder
-contents over your existing wondu root, preserving unchanged files. Every supplied file
-is complete; no snippets or manual code splicing is required. Back up or commit first.
+Wondu is a MERN tour and local-guide booking platform. This complete-file upgrade builds
+Parts A and C of the requested final phase on working Phases 1–4. Read docs/STATUS.md:
+verified reviews/wishlist/discovery upgrades and some final polish remain unfinished.
+Do not describe this as a fully completed final release.
 
-All three package.json files were generated with JSON serialization and validated with
-Python json.loads and Node JSON.parse. Scripts with nested quotes are correctly escaped.
-Use `node scripts/validate-manifests.mjs` to independently verify them before npm install.
+## Features by role
 
-## What's implemented
+- Guests: discover published tours and approved active guides; view future departures.
+- Travelers: httpOnly-cookie login, CSRF-protected booking requests, server pricing,
+  capacity-safe transactions, cancellation and booking history.
+- Guides: pending/approved/rejected application status, editable public profile with live
+  preview, own-tour publishing, itinerary/images/pricing, departure management, owned-tour
+  booking decisions, guide-specific dashboard and counts. Rejected/pending guides can edit
+  their profile, but cannot publish or manage tours.
+- Admins: stats, readable bar charts, guide approval/rejection reasons, tour reassignment
+  and archive, booking filters, user search/deactivation, and audit history.
 
-- POST /api/auth/register, login, logout; GET /api/auth/me and /api/auth/csrf.
-- bcrypt cost-12 hashes and a one-hour JWT in an httpOnly cookie, never localStorage.
-- Credentialed CORS for http://localhost:5173; sameSite=lax; secure cookies in production.
-- Signed session-bound double-submit CSRF tokens plus exact Origin checks for writes.
-- Email/name/password validation, email normalization, clear JSON errors, duplicate 409.
-- Separate login/register IP rate limiters.
-- requireAuth, requireRoles and requireApprovedGuide server middleware.
-- Public traveler/guide registration only; pending guide applications and admin approval.
-- Demo admin from environment variables via the seed only, no public promotion route.
-- Working forms, AuthContext/useAuth, role-aware ProtectedRoute, Navbar, and dashboards.
-- Requested auth/role tests plus CSRF, pending approval, and logout-revocation tests.
+## Stack and architecture
 
-## Model changes
+React + Vite, React Router, Axios, Lucide and custom CSS variables. Express + Node.js,
+MongoDB/Mongoose, bcrypt, jsonwebtoken, cookie-parser, CORS, helmet and rate limits.
+MongoDB replica set or Atlas REQUIRED for transaction-backed inventory/admin actions.
 
-User already existed; it was extended rather than replaced by a different collection:
-1. password minimum changed from 12 to 8; bcrypt save hook retained at cost 12.
-2. tokenVersion added (default 0, select:false) to invalidate JWTs on logout.
-3. name requires at least one trimmed character (rather than two); email max 254.
-4. toJSON removes both password and tokenVersion.
+UI → credentialed Axios → existing CSRF handshake → Express auth/current DB role →
+controller validation → Mongoose/transactions. Tour.guide is always the server-assigned
+owner. Conditional seat increments, unique active booking index and transaction rollback
+prevent overbooking/double release. Tour locking serializes active-booking edits and
+reassignment with guide booking actions. Admin action and audit insert commit together.
 
-Guide status belongs to the Guide model, not duplicated on User:
-- status: pending (default) or approved; approvedAt and approvedBy added.
-- Incomplete application profiles now allow empty languages and default bio/location/image.
-- No fabricated language, experience, or identity is assigned during registration.
-- Auth responses attach a small guide {_id,status} summary to the public user.
+New booking creation also locks the traveler account to serialize it with deactivation.
+Guide deactivation archives remaining owned tours; active bookings must first be resolved
+or reassigned. No admin account can be deactivated via the dashboard.
 
-Public queries explicitly require approved guides, so pending applications do not leak
-into discovery. After upgrading an old Phase 2 DB, run the development seed to mark the
-six fixtures approved and create the demo admin. Other existing guide profiles without
-status are not auto-approved; they must be deliberately migrated/reviewed. For such old
-non-fixture profiles, set status=pending in an admin-managed DB migration so they appear
-in the approval queue. No destructive blanket migration is performed by this upgrade.
+## Apply the upgrade
 
-## Cookie choice and security details
+The ZIP is an OVERLAY for the existing Phase 4 repository, not a standalone application.
+Its client/, server/, docs/ and scripts/ folders are directly at the root, without a wrapper.
+README.md replaces the old root README. Keep all unlisted files unchanged. Commit/back up
+both code and development DB first. Exact changes are in docs/CHANGELOG_GUIDE_ADMIN.md.
 
-httpOnly prevents JavaScript from reading the JWT, reducing direct token theft through
-script access. It does not prevent XSS from issuing requests. Cookies are sent automatically,
-so SameSite=Lax is supplemented with signed, session-bound CSRF tokens and Origin checks.
-React receives only a CSRF token, not the JWT. Secure=true is required with HTTPS in
-production; false is only for local HTTP. No credential is stored in localStorage.
-Logout increments tokenVersion, revoking ALL that user's sessions (all devices), then
-clears the browser cookie. There is no refresh-token flow. Tokens expire after one hour
-by default and login is required again. Roles are loaded from DB, not trusted from a JWT.
+No npm package or dependency changes. No package.json files are supplied. The helper
+parses all three of your existing manifests as actual JSON before installation.
 
-## Setup checklist
+## Windows setup (PowerShell)
 
-- [ ] Commit/back up your Phase 2 code and development database.
-- [ ] Copy all files in this overlay into the same relative paths in your project.
-- [ ] Use Node.js 22.12+ and a working development MongoDB.
-- [ ] Run manifest verification before installing:
+Use Node.js 22.12+ and your existing Phase 4 project with a working replica set or Atlas.
+Do not run two MongoDB processes on the same port. Existing .env files should be MERGED,
+not blindly replaced by examples.
 
-```sh
-node scripts/validate-manifests.mjs
+```powershell
+node scripts/verify-guide-admin.mjs
 npm install
 ```
 
-Keep a valid existing package-lock.json; npm install updates it for cookie-parser.
-No lockfile is supplied because dependencies were not installed in the delivery environment.
-After successful install, commit the resulting package-lock.json and use npm ci thereafter.
-If your previous lockfile is itself invalid JSON, back it up and regenerate it with npm install.
+npm install is only needed if dependencies are missing; this upgrade adds none. Keep
+and commit the valid existing package-lock.json after installation. Use npm ci thereafter.
 
-- [ ] Merge the new .env.example values into your real .env files; do not overwrite existing secrets.
-- [ ] Generate a strong JWT secret:
-
-```sh
-node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"
-```
-
-Set server/.env:
+Add just this new variable to server/.env, choosing your own strong password:
 
 ```dotenv
-PORT=5000
-NODE_ENV=development
-MONGODB_URI=mongodb://127.0.0.1:27017/wondu
-CLIENT_ORIGIN=http://localhost:5173
-JWT_SECRET=paste-the-generated-random-value-here
-JWT_EXPIRES_SECONDS=3600
-COOKIE_SECURE=false
-ALLOW_DEMO_SEED=true
-DEMO_ADMIN_NAME=Wondu Demo Admin
-DEMO_ADMIN_EMAIL=admin@wondu.example
-DEMO_ADMIN_PASSWORD=choose-your-own-strong-demo-password
+DEMO_GUIDE_PASSWORD=choose-your-own-strong-demo-guide-password
 ```
 
-Set client/.env:
+Keep existing JWT_SECRET, DEMO_ADMIN_PASSWORD and connection settings. For a local
+replica set the existing URI can be:
 
 ```dotenv
-VITE_DATA_SOURCE=api
-VITE_API_URL=http://localhost:5000/api
+MONGODB_URI=mongodb://127.0.0.1:27017/wondu?replicaSet=rs0
 ```
 
-Use localhost consistently in the browser and URLs; do not mix it with 127.0.0.1.
-Auth always requires the API, even when discovery is deliberately set to mock mode.
+Stop frontend/API. Set ALLOW_DEMO_SEED=true in server/.env, then:
 
-- [ ] Double-check MONGODB_URI points to a disposable development database; seed resets
-      deterministic fixture records, hashes random fixture passwords, and updates the
-      demo admin's environment-configured password. It never prints passwords, drops the
-      database, promotes a conflicting email owner, or creates admins via HTTP.
-- [ ] Run `npm run seed`, then set ALLOW_DEMO_SEED=false.
-- [ ] Start both applications:
+```powershell
+npm run seed
+node server/src/scripts/checkBookingDB.js
+```
 
-```sh
+Set ALLOW_DEMO_SEED=false, ensure client/.env uses VITE_DATA_SOURCE=api, then:
+
+```powershell
 npm run dev
 ```
 
-Frontend: http://localhost:5173. API: http://localhost:5000/api.
-The root script correctly escapes the nested quotes required by concurrently.
+Open http://localhost:5173. API http://localhost:5000/api. Use localhost consistently.
+No more manual assignDemoTour script is needed for newly registered guides: they can
+create their own tours after approval. The old development helper can remain unused.
 
-## Automated verification
+## Environment variables
 
-```sh
-node scripts/validate-manifests.mjs
+Only DEMO_GUIDE_PASSWORD is new. Existing configuration is retained:
+
+| Variable | Location | Purpose |
+| --- | --- | --- |
+| PORT | server | API port, local 5000; hosting provider supplies production value |
+| NODE_ENV | server | development/test/production |
+| MONGODB_URI | server | Replica-set/Atlas URI; keep credentials secret |
+| CLIENT_ORIGIN | server | Exact frontend origin, no trailing slash; local http://localhost:5173 |
+| JWT_SECRET | server | Random 32+ characters; never a placeholder |
+| JWT_EXPIRES_SECONDS | server | Session duration, default 3600; allowed 60–86400 |
+| COOKIE_SECURE | server | false only for localhost HTTP; true in HTTPS production |
+| ALLOW_DEMO_SEED | server | Explicit opt-in; false except while seeding a disposable development DB |
+| DEMO_ADMIN_NAME | server seed | Admin display name |
+| DEMO_ADMIN_EMAIL | server seed | Seed-only demo admin identity |
+| DEMO_ADMIN_PASSWORD | server seed | Strong admin password; never hardcoded |
+| DEMO_GUIDE_PASSWORD | server seed | NEW; shared demo guide password for six seed accounts |
+| TEST_MONGODB_URI | test shell | Existing optional test URI with wondu and test in DB name |
+| CATALOG_TEST_MONGODB_URI | test shell | Existing optional read-only seeded discovery test DB |
+| VITE_API_URL | client build | Public API URL, local http://localhost:5000/api |
+| VITE_DATA_SOURCE | client build | api for real profiles/tours/bookings; mock is demonstration only |
+
+No secret belongs in a VITE-prefixed variable. .env remains excluded by existing .gitignore.
+
+## Demo accounts
+
+- guide1@wondu.example through guide6@wondu.example: password is YOUR DEMO_GUIDE_PASSWORD.
+  Each linked User has role guide, an approved Guide, and their existing seeded tours.
+- Admin: YOUR DEMO_ADMIN_EMAIL + DEMO_ADMIN_PASSWORD.
+- Traveler: register your own traveler account. The legacy sample reviewer has a random
+  password, not a published demo login.
+
+The environment example contains placeholders only. Never deploy shared demo passwords
+or publish the real .env. Public registration can never request admin role.
+
+## Exactly what seed resets
+
+On a disposable development DB, seed replaces eight fixture tours (including departure
+IDs, ownership, archived status, spots and pricing), six fixture guides, seven fixture
+users, fixture destinations/reviews and configured admin credentials. All bookings for
+the eight fixture tours are deleted. Guide fixtures become approved, active and loggable
+in using DEMO_GUIDE_PASSWORD. Prior fixture sessions and admin sessions are revoked.
+
+Unrelated registered users, their guide applications, guide-created tours/bookings and
+existing audit history are retained. Existing manual ownership assignments on fixture
+tours are reset. Dates are regenerated relative to the seed day. The seed is NOT a
+transactional production migration; failure can leave partial fixtures. Never point it
+at a real user database. Runtime production mode refuses demo seeding.
+
+## API summary
+
+Existing Phase 3 auth and Phase 4 bookings remain. New/extended endpoints:
+
+| Method | Endpoint | Access |
+| --- | --- | --- |
+| GET/PATCH | /api/guide/profile | guide, including pending/rejected |
+| GET | /api/guide/summary | approved guide |
+| GET/POST | /api/guide/tours | approved guide; own/create |
+| GET/PATCH | /api/guide/tours/:id | approved guide; owner |
+| PATCH | /api/guide/tours/:id/archive | approved guide; owner |
+| POST | /api/guide/tours/:id/departures | approved guide; owner |
+| DELETE | /api/guide/tours/:id/departures/:departureId | approved guide; owner |
+| GET | /api/admin/stats | admin |
+| GET | /api/admin/guides?status=pending/approved/rejected | admin |
+| PATCH | /api/admin/guides/:id/approve or /reject | admin; reject reason required |
+| GET | /api/admin/tours | admin |
+| PATCH | /api/admin/tours/:id/guide | admin; approved active guideId |
+| PATCH | /api/admin/tours/:id/archive | admin |
+| GET | /api/admin/users | admin; search/role/page/limit |
+| PATCH | /api/admin/users/:id/deactivate | admin; reason required |
+| GET | /api/admin/audit | admin |
+
+All new writes use existing auth/roles/CSRF plus write rate limits. Lists are paginated.
+See docs/GUIDE_ADMIN_API.md for payloads, validation and business rules.
+
+## Testing
+
+```powershell
+node scripts/verify-guide-admin.mjs
 npm test
 npm run build
 ```
 
-Auth integration tests are opt-in and use a UNIQUE disposable database derived from a
-base name containing both wondu and test. They drop only that generated database on exit.
-Never point tests at a real user database. MongoDB permissions must allow creation/deletion
-of the generated test DB. Example:
-
-```sh
-TEST_MONGODB_URI=mongodb://127.0.0.1:27017/wondu_auth_test npm test
-```
-
-PowerShell:
+Run DB integration tests against a dedicated transaction-capable test URI:
 
 ```powershell
-$env:TEST_MONGODB_URI='mongodb://127.0.0.1:27017/wondu_auth_test'
+$env:TEST_MONGODB_URI='mongodb://127.0.0.1:27017/wondu_management_test?replicaSet=rs0'
 npm test
+Remove-Item Env:TEST_MONGODB_URI
 ```
 
-Discovery integration tests now use CATALOG_TEST_MONGODB_URI separately. They read an
-already-seeded development database and expect exactly the original fixture counts:
+Each suite creates and drops only its uniquely generated test DB. Base DB name must
+contain wondu and test. Without a URI, integration suites are skipped, not passed.
+Existing suites remain. A/C tests cover own/foreign tour edit, pending publish denial,
+active departure deletion guard, admin reassignment, archive, stats, reject reason,
+deactivation and traveler role denial. Review/wishlist tests are not written because
+those features remain missing.
 
-```sh
-CATALOG_TEST_MONGODB_URI=mongodb://127.0.0.1:27017/wondu npm test
-```
+Delivery: six pure new validation tests executed successfully; .js/.mjs syntax checked.
+Dependency installation, Vite/JSX build, Supertest, DB integration, browser/device and
+screen-reader checks were NOT executed in the delivery environment. Run them locally.
 
-Without those variables, integration suites are explicitly SKIPPED, not falsely passed.
-The integration suite covers registration, duplicate email, login, wrong password,
-unauthenticated access, traveler-to-admin denial, pending guide restrictions, admin
-approval, logout and replay revocation, and CSRF/foreign-origin denial.
+## What I would improve next
 
-## Delivery verification status
+- Finish completed-booking reviews/ratings, persistent wishlist, soonest departure sort
+  and available-spots filter (Part B is not implemented by this delivery).
+- Finish route metadata and executed responsive/accessibility/E2E QA.
+- Real payments/refunds, notifications, pending booking expiry and cancellation policy.
+- Image uploads to controlled storage rather than external URLs; content moderation.
+- Email verification, password reset, MFA, secure production admin provisioning.
+- User reactivation and formal guide rejection/resubmission workflow.
+- Shared rate-limit store/proxy configuration for multiple API instances.
+- Immutable external audit retention, metrics, backups, dependency scanning and recovery drills.
 
-All three supplied package.json files passed Python JSON parsing and Node JSON.parse.
-All supplied .js/.mjs files passed node --check. Five auth input-validation unit tests
-were executed and passed. Packages were NOT installed here. Supertest, MongoDB integration,
-Vite build and browser tests have NOT been run; execute the commands above locally.
+See docs/DEPLOYMENT.md, docs/DEMO_SCRIPT.md and docs/SECURITY_GUIDE_ADMIN.md. These docs
+are guidance, not proof of a deployed or fully completed production release.
 
-## Complete file inventory
 
-See docs/PHASE3_CHANGELOG.md for every replacement/new path. docs/API.md describes
-request/response shapes, CSRF, role rules, and retained discovery endpoints. The complete
-source companion includes every supplied file under its exact relative path.
+## Setup checklist
 
-## Manual test steps
+- [ ] Commit/back up code and development database.
+- [ ] Copy this overlay into the Phase 4 root, preserving unchanged files.
+- [ ] Run node scripts/verify-guide-admin.mjs and install only if needed.
+- [ ] Set DEMO_GUIDE_PASSWORD in server/.env; keep existing secrets.
+- [ ] Stop app, opt in to dev seed, seed, verify Booking indexes/topology, disable seed flag.
+- [ ] Start npm run dev using VITE_DATA_SOURCE=api.
+- [ ] Run npm test, opt-in integration suites, npm run build, and browser/manual checks.
 
-1. Open /dashboard/traveler logged out: expect a redirect to Login. Direct GET
-   /api/auth/me without a session returns JSON 401.
-2. Register a traveler with a new email and an 8+ character password. Expect automatic
-   sign-in, user name/Logout in Navbar, and traveler dashboard. Refresh the page: session persists.
-3. Log out, then register the same email with different case: expect 409 and a clear error.
-4. Try an invalid email, blank name, or short password: expect field validation. Send
-   role=admin through the API with proper CSRF: expect 400. No admin account is created.
-5. Log in with the right email but wrong password: expect generic 401. Correct login works.
-6. In the traveler session, visit /dashboard/admin: access denied. Direct admin GET/PATCH
-   with that same session returns 403, regardless of client-side state.
-7. Register a guide in a separate browser/incognito session. Expect pending status;
-   the public guide directory omits the profile and /api/dashboard/guide/workspace returns 403.
-8. Log in as the environment-seeded admin in another session. Open the admin dashboard,
-   find the pending application, and click Approve guide. PATCH uses the Guide ID.
-9. Return to the guide session and click Refresh approval status. Expect approved status.
-   Workspace check now succeeds. Guide-editing tools themselves are not implemented yet.
-10. In browser Storage/Cookies inspect wondu_session: HttpOnly=true, SameSite=Lax,
-    Secure=false only locally. There must be no JWT in localStorage or JSON responses.
-11. Log out. Navbar returns to Login/Register and protected routes require login again.
-    Other sessions for that account are also revoked at their next API request.
-12. Submit a write without CSRF or from a foreign Origin: expect 403. Many login attempts
-    eventually return 429. Limits use in-memory IP state; restart the dev API to reset them.
-13. Stop API and load a protected page: expect retryable session error, not fake login success.
-14. Verify keyboard navigation, visible errors/loading states, and mobile navigation.
+## Manual traveler checks
 
-Stop after Phase 3. Authentication/roles are implemented; booking, payments, password reset,
-email verification, guide profile editing and additional admin actions are future work.
+1. Register/login as a traveler. Open a guide-created future tour, select guests/departure
+   and confirm a request. Verify server total and pending status in My Bookings.
+2. Guide confirms; refresh status. Cancel another request and verify availability returns.
+3. Tour archive hides it publicly and blocks new booking while history remains.
+4. Guide/admin management routes return 403 for traveler accounts.
+5. Do not demonstrate review/wishlist persistence: those features are not implemented.
+
+## Manual guide checks
+
+1. Login as guide1@wondu.example with YOUR DEMO_GUIDE_PASSWORD. Confirm the guide-specific
+   workspace, owned fixture tours, status counts and incoming requests.
+2. Save My Profile; verify live preview and public regions/languages/bio/photo.
+3. Create a tour with valid images, destination, itinerary/duration and future departure.
+4. Book it from a separate traveler profile; confirm request appears only for its owner.
+5. Confirm/decline via existing booking list; verify appropriate inventory changes.
+6. Try deleting its booked departure or editing core details while active: expect 409.
+7. Try editing another guide's tour by ID: expect 403.
+8. New pending guide can edit profile but cannot create tours; rejected status shows reason.
+
+## Manual admin checks
+
+1. Login with environment-configured demo admin. Review stats and chart labels; completed
+   booking revenue is an estimate, not payment revenue.
+2. Reject a pending application with a reason; verify reason on guide dashboard. Approve it
+   later to unlock tour creation. Both changes appear in the audit log.
+3. Reassign a tour to an approved guide. Old owner loses edit/booking authority; new owner
+   sees its existing requests. Unapproved/inactive target guide is rejected.
+4. Archive any tour. Verify public listing/detail and booking creation reject it.
+5. Search users and deactivate one without active work. Old session/login must stop working.
+   Active-work deactivation is blocked with explanation; admins cannot deactivate admins.
+6. Inspect audit records for approve/reject/reassign/archive/deactivate. Check existing
+   booking status filter and paginate users/tours/audit records.
