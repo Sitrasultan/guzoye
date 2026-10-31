@@ -1,0 +1,5 @@
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Search, MapPin, Compass } from 'lucide-react';
+import Button from './Button';
+export default function SearchBar(){const navigate=useNavigate();const [search,setSearch]=useState('');const [region,setRegion]=useState('');return <form className="search-bar" onSubmit={e=>{e.preventDefault();const p=new URLSearchParams();if(search.trim())p.set('search',search.trim());if(region)p.set('region',region);navigate(`/tours?${p}`)}}><label><MapPin size={21}/><span><small>YOUR NEXT ADVENTURE</small><input aria-label="Search destinations or tours" placeholder="Where do you want to go?" value={search} onChange={e=>setSearch(e.target.value)}/></span></label><label className="search-region"><Compass size={21}/><span><small>EXPLORE BY REGION</small><select aria-label="Region" value={region} onChange={e=>setRegion(e.target.value)}><option value="">All of Ethiopia</option>{['Amhara','Afar','Harari','South Ethiopia','Oromia','Addis Ababa'].map(x=><option key={x}>{x}</option>)}</select></span></label><Button type="submit"><Search size={18}/>Find my journey</Button></form>}

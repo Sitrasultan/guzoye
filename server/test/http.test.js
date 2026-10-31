@@ -1,0 +1,10 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import request from 'supertest';
+import app from '../src/app.js';
+test('health is honest when no database is connected',async()=>{const r=await request(app).get('/api/health');assert.equal(r.status,503);assert.equal(r.body.database,'disconnected');});
+test('unknown routes return JSON 404',async()=>{const r=await request(app).get('/api/missing');assert.equal(r.status,404);assert.ok(r.body.message);});
+test('invalid object ids return 400 before database access',async()=>{const r=await request(app).get('/api/tours/not-an-id');assert.equal(r.status,400);});
+test('unsafe pagination returns 400 before database access',async()=>{const r=await request(app).get('/api/tours?page=-1');assert.equal(r.status,400);});
+test('repeated query values are rejected',async()=>{const r=await request(app).get('/api/tours?region=Afar&region=Amhara');assert.equal(r.status,400);});
+test('booking and auth writes are not exposed',async()=>{for(const path of ['/api/bookings','/api/auth/login','/api/reviews']){const r=await request(app).post(path).send({});assert.equal(r.status,404);}});
