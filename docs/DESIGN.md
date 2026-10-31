@@ -1,47 +1,53 @@
-# Wondu design and implementation notes
+# Wondu — design and architecture through Phase 3
 
-The supplied reference informs the tour cards, destination photography, guide profiles,
-search surface, and booking summary. This implementation uses an editorial public
-travel-site layout instead of reproducing a desktop dashboard sidebar.
+## Visual system
+Existing Phase 2 styles.css remains unchanged. Phase 3 auth.css imports after it and
+reuses --cream, --surface, --green, --gold, --terracotta, --line, --radius, and --shadow.
+Editorial headings, rounded cards, gentle motion, mobile navigation, responsive grids,
+and reduced-motion support remain. Stock imagery and original tour/guide fixtures are
+illustrative; sample rating counts are not computed from seeded reviews.
 
-## Design system
-- Cream background `#faf8f2`, deep green `#143f35`, warm gold `#dcb469`, terracotta `#ba694c`.
-- Custom CSS variables and reusable button, card, label, section-heading, modal, and state patterns.
-- DM Sans for body copy, Manrope for headings, Georgia for editorial italic accents.
-- Fonts load from Google Fonts with system fallbacks. Unsplash images are remote,
-  illustrative stock photographs, not verified photographs of these destinations or people.
-- Photo, guide identity, itinerary, price, rating, and review data are demo content.
-  Aggregate rating counts are illustrative and are not calculated from the single sample review per tour.
-- Favorite buttons are session-local component state, not persisted account favorites.
+## Authentication flow
+AuthProvider checks /auth/me on startup and keeps only the public user in memory.
+AuthContext/useAuth expose login, register, logout, refresh, loading, and sessionError.
+A revision counter prevents stale session requests from overwriting newer authentication
+state. ProtectedRoute waits for session loading, offers retry on a network failure,
+redirects guests to login, and checks supported roles for dashboard routes. These client
+checks are UX only: server middleware always independently enforces authentication,
+current DB role, and approved guide status.
 
-## Responsiveness and accessibility
-- Mobile-first one-column layouts; grids expand at 600px, 960px, and 1200px.
-- Mobile navigation with accessible labels and expanded state.
-- Keyboard-visible focus, skip link, labeled forms, native details for itineraries,
-  and native dialog focus management / Escape handling.
-- Loading skeletons, failed-request retry controls, empty results, missing-route state.
-- Reduced-motion preference disables animations and transitions.
-- Pending: real browser, screen-reader, contrast, device, and end-to-end QA.
+Axios uses withCredentials. A fresh signed CSRF token is fetched before writes. JWTs
+are httpOnly cookies, never JSON fields or localStorage entries. Passwords stay in form
+state only while needed; successful submission clears them. Login/register errors use
+JSON field messages, accessible alerts, loading states, and disabled duplicate submission.
+Auth pages and protected requests use no-store responses on the server.
 
-## Data flow
-`Pages → api service → mock adapter OR Axios → Express routes → controllers → Mongoose`.
-The mock adapter and seed both consume the same root `shared/catalog.json`.
-Stable IDs preserve links when moving from mock mode to API mode. The Vite mode is
-selected explicitly; API errors are never silently replaced with mock data.
-The mock catalog is bundled in this demo client even in API mode; it contains no secrets.
+## Role UX
+Logged out: Login/Register. Logged in: name, role-based dashboard link, Logout.
+Traveler dashboard links to discovery. Guide dashboard shows pending/approved status
+and can refresh it. Pending guides cannot enter approved-only server workspace routes.
+Admin dashboard paginates pending applications and approves Guide IDs.
+My Bookings is now protected but remains an honest empty state: reservation handling
+has not been implemented. The existing tour booking panel remains only an estimate
+and local preview. No payments, actual bookings, or guide tour-management features exist.
 
-## Phase boundaries
-Login/Register are disabled design previews. My Bookings is an honest empty state.
-The booking panel validates a preferred date and guest count and computes an estimated
-USD total, then opens a non-persistent preview dialog. It does not check availability,
-reserve capacity, or take payments. Server models prepare for later work without
-exposing unsafe unauthenticated writes.
+## Deployment boundaries
+Local development uses localhost:5173 + localhost:5000. Use HTTPS and secure cookies
+in production. SameSite=Lax assumes same-site web/API deployment; unrelated-site domains
+need a deliberately redesigned cookie/CSRF setup, not an arbitrary SameSite=None edit.
+Use a long random JWT secret, exact CORS origin, environment-managed demo credentials,
+shared rate-limit storage for multiple API processes, HTTPS termination, correct proxy
+trust, audit logs and monitoring. Do not deploy a demo admin credential publicly.
 
-## Before any real-world launch
-Replace and license destination-specific photography, validate itineraries and current
-travel conditions, verify guides, implement real availability and capacity transactions,
-authentication, roles, account security, verified-booking reviews, cancellation and refund
-policies, payment processing, observability, deployment hardening, and full QA.
-When deploying the SPA, configure the web host to rewrite client routes to index.html.
-The Express API and built SPA are separate deployments in this phase; `npm start`
-starts the API only. Configure proxy trust and a shared rate limiter if deployment requires them.
+## Known limitations
+No email verification, password reset, MFA, refresh tokens, application rejection,
+profile editing, or real identity verification. Guide registration uses compensating
+cleanup rather than a multi-document transaction so standalone MongoDB works; a process
+crash between User and Guide writes can leave an orphan requiring administrative cleanup.
+The seed is development-only and non-transactional. Existing seeded profiles are approved
+by the seed; preexisting non-fixture profiles require explicit admin approval.
+
+## QA
+Run README setup, automated tests, and manual role checks. Browser accessibility,
+responsive screenshots, end-to-end UI tests, dependency audit, and production deployment
+checks remain required before launch.

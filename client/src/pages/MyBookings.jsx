@@ -1,3 +1,7 @@
-import { Ticket } from 'lucide-react';
+import { useAuth } from '../hooks/useAuth';
+import BookingsList from '../components/BookingsList';
 import Button from '../components/Button';
-export default function MyBookings(){return <main className="container page"><header className="page-heading"><span className="eyebrow">YOUR STORIES IN THE MAKING</span><h1>My bookings.</h1><p>A home for the adventures you’ll look back on.</p></header><section className="empty-state bookings-empty"><Ticket size={48}/><h2>Your next chapter is still unwritten.</h2><p>Secure accounts and bookings arrive in a later phase.<br/>For now, discover your favorite journey and preview the details.<br/>No reservation has been created.</p><Button to="/tours">Find your adventure</Button></section></main>}
+export default function MyBookings() {
+  const { user } = useAuth();
+  return <main className="container page"><header className="page-heading"><span className="eyebrow">YOUR STORIES IN THE MAKING</span><h1>My bookings.</h1><p>Welcome, {user.name}. Your journeys, all in one place.</p></header>{user.role === 'traveler' ? <BookingsList /> : <section className="account-panel"><h2>Traveler bookings</h2><p>Only traveler accounts create personal tour bookings. Use your role dashboard to manage requests.</p><Button to="/dashboard">Go to dashboard</Button></section>}</main>;
+}

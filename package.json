@@ -1,15 +1,22 @@
-{ 
-"name": "wondu", 
-"private": true, 
-"type": "module", 
-"workspaces": ["client", "server"], 
-"scripts": { 
-"dev": "concurrently -k -n api,web \"npm run dev -w server\" \"npm run dev -w client\"", 
-"build": "npm run build -w client", 
-"seed": "npm run seed -w server", 
-"start": "npm run start -w server", 
-"test": "npm run test -w server" 
-}, 
-"devDependencies": { "concurrently": "^9.1.2" }, 
-"engines": { "node": ">=22.12.0" } 
-} 
+{
+  "name": "wondu",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "scripts": {
+    "dev": "concurrently -k -n api,web \"npm run dev -w server\" \"npm run dev -w client\"",
+    "build": "npm run build -w client",
+    "seed": "npm run seed -w server",
+    "start": "npm run start -w server",
+    "test": "npm run test -w server"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  }
+}

@@ -1,0 +1,28 @@
+/* Phase 3 additions reuse the existing Wondu design tokens. */
+.auth-security { display:flex; gap:8px; align-items:center; font-size:.75rem; }
+.form-error,.nav-error { background:#fae7df; border:1px solid #d9a38d; border-radius:10px; padding:14px; color:#813a28; font-size:.8rem; }
+.nav-error { position:absolute; right:20px; top:80px; z-index:20; max-width:380px; box-shadow:var(--shadow); }
+.field-error { display:block; margin-top:7px; color:#923f2b; line-height:1.5; }
+input[aria-invalid="true"] { border-color:var(--terracotta); }
+.form-help { display:block; color:var(--muted); margin:-8px 0 20px; line-height:1.6; }
+.nav-user { max-width:120px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:var(--green); font-weight:700; }
+.nav-auth { gap:14px; margin-left:10px; }
+.navigation { gap:18px; }
+.account-panel { background:var(--surface); padding:clamp(24px,4vw,42px); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); }
+.account-panel h2 { font-size:1.5rem; }
+.account-actions { display:flex; flex-wrap:wrap; gap:12px; }
+.status-pill { display:inline-flex; padding:7px 12px; border-radius:30px; font-size:.7rem; font-weight:700; margin-bottom:15px; }
+.status-pill.pending { background:#f6ead0; color:#78571e; }
+.status-pill.approved,.success-message { background:var(--sage); color:var(--green); }
+.success-message { padding:15px; border-radius:10px; }
+.application-list { display:grid; gap:16px; }
+.application-card { display:flex; flex-wrap:wrap; gap:20px; align-items:center; justify-content:space-between; background:white; border:1px solid var(--line); border-radius:var(--radius); padding:25px; }
+.application-card h2 { font-size:1.25rem; margin-bottom:8px; }
+.application-card p { margin-bottom:8px; overflow-wrap:anywhere; }
+.application-card small { color:var(--muted); overflow-wrap:anywhere; }
+@media(min-width:960px) and (max-width:1199px) {
+  .site-header { height:auto; min-height:88px; }
+  .nav-inner { flex-wrap:wrap; gap:10px; padding-block:14px; }
+  .navigation { flex-wrap:wrap; gap:16px; }
+  .nav-auth { margin-left:0; }
+}

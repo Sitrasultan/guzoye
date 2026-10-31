@@ -1,0 +1,57 @@
+{
+  "distribution": "Phase 3 overlay; no wrapper directory; only client/server/docs/scripts at ZIP root",
+  "changed_existing_files": 10,
+  "package_manifests_supplied": 0,
+  "package_manifests_changed": 0,
+  "dependencies_added": 0,
+  "environment_variables_added": 0,
+  "manifest_validation": "No manifests supplied; scripts/verify-phase4.mjs validates all three existing manifests locally.",
+  "syntax_passed": [
+    "server/src/models/Tour.js",
+    "server/src/models/Booking.js",
+    "server/src/middleware/bookingValidation.js",
+    "server/src/services/bookingService.js",
+    "server/src/controllers/bookingController.js",
+    "server/src/routes/bookingRoutes.js",
+    "server/src/app.js",
+    "server/src/seed.js",
+    "server/src/scripts/checkBookingDB.js",
+    "scripts/verify-phase4.mjs",
+    "client/src/services/bookings.js",
+    "server/src/routes/dashboardRoutes.js",
+    "server/test/http.test.js",
+    "server/test/bookingValidation.test.js",
+    "server/test/bookings.integration.test.js",
+    "server/src/scripts/assignDemoTour.js"
+  ],
+  "unit_tests": {
+    "passed": 5,
+    "failed": 0,
+    "suite": "bookingValidation.test.js"
+  },
+  "integration_tests_authored_not_executed": [
+    "server pricing",
+    "overbooking",
+    "duplicate booking",
+    "past departure",
+    "pending guide",
+    "concurrent last seat",
+    "cancellation and repeated cancellation",
+    "invalid transitions",
+    "foreign guide",
+    "decline restoration",
+    "concurrent cancel/decline double release",
+    "role denial",
+    "list isolation and status filters",
+    "insert failure rollback",
+    "CSRF denial"
+  ],
+  "not_executed": [
+    "npm dependency installation",
+    "Vite build / JSX compilation",
+    "Supertest tests",
+    "MongoDB transactions and concurrency tests",
+    "browser / accessibility QA"
+  ],
+  "database_requirement": "Transaction-capable replica set or Atlas; standalone writes fail safely."
+}

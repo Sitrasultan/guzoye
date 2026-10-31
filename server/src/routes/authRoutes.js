@@ -1,0 +1,16 @@
+import { Router } from 'express';
+import rateLimit from 'express-rate-limit';
+import { asyncHandler } from '../middleware/errors.js';
+import { requireAuth } from '../middleware/auth.js';
+import { requireCsrf, csrfToken } from '../middleware/csrf.js';
+import { validateRegistration, validateLogin } from '../middleware/authValidation.js';
+import { register, login, logout, me } from '../controllers/authController.js';
+const router = Router();
+const limiter = (limit, message) => rateLimit({ windowMs: 15 * 60 * 1000, limit, standardHeaders: 'draft-7', legacyHeaders: false, message: { message } });
+router.use((_req, res, next) => { res.set('Cache-Control', 'no-store'); next(); });
+router.get('/csrf', csrfToken);
+router.post('/register', limiter(10, 'Too many registration attempts. Try again in 15 minutes.'), requireCsrf, validateRegistration, asyncHandler(register));
+router.post('/login', limiter(20, 'Too many login attempts. Try again in 15 minutes.'), requireCsrf, validateLogin, asyncHandler(login));
+router.post('/logout', requireAuth, requireCsrf, asyncHandler(logout));
+router.get('/me', requireAuth, asyncHandler(me));
+export default router;

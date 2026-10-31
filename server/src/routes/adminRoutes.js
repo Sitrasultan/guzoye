@@ -1,0 +1,11 @@
+import { Router } from 'express';
+import { requireAuth, requireRoles } from '../middleware/auth.js';
+import { requireCsrf } from '../middleware/csrf.js';
+import { validateId, validateQuery } from '../middleware/validate.js';
+import { asyncHandler } from '../middleware/errors.js';
+import { listApplications, approveGuide } from '../controllers/adminController.js';
+const router = Router();
+router.use(requireAuth, requireRoles('admin'));
+router.get('/guides', validateQuery, asyncHandler(listApplications));
+router.patch('/guides/:id/approve', requireCsrf, validateId, asyncHandler(approveGuide));
+export default router;

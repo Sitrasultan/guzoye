@@ -1,0 +1,14 @@
+import { Router } from 'express';
+import { requireAuth, requireRoles, requireApprovedGuide } from '../middleware/auth.js';
+import { requireCsrf } from '../middleware/csrf.js';
+import { validateId } from '../middleware/validate.js';
+import { asyncHandler } from '../middleware/errors.js';
+import { create, mine, cancel, guideBookings, status, adminBookings } from '../controllers/bookingController.js';
+const router = Router();
+router.post('/bookings', requireAuth, requireRoles('traveler'), requireCsrf, asyncHandler(create));
+router.get('/bookings/mine', requireAuth, requireRoles('traveler'), asyncHandler(mine));
+router.patch('/bookings/:id/cancel', requireAuth, requireRoles('traveler'), requireCsrf, validateId, asyncHandler(cancel));
+router.get('/guide/bookings', requireAuth, requireRoles('guide'), requireApprovedGuide, asyncHandler(guideBookings));
+router.patch('/bookings/:id/status', requireAuth, requireRoles('guide'), requireApprovedGuide, requireCsrf, validateId, asyncHandler(status));
+router.get('/admin/bookings', requireAuth, requireRoles('admin'), asyncHandler(adminBookings));
+export default router;

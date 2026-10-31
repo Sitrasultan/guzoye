@@ -1,0 +1,59 @@
+{
+  "manifests": {
+    "package.json": {
+      "json_valid": true,
+      "sha256": "74b02d815633708dbae065ee9f01c5bae55c92cb70850455bf8daa6ec9e35c44"
+    },
+    "client/package.json": {
+      "json_valid": true,
+      "sha256": "2006e345e6d4ddaf400714a4519162eac63c413d953ccef5efd01d4d57a07244"
+    },
+    "server/package.json": {
+      "json_valid": true,
+      "sha256": "341944024bfc5387d9e2fcec19a1fb51fd82d296fe56b0f18f663549d7bf987d"
+    }
+  },
+  "node_json_parse_output": [
+    "Valid JSON: package.json",
+    "Valid JSON: client/package.json",
+    "Valid JSON: server/package.json"
+  ],
+  "javascript_syntax_checked": [
+    "scripts/validate-manifests.mjs",
+    "server/test/catalog.integration.test.js",
+    "server/test/http.test.js",
+    "server/test/authValidation.test.js",
+    "server/test/auth.integration.test.js",
+    "server/src/index.js",
+    "server/src/seed.js",
+    "server/src/app.js",
+    "server/src/config/env.js",
+    "server/src/services/session.js",
+    "server/src/routes/dashboardRoutes.js",
+    "server/src/routes/authRoutes.js",
+    "server/src/routes/adminRoutes.js",
+    "server/src/middleware/authValidation.js",
+    "server/src/middleware/csrf.js",
+    "server/src/middleware/auth.js",
+    "server/src/middleware/errors.js",
+    "server/src/models/Guide.js",
+    "server/src/models/User.js",
+    "server/src/controllers/adminController.js",
+    "server/src/controllers/authController.js",
+    "server/src/controllers/catalogController.js",
+    "client/src/services/api.js",
+    "client/src/hooks/useAuth.js"
+  ],
+  "auth_validation_tests": {
+    "passed": 5,
+    "failed": 0
+  },
+  "not_executed": [
+    "dependency installation",
+    "JSX compilation / Vite build",
+    "Supertest HTTP tests",
+    "MongoDB integration tests",
+    "browser and accessibility QA"
+  ],
+  "distribution": "Complete-file overlay for existing Phase 2; unchanged files must be retained."
+}
