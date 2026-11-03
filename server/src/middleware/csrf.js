@@ -24,6 +24,6 @@ export function requireCsrf(req, _res, next) {
   if (!/^[a-f0-9]{64}$/.test(nonce) || !/^[a-f0-9]{64}$/.test(mac)) return next(new ApiError(403, 'Invalid CSRF token.'));
   const expected = signature(nonce, req.cookies[COOKIE_NAME] || 'anonymous');
   if (!timingSafeEqual(Buffer.from(mac, 'hex'), Buffer.from(expected, 'hex'))) return next(new ApiError(403, 'CSRF token expired. Refresh and try again.'));
-  if (!req.is('application/json')) return next(new ApiError(415, 'Use Content-Type: application/json.'));
+  if (!req.is('application/json') && !(req.allowMultipartCsrf === true && req.is('multipart/form-data'))) return next(new ApiError(415, 'Use Content-Type: application/json.'));
   next();
 }

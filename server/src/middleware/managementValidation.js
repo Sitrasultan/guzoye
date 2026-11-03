@@ -24,13 +24,16 @@ export function list(value, field, max = 20) {
 }
 export function profileInput(body) {
   plain(body);
-  const allowed = ['bio', 'languages', 'specialties', 'regionsCovered', 'yearsExperience', 'image'];
+  const allowed = ['bio', 'languages', 'specialties', 'regionsCovered', 'yearsExperience', 'coveredDestinations'];
   if (Object.keys(body).some(key => !allowed.includes(key))) fail('body', 'Profile contains unsupported fields.');
   const out = {};
   if ('bio' in body) out.bio = text(body.bio, 'bio', 20, 3000);
   for (const field of ['languages', 'specialties', 'regionsCovered']) if (field in body) out[field] = list(body[field], field);
   if ('yearsExperience' in body) out.yearsExperience = number(body.yearsExperience, 'yearsExperience', 0, 80, true);
-  if ('image' in body) out.image = imageUrl(body.image);
+  if ('coveredDestinations' in body) {
+    if (!Array.isArray(body.coveredDestinations) || body.coveredDestinations.length > 50) fail('coveredDestinations', 'Choose at most 50 places.');
+    out.coveredDestinations = [...new Set(body.coveredDestinations.map(value => id(value, 'coveredDestinations')))];
+  }
   if (!Object.keys(out).length) fail('body', 'Submit at least one profile field.');
   return out;
 }
@@ -61,7 +64,7 @@ export function tourInput(body, partial = false) {
     if (!Array.isArray(body.itinerary) || body.itinerary.length < 1 || body.itinerary.length > 365) fail('itinerary', 'Add 1–365 itinerary days.');
     out.itinerary = body.itinerary.map((day, index) => { plain(day); return { day: index + 1, title: text(day.title, 'day title', 2, 180), description: text(day.description, 'day description', 5, 3000) }; });
   }
-  if (required('images')) { if (!Array.isArray(body.images) || body.images.length < 1 || body.images.length > 10) fail('images', 'Add 1–10 image URLs.'); out.images = body.images.map(value => imageUrl(value, 'images')); }
+  if (required('images')) { if (!Array.isArray(body.images) || body.images.length < 1 || body.images.length > 6) fail('images', 'Choose 1–6 images.'); out.images = body.images.map(value => typeof value === 'string' && /^\/uploads\/[0-9a-f-]{36}\.webp$/.test(value) ? value : imageUrl(value, 'images')); }
   for (const field of ['included', 'excluded']) if (required(field)) out[field] = list(body[field], field, 40);
   if (!partial) { if (!Array.isArray(body.departures) || body.departures.length < 1 || body.departures.length > 40) fail('departures', 'Add 1–40 future departures.'); out.departures = body.departures.map(departureInput); const times = out.departures.map(d => +d.date); if (new Set(times).size !== times.length) fail('departures', 'Departure dates must be distinct.'); }
   if (!Object.keys(out).length) fail('body', 'Submit at least one tour field.');

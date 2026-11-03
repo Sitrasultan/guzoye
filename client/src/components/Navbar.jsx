@@ -1,4 +1,6 @@
-import { useState } from 'react';
+import Avatar from './Avatar';
+import { authApi } from '../services/api';
+import { useEffect, useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { Mountain, Menu, X, ArrowUpRight, LogOut } from 'lucide-react';
 import Button from './Button';
@@ -9,6 +11,9 @@ export default function Navbar() {
   const [error, setError] = useState('');
   const { user, loading, logout } = useAuth();
   const navigate = useNavigate();
+  const [photo, setPhoto] = useState(user?.image || '');
+  useEffect(() => setPhoto(user?.image || ''), [user]);
+  useEffect(() => { const update = () => authApi.me().then(current => setPhoto(current.image || '')).catch(() => {}); window.addEventListener('wondu:photo-updated', update); return () => window.removeEventListener('wondu:photo-updated', update); }, []);
   async function handleLogout() {
     setBusy(true); setError('');
     try { await logout(); setOpen(false); navigate('/login'); }
@@ -23,7 +28,7 @@ export default function Navbar() {
         {[['/', 'Discover'], ['/tours', 'Explore tours'], ['/guides', 'Local guides'], ['/bookings', 'My bookings']].map(([to, label]) => <NavLink key={to} to={to} end={to === '/'} onClick={() => setOpen(false)}>{label}</NavLink>)}
         <div className="nav-auth">
           {loading ? <span role="status">Checking session…</span> : user ? <>
-            <span className="nav-user" title={user.name}>{user.name}</span>
+            <Avatar src={photo} name={user.name} size={34} /><span className="nav-user" title={user.name}>{user.name}</span>
             <Link to={dashboardPath(user.role)} onClick={() => setOpen(false)}>Dashboard</Link>
             <button className="btn btn-secondary" disabled={busy} onClick={handleLogout}><LogOut size={15} />{busy ? 'Logging out…' : 'Logout'}</button>
           </> : <><Link to="/login" onClick={() => setOpen(false)}>Log in</Link><Button to="/register" onClick={() => setOpen(false)}>Get started <ArrowUpRight size={16} /></Button></>}

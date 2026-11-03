@@ -1,3 +1,4 @@
+import { bindTourImages, purge } from '../services/mediaLifecycle.js';
 import Guide from '../models/Guide.js';
 import Tour from '../models/Tour.js';
 import Destination from '../models/Destination.js';
@@ -12,6 +13,7 @@ export async function profile(req, res) {
 }
 export async function updateProfile(req, res) {
   const input = profileInput(req.body);
+  if (input.coveredDestinations && await Destination.countDocuments({ _id: { $in: input.coveredDestinations } }) !== input.coveredDestinations.length) throw new ApiError(400, 'Choose existing destinations.');
   const data = await Guide.findOneAndUpdate({ user: req.user._id }, { $set: input }, { new: true, runValidators: true }).populate('user', 'name role');
   if (!data) throw new ApiError(404, 'Guide profile not found.');
   res.json({ data, message: 'Profile saved.' });
@@ -42,6 +44,7 @@ export async function createTour(req, res) {
     if (!guide) throw new ApiError(403, 'An approved, active guide is required.');
     if (!await Destination.exists({ _id: input.destination }).session(session)) throw new ApiError(400, 'Choose an existing destination.');
     const [created] = await Tour.create([{ ...input, guide: guide._id, archived: false, rating: 0, reviewCount: 0 }], { session });
+    await bindTourImages(created, input.images, req.user._id, session);
     return created;
   });
   res.status(201).json({ data, message: 'Tour created. You own its booking requests.' });
@@ -54,9 +57,11 @@ export async function editTour(req, res) {
     if (await activeBookings(tour._id, session)) throw new ApiError(409, 'This tour has active bookings. Its details cannot be edited; archive it instead.');
     if (input.destination && !await Destination.exists({ _id: input.destination }).session(session)) throw new ApiError(400, 'Choose an existing destination.');
     if ((input.itinerary || tour.itinerary).length !== (input.duration || tour.duration)) throw new ApiError(400, 'The itinerary must have one entry per duration day.');
-    tour.set(input); await tour.save({ session }); return tour;
+    const removed = input.images ? await bindTourImages(tour, input.images, req.user._id, session) : [];
+    tour.set(input); await tour.save({ session }); return { tour, removed };
   });
-  res.json({ data, message: 'Tour saved.' });
+  for (const media of data.removed) await purge(media);
+  res.json({ data: data.tour, message: 'Tour saved.' });
 }
 export async function archiveTour(req, res) {
   const data = await transaction(async session => {

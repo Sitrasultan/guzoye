@@ -1,3 +1,4 @@
+import { guideFilters, discoveryPipeline } from '../services/guideDiscovery.js';
 import Tour from '../models/Tour.js';
 import Guide from '../models/Guide.js';
 import Destination from '../models/Destination.js';
@@ -33,12 +34,15 @@ export async function listDestinations(req, res) {
 }
 export async function getDestination(req, res) { const data = await Destination.findById(req.params.id).lean(); if (!data) throw new ApiError(404, 'Destination not found.'); res.json({ data }); }
 export async function listGuides(req, res) {
-  const { page, limit } = pagination(req.query), filter = { status: 'approved', isActive: { $ne: false } };
-  if (req.query.language) filter.languages = req.query.language;
-  if (req.query.search) { const users = await User.find({ name: new RegExp(escapeRegex(req.query.search), 'i') }).select('_id').lean(); filter.user = { $in: users.map(u => u._id) }; }
-  const [data, total] = await Promise.all([Guide.find(filter).sort({ rating: -1, _id: 1 }).skip((page - 1) * limit).limit(limit).populate('user', 'name role').lean(), Guide.countDocuments(filter)]); send(res, data, total, page, limit);
+  const filters = guideFilters(req.query);
+  const order = filters.sort === 'name' ? { 'user.name': 1, _id: 1 } : filters.sort === 'experience' ? { yearsExperience: -1, _id: 1 } : { rating: -1, _id: 1 };
+  const [result] = await Guide.aggregate([...discoveryPipeline(filters), { $sort: order }, { $facet: { data: [{ $skip: (filters.page - 1) * filters.limit }, { $limit: filters.limit }], total: [{ $count: 'count' }] } }]).collation({ locale: 'en', strength: 2 });
+  send(res, result?.data || [], result?.total[0]?.count || 0, filters.page, filters.limit);
 }
-export async function getGuide(req, res) { const data = await Guide.findOne({ _id: req.params.id, status: 'approved', isActive: { $ne: false } }).populate('user', 'name role').lean(); if (!data) throw new ApiError(404, 'Guide not found.'); res.json({ data }); }
+export async function getGuide(req, res) {
+  const [data] = await Guide.aggregate(discoveryPipeline({ minRating: 0 }, req.params.id));
+  if (!data) throw new ApiError(404, 'Guide not found.'); res.json({ data });
+}
 export async function listReviews(req, res) {
   const tour = await Tour.findOne({ _id: req.params.id, archived: { $ne: true } }).select('guide').lean();
   if (!tour || !await Guide.exists({ _id: tour.guide, status: 'approved', isActive: { $ne: false } })) throw new ApiError(404, 'Tour not found.');

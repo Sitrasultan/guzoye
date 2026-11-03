@@ -1,0 +1,80 @@
+{
+  "source": "wondu-current.zip",
+  "scope": "Delivery 1 partial: items 1 and 2 implemented; items 3\u20137 incomplete; Delivery 2 not started.",
+  "package_json_supplied": [
+    "server/package.json"
+  ],
+  "manifests_validated_python_and_node": [
+    "package.json",
+    "client/package.json",
+    "server/package.json"
+  ],
+  "supplied_manifest_sha256": "dcfc06640165c44716f2f44ea2d06d2441eb0b371c935a8e7e429f0e6ee55094",
+  "new_dependencies": {
+    "multer": "^2.0.2",
+    "sharp": "^0.34.5",
+    "cloudinary": "^2.7.0"
+  },
+  "optional_new_environment": [
+    "MEDIA_STORAGE",
+    "CLOUDINARY_CLOUD_NAME",
+    "CLOUDINARY_API_KEY",
+    "CLOUDINARY_API_SECRET"
+  ],
+  "javascript_syntax_passed": [
+    "server/src/models/Media.js",
+    "server/src/models/Guide.js",
+    "server/src/services/imageValidation.js",
+    "server/src/services/mediaStorage.js",
+    "server/src/middleware/csrf.js",
+    "server/src/middleware/imageUpload.js",
+    "server/src/services/mediaLifecycle.js",
+    "server/src/controllers/mediaController.js",
+    "server/src/routes/mediaRoutes.js",
+    "server/src/app.js",
+    "server/src/middleware/managementValidation.js",
+    "server/src/controllers/guideManagementController.js",
+    "server/src/services/guideDiscovery.js",
+    "server/src/controllers/catalogController.js",
+    "server/src/controllers/authController.js",
+    "server/src/seed.js",
+    "server/src/scripts/cleanupMedia.js",
+    "server/src/scripts/migrateCoveredPlaces.js",
+    "client/src/services/media.js",
+    "client/src/services/api.js",
+    "server/src/services/guideFilters.js",
+    "server/test/management.integration.test.js",
+    "server/test/delivery1.validation.test.js",
+    "server/test/delivery1.integration.test.js",
+    "scripts/verify-final-delivery-1.mjs",
+    "server/src/index.js"
+  ],
+  "unit_tests": {
+    "passed": 30,
+    "failed": 0,
+    "new": 6,
+    "existing": 24,
+    "suites": [
+      "delivery1.validation",
+      "managementValidation",
+      "validation",
+      "bookingValidation",
+      "authValidation",
+      "fixtures"
+    ]
+  },
+  "relative_imports": "All changed relative imports resolve in overlaid repository.",
+  "source_checks": "Auth+guide role on media router; multipart CSRF before multer; JSON routes remain gated.",
+  "not_run": [
+    "npm install or lockfile regeneration",
+    "Sharp native decoding/resize tests",
+    "Supertest HTTP tests",
+    "MongoDB integration/transaction tests",
+    "Cloudinary service calls",
+    "Vite JSX compilation/build",
+    "browser/mobile/camera/accessibility tests"
+  ],
+  "seed_required": false,
+  "migration": "node server/src/scripts/migrateCoveredPlaces.js (idempotent, no deletion)",
+  "next": "Finish Delivery 1 reviews/wishlist/tour discovery/metadata/404 and related tests before Delivery 2 polish."
+}

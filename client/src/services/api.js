@@ -37,15 +37,18 @@ export const dashboardApi = {
 const pause = () => new Promise(resolve => setTimeout(resolve, 350));
 function mockList(resource, params = {}) {
   let data = [...catalog[resource]];
-  if (params.search) { const term = params.search.toLowerCase(); data = data.filter(x => `${x.title || x.user?.name || x.name} ${x.description || ''} ${x.destination?.name || ''}`.toLowerCase().includes(term)); }
+  if (params.search || params.q) { const term = (params.q || params.search).toLowerCase(); data = data.filter(x => `${x.title || x.user?.name || x.name} ${x.description || ''} ${x.destination?.name || ''}`.toLowerCase().includes(term)); }
   if (params.region) data = data.filter(x => x.destination?.region === params.region);
   if (params.maxPrice) data = data.filter(x => x.price <= Number(params.maxPrice));
   if (params.duration) data = data.filter(x => x.duration <= Number(params.duration));
   if (params.difficulty) data = data.filter(x => x.difficulty === params.difficulty);
+  if (resource === 'guides') { data = data.map(guide => ({ ...guide, coveredPlaces: catalog.destinations.filter(destination => (guide.coveredDestinations || []).includes(destination._id) || catalog.tours.some(tour => tour.guide._id === guide._id && tour.destination._id === destination._id)) })); if (params.destination) data = data.filter(guide => guide.coveredPlaces.some(place => place._id === params.destination)); if (params.minRating) data = data.filter(guide => guide.rating >= Number(params.minRating)); }
   if (params.language) data = data.filter(x => x.languages?.includes(params.language));
   if (params.guide) data = data.filter(x => x.guide?._id === params.guide);
   if (params.featured === 'true') data = data.filter(x => x.featured);
-  if (params.sort === 'price-asc') data.sort((a, b) => a.price - b.price);
+  if (resource === 'guides' && params.sort === 'name') data.sort((a,b) => a.user.name.localeCompare(b.user.name));
+  else if (resource === 'guides' && params.sort === 'experience') data.sort((a,b) => b.yearsExperience-a.yearsExperience);
+  else if (params.sort === 'price-asc') data.sort((a, b) => a.price - b.price);
   else if (params.sort === 'price-desc') data.sort((a, b) => b.price - a.price);
   else data.sort((a, b) => (b.rating || 0) - (a.rating || 0) || a._id.localeCompare(b._id));
   const total = data.length, limit = Number(params.limit || 8), page = Number(params.page || 1);

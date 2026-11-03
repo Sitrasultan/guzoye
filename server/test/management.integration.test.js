@@ -37,7 +37,7 @@ test('guide studio and admin management integration', { skip: !uri }, async t =>
     const body = { title: 'My locally led city tour', destination: String(destination._id), description: 'Explore the city with a thoughtful, locally led itinerary.', price: 40, duration: 1, difficulty: 'Easy', capacity: 8, itinerary: [{ title: 'City walk', description: 'Meet our guide and explore the city.' }], images: ['https://example.com/image.jpg'], included: ['Local guide'], excluded: ['Flights'], departures: [{ date: new Date(Date.now() + 86400000 * 10).toISOString(), capacity: 8 }] };
     let tourId, departureId, bookingId;
     await t.test('profile save and field validation', async () => {
-      const result = await write(pending.agent, 'patch', '/api/guide/profile', { bio: 'I love sharing the history and culture of my home.', languages: ['English'], regionsCovered: ['Amhara'], image: 'https://example.com/photo.jpg' });
+      const result = await write(pending.agent, 'patch', '/api/guide/profile', { bio: 'I love sharing the history and culture of my home.', languages: ['English'], regionsCovered: ['Amhara'] });
       assert.equal(result.status, 200); assert.equal(result.body.data.regionsCovered[0], 'Amhara');
       assert.equal((await write(owner.agent, 'patch', '/api/guide/profile', { image: 'http://localhost/private' })).status, 400);
     });

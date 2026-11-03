@@ -108,3 +108,20 @@ configuration and exact origin handling, not blind cookie changes.
 - [ ] Configure SPA rewrites, approved image policy, monitoring, logs and backups.
 - [ ] Resolve proxy trust and shared IP rate-limit storage before scaling.
 - [ ] Do not expose demo passwords/seed endpoints; no payment is collected by this app.
+
+
+## Final Delivery 1 media adapter
+
+Run npm install from monorepo root and commit its updated lockfile before npm ci builds.
+Set MEDIA_STORAGE=cloudinary plus CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY and
+CLOUDINARY_API_SECRET as backend-only secrets for durable uploads. No new client secret.
+Use local mode only with explicitly durable mounted storage or disposable development.
+No automatic local-to-cloud migration is supplied. Keep /uploads reachable at API origin
+for old local assets; back up bytes and Media records together. Schedule cleanupMedia.js
+hourly and monitor pending deletions. Cloudinary upload_stream/destroy are server-side;
+production verification against your account has not been executed here.
+
+Both session and CSRF cookies still use existing SameSite=Lax; multipart handling does not
+change cookie policy. Follow the same-site custom-domain recommendation above. Cross-site
+cookie configuration remains a separate deployment decision requiring both cookie services
+and browser testing; don't disable CSRF to make uploads work.

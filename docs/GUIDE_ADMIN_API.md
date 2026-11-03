@@ -8,10 +8,10 @@ No bearer/localStorage tokens, public promotion endpoint or public audit endpoin
 
 GET /api/guide/profile returns {data: Guide with public user name/role}.
 PATCH accepts only bio (20–3000 chars), languages[], specialties[], regionsCovered[],
-yearsExperience (integer 0–80) and image (HTTPS public-hostname URL). Lists allow at most
+yearsExperience (integer 0–80) and coveredDestinations (existing Destination IDs). Lists allow at most
 20 unique trimmed entries of 1–150 chars each. All fields are optional individually;
 submit at least one. Unknown fields (role/status/rating/user) are rejected.
-Pending/rejected guides may edit profile, but cannot publish tours and remain hidden.
+Photo changes use the dedicated multipart endpoint (pending/approved only). Pending/rejected guides may edit other profile fields, but cannot publish tours and remain hidden.
 URL validation checks format/scheme/host, not actual image content or DNS resolution.
 The server never downloads submitted URLs, so this is not an image proxy or uploader.
 
@@ -25,7 +25,7 @@ req.guide._id; ownership/status/rating cannot be supplied by the client.
 
 Price is nonnegative USD, max 1000000, at most 2 decimals. Duration 1–365 days; capacity
 1–1000 integer. Difficulty Easy/Moderate/Challenging. Itinerary day count must equal duration;
-server numbers days in array order, each has title/description. Images: 1–10 HTTPS URLs.
+server numbers days in array order, each has title/description. Images: 1–6 uploaded or legacy HTTPS image URLs. New UI uses uploads; see docs/API.md.
 Included/excluded lists max 40 entries. Initial departures: 1–40 distinct future timestamps,
 each with capacity; spotsLeft is computed server-side. Request JSON is capped at 128 KB.
 

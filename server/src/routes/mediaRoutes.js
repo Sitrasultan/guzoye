@@ -1,0 +1,22 @@
+import { Router } from 'express';
+import rateLimit from 'express-rate-limit';
+import { requireAuth, requireRoles, requireApprovedGuide } from '../middleware/auth.js';
+import { requireCsrf } from '../middleware/csrf.js';
+import { imageUpload, allowMultipartCsrf, uploadSlot } from '../middleware/imageUpload.js';
+import { asyncHandler, ApiError } from '../middleware/errors.js';
+import { validateId } from '../middleware/validate.js';
+import Guide from '../models/Guide.js';
+import * as controller from '../controllers/mediaController.js';
+const router = Router();
+router.use(requireAuth, requireRoles('guide'));
+const limit = rateLimit({ windowMs: 15 * 60 * 1000, limit: 30, skip: req => req.method === 'GET', message: { message: 'Too many image changes. Try again later.' } });
+const profilePermission = asyncHandler(async (req, _res, next) => {
+  if (!await Guide.exists({ user: req.user._id, status: { $in: ['pending', 'approved'] }, isActive: { $ne: false } })) throw new ApiError(403, 'Only approved or pending guides can change a photo.'); next();
+});
+const kind = value => (req, _res, next) => { req.mediaKind = value; next(); };
+router.post('/profile/photo', limit, profilePermission, allowMultipartCsrf, requireCsrf, uploadSlot, imageUpload, kind('avatar'), asyncHandler(controller.upload));
+router.delete('/profile/photo', limit, profilePermission, requireCsrf, asyncHandler(controller.removePhoto));
+router.get('/media', requireApprovedGuide, asyncHandler(controller.library));
+router.post('/media', limit, requireApprovedGuide, allowMultipartCsrf, requireCsrf, uploadSlot, imageUpload, kind('tour'), asyncHandler(controller.upload));
+router.delete('/media/:id', limit, requireApprovedGuide, requireCsrf, validateId, asyncHandler(controller.removeDraft));
+export default router;

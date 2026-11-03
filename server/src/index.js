@@ -1,9 +1,11 @@
+import { validateMediaEnvironment } from './services/mediaStorage.js';
 import mongoose from 'mongoose';
 import app from './app.js';
 import { connectDB } from './config/db.js';
 import { env, validateEnvironment } from './config/env.js';
 try {
   validateEnvironment();
+  validateMediaEnvironment();
   await connectDB();
   const server = app.listen(env.port, () => console.log(`Wondu API listening on http://localhost:${env.port}`));
   let closing = false;

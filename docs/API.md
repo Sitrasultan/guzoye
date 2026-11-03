@@ -82,3 +82,51 @@ Sort values are rating, price-asc, price-desc. Difficulty: Easy, Moderate, Chall
 page is 1–10000; limit is 1–50, default 8. Search is a case-insensitive literal substring.
 Malformed IDs return 400; valid missing or unapproved public resources return 404.
 There are still no booking, payment, tour-editing, or review-submission endpoints.
+
+
+# Final Delivery 1 additions (items 1–2)
+
+## Media
+
+| Method | Path | Access / body |
+| --- | --- | --- |
+| POST | /api/guide/profile/photo | pending/approved active guide; multipart single field photo |
+| DELETE | /api/guide/profile/photo | same; JSON {} |
+| GET | /api/guide/media | approved guide; own unattached tour uploads, maximum 24 |
+| POST | /api/guide/media | approved guide; multipart single field photo |
+| DELETE | /api/guide/media/:id | approved guide; own unattached upload only |
+| GET | /uploads/:uuid.webp | public image, strict filename, no directory listing |
+
+All writes retain Origin, signed session-bound CSRF and role checks. Upload routes alone
+allow multipart after CSRF validation, before multer. Do not set multipart Content-Type
+manually in Axios: allow the browser to add the boundary. Uploads are limited to 2MB,
+one file/no extra multipart fields. Four in-flight responses and 30 image changes/15min/IP
+are bounded per API process. Production multi-process/WAF limits remain operator work.
+Success POST 201 {data:{_id,url},message}; remove 200 {message}. Wrong/invalid content 400,
+too large 413, bad session 401, role/CSRF/ownership 403, attached upload 409, rate/busy 429.
+Original filename and MIME header are not trusted. Metadata/key/provider stay server-side.
+
+Profile PATCH now accepts coveredDestinations:[destination IDs] and no longer accepts image.
+The existing bio/languages/specialties/yearsExperience remain; legacy regionsCovered stays
+in storage/API for compatibility but is not the new place-selection control. A photo is
+saved/removed independently, immediately. Generic profile Save does not upload bytes.
+
+Tour create/edit still receives ordered images:[URLs]. Uploaded paths are validated against
+owned Media records before attachment. Six max; ready own drafts or this tour's existing
+assets only. Legacy HTTPS seeded URLs remain compatible, but new UI uses file upload.
+An attached file cannot be deleted through the draft endpoint. Removing it in a form only
+deletes storage after a successful authorized Tour save. Reassigned tour owners can retain
+or remove already-attached assets without receiving access to the previous owner's drafts.
+
+## Guide discovery
+
+GET /api/guides?destination=<id>&language=English&minRating=4&q=Hana&sort=experience&page=1&limit=12
+
+Parameters combine with AND; destination internally matches explicit place OR published
+owned-tour destination. One result per guide. minRating 0–5; sort rating/experience/name;
+page 1–10000; limit 1–50. q/search are escaped literal substrings of name. Invalid/repeated
+or unsupported query fields return 400. Approved active guides and active User required.
+Default sort rating; name case-insensitive, ID tie-breaker. All filtering/sorting before
+pagination. coveredPlaces:[{_id,name,region}] returns effective union for cards/profile.
+GET /api/guides/:id now includes coveredPlaces. Archived tours do not contribute coverage;
+explicitly checked places continue to match even when no tour remains published there.

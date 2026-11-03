@@ -5,8 +5,8 @@ import { ApiError } from '../middleware/errors.js';
 import { issueSession, clearSession } from '../services/session.js';
 const dummyHash = bcrypt.hashSync('not-a-user-password', 12);
 export async function publicUser(user) {
-  const guide = user.role === 'guide' ? await Guide.findOne({ user: user._id }).select('_id status rejectionReason').lean() : null;
-  return { _id: user._id, name: user.name, email: user.email, role: user.role, guide };
+  const guide = user.role === 'guide' ? await Guide.findOne({ user: user._id }).select('_id status rejectionReason image').lean() : null;
+  return { _id: user._id, name: user.name, email: user.email, role: user.role, image: guide?.image || '', guide };
 }
 export async function register(req, res) {
   const { name, email, password, role } = req.validated;

@@ -1,3 +1,12 @@
+# Current upgrade: Final Delivery 1, items 1–2
+
+Built against the supplied project. Real uploads and place-based guide discovery are added.
+This is a partial Delivery 1: reviews/wishlist/tour discovery/meta work is still missing.
+See docs/FINAL_DELIVERY_1.md for exact install/migration/manual tests and docs/STATUS.md.
+
+Required after copying: npm install, then the non-destructive place migration. No re-seed
+is required. New dependencies: multer, sharp, cloudinary. Local mode needs no new secrets.
+
 # Wondu — Ethiopia, with a local
 
 Wondu is a MERN tour and local-guide booking platform. This complete-file upgrade builds
@@ -196,7 +205,7 @@ screen-reader checks were NOT executed in the delivery environment. Run them loc
   and available-spots filter (Part B is not implemented by this delivery).
 - Finish route metadata and executed responsive/accessibility/E2E QA.
 - Real payments/refunds, notifications, pending booking expiry and cancellation policy.
-- Image uploads to controlled storage rather than external URLs; content moderation.
+- Expand image content moderation and interactive cropping; local/Cloudinary file uploads now exist.
 - Email verification, password reset, MFA, secure production admin provisioning.
 - User reactivation and formal guide rejection/resubmission workflow.
 - Shared rate-limit store/proxy configuration for multiple API instances.

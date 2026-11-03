@@ -38,7 +38,7 @@ try {
   await User.deleteMany({ _id: { $in: users.map(u => u._id) } });
   for (const user of users) await User.create(user);
   await Destination.insertMany(catalog.destinations);
-  await Guide.insertMany(catalog.guides.map(g => ({ ...g, user: g.user._id, status: 'approved', isActive: true, regionsCovered: [...new Set(catalog.tours.filter(t => t.guide._id === g._id).map(t => t.destination.region))], approvedAt: new Date(), approvedBy: adminId })));
+  await Guide.insertMany(catalog.guides.map(g => ({ ...g, user: g.user._id, status: 'approved', isActive: true, coveredDestinations: [...new Set(catalog.tours.filter(t => t.guide._id === g._id).map(t => t.destination._id))], regionsCovered: [...new Set(catalog.tours.filter(t => t.guide._id === g._id).map(t => t.destination.region))], approvedAt: new Date(), approvedBy: adminId })));
   const today = new Date();
   await Tour.insertMany(catalog.tours.map((tour, index) => ({ ...tour, destination: tour.destination._id, guide: tour.guide._id, archived: false, departures: Array.from({ length: 3 + index % 2 }, (_, i) => { const date = new Date(today); date.setUTCDate(date.getUTCDate() + 7 + index + i * 14); date.setUTCHours(6, 0, 0, 0); return { date, capacity: tour.capacity, spotsLeft: tour.capacity }; }) })));
   // These remain illustrative reviews until Part B is implemented.
