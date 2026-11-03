@@ -15,7 +15,7 @@ export async function register(req, res) {
   try { if (role === 'guide') await Guide.create({ user: user._id, status: 'pending' }); }
   catch (error) { await User.deleteOne({ _id: user._id }); throw error; }
   issueSession(res, user);
-  res.status(201).json({ data: { user: await publicUser(user) }, message: role === 'guide' ? 'Account created. Your guide application is pending admin approval.' : 'Welcome to Wondu.' });
+  res.status(201).json({ data: { user: await publicUser(user) }, message: role === 'guide' ? 'Account created. Your guide application is pending admin approval.' : 'Welcome to Guzoye.' });
 }
 export async function login(req, res) {
   const { email, password } = req.validated;

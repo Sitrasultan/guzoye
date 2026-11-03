@@ -27,7 +27,7 @@ export async function storeImage(buffer) {
   }
   const client = await cloud();
   const result = await new Promise((resolve, reject) => {
-    client.uploader.upload_stream({ resource_type: 'image', public_id: `wondu/${id}`, overwrite: false, format: 'webp' }, (error, value) => error ? reject(error) : resolve(value)).end(buffer);
+    client.uploader.upload_stream({ resource_type: 'image', public_id: `guzoye/${id}`, overwrite: false, format: 'webp' }, (error, value) => error ? reject(error) : resolve(value)).end(buffer);
   });
   return { provider, key: result.public_id, url: result.secure_url };
 }

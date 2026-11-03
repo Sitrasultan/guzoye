@@ -7,11 +7,11 @@ const http = axios.create({
   withCredentials: true
 });
 http.interceptors.response.use(response => response, error => {
-  const message = error.response?.data?.message || (error.code === 'ECONNABORTED' ? 'The request timed out. Please try again.' : 'Cannot reach Wondu. Check the API connection and try again.');
+  const message = error.response?.data?.message || (error.code === 'ECONNABORTED' ? 'The request timed out. Please try again.' : 'Cannot reach Guzoye. Check the API connection and try again.');
   const normalized = new Error(message);
   normalized.status = error.response?.status;
   normalized.fields = error.response?.data?.errors || {};
-  if (normalized.status === 401 && !error.config?.url?.startsWith('/auth/')) window.dispatchEvent(new Event('wondu:session-expired'));
+  if (normalized.status === 401 && !error.config?.url?.startsWith('/auth/')) window.dispatchEvent(new Event('guzoye:session-expired'));
   return Promise.reject(normalized);
 });
 // Fetch a fresh signed, session-bound CSRF token before every write. No JWT is

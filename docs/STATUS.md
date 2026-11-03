@@ -1,6 +1,6 @@
-# Wondu — Final Delivery 1 status (partial, items 1 and 2)
+# Guzoye — Final Delivery 1 status (partial, items 1 and 2)
 
-Built against the supplied wondu-current.zip, not a reconstructed project.
+Built against the supplied guzoye-current.zip, not a reconstructed project.
 
 ## Implemented in this ZIP
 

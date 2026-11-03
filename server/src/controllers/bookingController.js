@@ -2,13 +2,13 @@ import Booking from '../models/Booking.js';
 import Tour from '../models/Tour.js';
 import { bookingInput, statusInput, bookingFilters } from '../middleware/bookingValidation.js';
 import { createBooking, cancelBooking, changeBookingStatus } from '../services/bookingService.js';
-const tourFields = 'title images guide destination departures';
+const tourFields = 'title images destination departures assignedGuides owner';
 async function list(res, filter, query) {
   const { page, limit, status } = bookingFilters(query);
   if (status) filter.status = status;
   const [data, total] = await Promise.all([
     Booking.find(filter).sort({ createdAt: -1, _id: -1 }).skip((page - 1) * limit).limit(limit)
-      .populate('tour', tourFields).populate('user', 'name email').lean(),
+      .populate('tour', tourFields).populate('guide', 'image rating languages').populate({ path: 'guide', populate: { path: 'user', select: 'name email' } }).populate('user', 'name email').lean(),
     Booking.countDocuments(filter)
   ]);
   res.set('Cache-Control', 'no-store');
@@ -25,8 +25,7 @@ export async function cancel(req, res) {
 }
 export async function guideBookings(req, res) {
   bookingFilters(req.query); // Validate before querying.
-  const tours = await Tour.find({ guide: req.guide._id }).select('_id').lean();
-  await list(res, { tour: { $in: tours.map(t => t._id) } }, req.query);
+  await list(res, { guide: req.guide._id }, req.query);
 }
 export async function status(req, res) {
   const data = await changeBookingStatus(req.guide._id, req.params.id, statusInput(req.body));

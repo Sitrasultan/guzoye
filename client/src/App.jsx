@@ -12,8 +12,8 @@ import Auth from './pages/Auth';
 import MyBookings from './pages/MyBookings';
 import Dashboard, { DashboardRedirect } from './pages/Dashboard';
 import AdminDashboard from './pages/AdminDashboard';
+import AdminTourManager from './pages/AdminTourManager';
 import GuideMyProfile from './pages/GuideMyProfile';
-import GuideTourForm from './pages/GuideTourForm';
 import { EmptyState } from './components/States';
 import Button from './components/Button';
 function ScrollReset() { const { pathname } = useLocation(); useEffect(() => { window.scrollTo(0, 0); }, [pathname]); return null; }
@@ -23,8 +23,8 @@ export default function App() {
     <Route path="/login" element={<Auth key="login" />} /><Route path="/register" element={<Auth key="register" register />} />
     <Route element={<ProtectedRoute />}><Route path="/dashboard" element={<DashboardRedirect />} /><Route path="/bookings" element={<MyBookings />} /></Route>
     <Route element={<ProtectedRoute roles={['traveler']} />}><Route path="/dashboard/traveler" element={<Dashboard />} /></Route>
-    <Route element={<ProtectedRoute roles={['guide']} />}><Route path="/dashboard/guide" element={<Dashboard />} /><Route path="/dashboard/guide/profile" element={<GuideMyProfile />} /><Route path="/dashboard/guide/tours/new" element={<GuideTourForm key="new" />} /><Route path="/dashboard/guide/tours/:id/edit" element={<GuideTourForm />} /></Route>
-    <Route element={<ProtectedRoute roles={['admin']} />}><Route path="/dashboard/admin" element={<AdminDashboard />} /></Route>
+    <Route element={<ProtectedRoute roles={['guide']} />}><Route path="/dashboard/guide" element={<Dashboard />} /><Route path="/dashboard/guide/profile" element={<GuideMyProfile />} /><Route path="*" element={<EmptyState title="Tour studio retired" message="Guzoye admins now create tours and assign guides." />} /></Route>
+    <Route element={<ProtectedRoute roles={['admin']} />}><Route path="/dashboard/admin" element={<AdminDashboard />} /><Route path="/dashboard/admin/tours" element={<AdminTourManager />} /></Route>
     <Route path="*" element={<main className="container page"><EmptyState title="A little off the beaten path" message="This page doesn’t exist. Let’s find your way back."><Button to="/">Back to discovery</Button></EmptyState></main>} />
   </Routes></div><Footer /></>;
 }

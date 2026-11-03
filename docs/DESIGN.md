@@ -1,4 +1,4 @@
-# Wondu — design and architecture through Phase 3
+# Guzoye — design and architecture through Phase 3
 
 ## Visual system
 Existing Phase 2 styles.css remains unchanged. Phase 3 auth.css imports after it and

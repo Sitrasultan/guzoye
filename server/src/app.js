@@ -12,6 +12,7 @@ import { env } from './config/env.js';
 import catalogRoutes from './routes/catalogRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
+import adminTourRoutes from './routes/adminTourRoutes.js';
 import dashboardRoutes from './routes/dashboardRoutes.js';
 import bookingRoutes from './routes/bookingRoutes.js';
 import guideManagementRoutes from './routes/guideManagementRoutes.js';
@@ -23,7 +24,7 @@ app.use(express.json({ limit: '128kb' })); app.use(cookieParser());
 if (env.mode !== 'test') app.use(morgan('dev'));
 app.use('/api', rateLimit({ windowMs: 15 * 60 * 1000, limit: 500, standardHeaders: 'draft-7', legacyHeaders: false, message: { message: 'Too many requests. Please try again later.' } }));
 app.get('/api/health', (_req, res) => { const connected = mongoose.connection.readyState === 1; res.status(connected ? 200 : 503).json({ status: connected ? 'ok' : 'unavailable', database: connected ? 'connected' : 'disconnected' }); });
-app.use('/api/auth', authRoutes); app.use('/api/admin', adminRoutes); app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/auth', authRoutes); app.use('/api/admin', adminTourRoutes); app.use('/api/admin', adminRoutes); app.use('/api/dashboard', dashboardRoutes);
 app.get('/uploads/:name', (req, res, next) => {
   if (!/^[0-9a-f-]{36}\.webp$/.test(req.params.name)) return res.sendStatus(404);
   res.set({ 'Cross-Origin-Resource-Policy': 'cross-origin', 'X-Content-Type-Options': 'nosniff', 'Content-Type': 'image/webp', 'Cache-Control': 'public, max-age=3600' });

@@ -14,7 +14,9 @@ const schema = new mongoose.Schema({
   rating: { type: Number, min: 0, max: 5, default: 0 }, reviewCount: { type: Number, min: 0, default: 0 },
   yearsExperience: { type: Number, min: 0, max: 80, default: 0 },
   location: { type: String, default: 'Ethiopia' },
-  image: { type: String, default: '' }
+  image: { type: String, default: '' },
+  blockedDates: { type: [Date], default: [] },
+  availabilityNotes: { type: String, default: '', maxlength: 1000 }
 }, { timestamps: true });
 schema.index({ languages: 1, status: 1 });
 schema.set('toJSON', { transform(_doc, value) { delete value.mutationVersion; return value; } });

@@ -1,4 +1,5 @@
 import { guideFilters, discoveryPipeline } from '../services/guideDiscovery.js';
+import mongoose from 'mongoose';
 import Tour from '../models/Tour.js';
 import Guide from '../models/Guide.js';
 import Destination from '../models/Destination.js';
@@ -6,7 +7,8 @@ import Review from '../models/Review.js';
 import User from '../models/User.js';
 import { ApiError } from '../middleware/errors.js';
 import { pagination, integer, enumValue, escapeRegex, validateOptionalId } from '../middleware/validate.js';
-const population = { path: 'guide', populate: { path: 'user', select: 'name role' } };
+const guidePopulation = { path: 'assignedGuides', select: 'image rating languages status isActive', populate: { path: 'user', select: 'name role' } };
+const population = guidePopulation;
 function send(res, data, total, page, limit) { res.json({ data, pagination: { total, page, limit, pages: Math.ceil(total / limit) } }); }
 const visibleGuides = () => Guide.find({ status: 'approved', isActive: { $ne: false } }).select('_id');
 export async function listTours(req, res) {
@@ -17,7 +19,10 @@ export async function listTours(req, res) {
   if (q.duration) filter.duration = { $lte: integer(q.duration, 'duration', { max: 365 }) };
   if (q.featured) filter.featured = enumValue(q.featured, ['true', 'false'], 'featured') === 'true';
   if (q.guide) validateOptionalId(q.guide);
-  const approved = await visibleGuides().lean(); filter.guide = { $in: approved.map(g => g._id).filter(value => !q.guide || String(value) === q.guide) };
+  const approved = await visibleGuides().lean();
+  const approvedIds = approved.map(g => String(g._id));
+  filter.assignedGuides = { $in: approvedIds.map(id => new mongoose.Types.ObjectId(id)) };
+  if (q.guide) { validateOptionalId(q.guide); filter.assignedGuides = { $in: [new mongoose.Types.ObjectId(q.guide)] }; }
   if (q.region) { const rows = await Destination.find({ region: q.region }).select('_id').lean(); filter.destination = { $in: rows.map(d => d._id) }; }
   if (q.search) { const regex = new RegExp(escapeRegex(q.search), 'i'); const rows = await Destination.find({ name: regex }).select('_id').lean(); filter.$or = [{ title: regex }, { description: regex }, { destination: { $in: rows.map(d => d._id) } }]; }
   const order = sort === 'price-asc' ? { price: 1, _id: 1 } : sort === 'price-desc' ? { price: -1, _id: 1 } : { rating: -1, _id: 1 };
@@ -26,7 +31,8 @@ export async function listTours(req, res) {
 }
 export async function getTour(req, res) {
   const data = await Tour.findOne({ _id: req.params.id, archived: { $ne: true } }).populate('destination').populate(population).lean();
-  if (!data || data.guide?.status !== 'approved' || data.guide?.isActive === false) throw new ApiError(404, 'Tour not found.'); res.json({ data });
+  const hasAvailableGuide = (data?.assignedGuides || []).some(guide => guide.status === 'approved' && guide.isActive !== false);
+  if (!data || !hasAvailableGuide) throw new ApiError(404, 'Tour not found.'); res.json({ data });
 }
 export async function listDestinations(req, res) {
   const { page, limit } = pagination(req.query), filter = req.query.search ? { name: new RegExp(escapeRegex(req.query.search), 'i') } : {};
@@ -44,8 +50,9 @@ export async function getGuide(req, res) {
   if (!data) throw new ApiError(404, 'Guide not found.'); res.json({ data });
 }
 export async function listReviews(req, res) {
-  const tour = await Tour.findOne({ _id: req.params.id, archived: { $ne: true } }).select('guide').lean();
-  if (!tour || !await Guide.exists({ _id: tour.guide, status: 'approved', isActive: { $ne: false } })) throw new ApiError(404, 'Tour not found.');
+  const tour = await Tour.findOne({ _id: req.params.id, archived: { $ne: true } }).select('assignedGuides').populate('assignedGuides', 'status isActive').lean();
+  const hasAvailableGuide = (tour?.assignedGuides || []).some(guide => guide.status === 'approved' && guide.isActive !== false);
+  if (!tour || !hasAvailableGuide) throw new ApiError(404, 'Tour not found.');
   const { page, limit } = pagination(req.query), filter = { tour: req.params.id };
   const [data, total] = await Promise.all([Review.find(filter).sort({ createdAt: -1, _id: 1 }).skip((page - 1) * limit).limit(limit).populate('user', 'name').lean(), Review.countDocuments(filter)]); send(res, data, total, page, limit);
 }

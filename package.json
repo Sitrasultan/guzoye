@@ -1,5 +1,5 @@
 {
-  "name": "wondu",
+  "name": "guzoye",
   "private": true,
   "type": "module",
   "workspaces": [
@@ -11,7 +11,8 @@
     "build": "npm run build -w client",
     "seed": "npm run seed -w server",
     "start": "npm run start -w server",
-    "test": "npm run test -w server"
+    "test": "npm run test -w server",
+    "migrate:guzoye-1a": "node server/src/scripts/migrate-guzoye-1a.js"
   },
   "devDependencies": {
     "concurrently": "^9.1.2"

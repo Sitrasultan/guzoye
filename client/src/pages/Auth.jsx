@@ -24,7 +24,7 @@ export default function Auth({ register = false }) {
   if (!auth.loading && auth.user && !busy) return <Navigate to={dashboardPath(auth.user.role)} replace />;
   const fieldError = name => fields[name] ? <small id={`${name}-error`} className="field-error">{fields[name]}</small> : null;
   return <main className="container auth-page">
-    <section className="auth-story"><Mountain size={40} /><span className="eyebrow">WELCOME TO WONDU</span><h1>A world of stories.<br />A place for yours.</h1><p>Your next chapter begins with a little curiosity.</p></section>
+    <section className="auth-story"><Mountain size={40} /><span className="eyebrow">WELCOME TO GUZOYE</span><h1>A world of stories.<br />A place for yours.</h1><p>Your next chapter begins with a little curiosity.</p></section>
     <section className="auth-form">
       <span className="eyebrow">{register ? 'START SOMETHING GOOD' : 'GOOD TO SEE YOU AGAIN'}</span>
       <h2>{register ? 'Let’s find your next story.' : 'Welcome back, explorer.'}</h2>
@@ -39,7 +39,7 @@ export default function Auth({ register = false }) {
           <Button type="submit" className="full-width" disabled={busy || auth.loading}>{busy ? 'Please wait…' : register ? 'Create account' : 'Log in'}<ArrowRight size={16} /></Button>
         </fieldset>
       </form>
-      <p>{register ? 'Already part of the journey?' : 'New around here?'} <Link to={register ? '/login' : '/register'}>{register ? 'Log in' : 'Join Wondu'}</Link></p>
+      <p>{register ? 'Already part of the journey?' : 'New around here?'} <Link to={register ? '/login' : '/register'}>{register ? 'Log in' : 'Join Guzoye'}</Link></p>
       <Link className="section-link" to="/tours">Explore without an account <ArrowRight size={16} /></Link>
     </section>
   </main>;

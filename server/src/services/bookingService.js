@@ -21,8 +21,21 @@ async function restoreSeats(booking, session) {
   const tour = await Tour.findById(booking.tour).session(session);
   const departure = tour?.departures.id(booking.departureId);
   if (!departure) throw new ApiError(409, 'Departure unavailable. No booking status was changed.');
-  const updated = await Tour.updateOne({ _id: tour._id, departures: { $elemMatch: { _id: departure._id, spotsLeft: { $lte: departure.capacity - booking.guests } } } }, { $inc: { 'departures.$.spotsLeft': booking.guests } }, { session });
-  if (updated.modifiedCount !== 1) throw new ApiError(409, 'Availability is inconsistent. No status was changed.');
+  const group = departure.guideGroups.find(item => String(item.guide) === String(booking.guide));
+  if (!group) throw new ApiError(409, 'The booked guide group is unavailable. No booking status was changed.');
+  const departureRestored = await Tour.updateOne(
+    { _id: tour._id, departures: { $elemMatch: { _id: departure._id, spotsLeft: { $lte: departure.capacity - booking.guests } } } },
+    { $inc: { 'departures.$.spotsLeft': booking.guests } },
+    { session }
+  );
+  const groupRestored = await Tour.updateOne(
+    { _id: tour._id, 'departures._id': departure._id },
+    { $inc: { 'departures.$.guideGroups.$[group].spotsLeft': booking.guests } },
+    { session, arrayFilters: [{ 'group._id': group._id, 'group.spotsLeft': { $lte: group.capacity - booking.guests } }] }
+  );
+  if (departureRestored.modifiedCount !== 1 || groupRestored.modifiedCount !== 1) {
+    throw new ApiError(409, 'Availability is inconsistent. No booking status was changed.');
+  }
 }
 export async function createBooking(userId, input) {
   return inTransaction(async session => {
@@ -31,14 +44,29 @@ export async function createBooking(userId, input) {
     const tour = await Tour.findById(input.tour).session(session);
     if (!tour) throw new ApiError(404, 'Tour not found.');
     if (tour.archived) throw new ApiError(409, 'This tour is archived and no longer accepts bookings.');
-    if (!await Guide.exists({ _id: tour.guide, status: 'approved', isActive: { $ne: false } }).session(session)) throw new ApiError(409, 'This tour does not have an approved, active guide.');
+    if (!tour.assignedGuides?.some(id => String(id) === input.guideId)) throw new ApiError(400, 'Choose a guide assigned to this tour.');
+    const guide = await Guide.findOne({ _id: input.guideId, status: 'approved', isActive: { $ne: false } }).session(session);
+    if (!guide) throw new ApiError(409, 'The selected guide is not currently available.');
     const departure = tour.departures.id(input.departureId);
     if (!departure) throw new ApiError(404, 'Departure not found for this tour.');
     if (+departure.date <= Date.now()) throw new ApiError(409, 'This departure is in the past or has already started.');
+    if (guide.blockedDates?.some(blocked => +blocked === +departure.date)) throw new ApiError(409, 'The selected guide is blocked for this departure.');
+    const group = departure.guideGroups.find(item => String(item.guide) === String(input.guideId));
+    if (!group) throw new ApiError(400, 'The selected guide has no group on this departure.');
     if (await Booking.exists({ user: userId, tour: tour._id, departureId: departure._id, active: true }).session(session)) throw new ApiError(409, 'You already have an active booking for this departure.');
-    const reserved = await Tour.findOneAndUpdate({ _id: tour._id, archived: { $ne: true }, guide: tour.guide, departures: { $elemMatch: { _id: departure._id, date: { $gt: new Date() }, spotsLeft: { $gte: input.guests } } } }, { $inc: { 'departures.$.spotsLeft': -input.guests } }, { session, new: true });
-    if (!reserved) throw new ApiError(409, 'Not enough spots remain or this departure is no longer bookable.');
-    const [booking] = await Booking.create([{ user: userId, tour: tour._id, departureId: departure._id, departureDate: departure.date, guests: input.guests, totalPrice: calculateTotal(tour.price, input.guests), status: 'pending', active: true }], { session });
+    const groupReserved = await Tour.updateOne(
+      { _id: tour._id, 'departures._id': departure._id },
+      { $inc: { 'departures.$.guideGroups.$[group].spotsLeft': -input.guests } },
+      { session, arrayFilters: [{ 'group._id': group._id, 'group.spotsLeft': { $gte: input.guests } }] }
+    );
+    if (groupReserved.modifiedCount !== 1) throw new ApiError(409, 'The selected guide group does not have enough spots.');
+    const departureReserved = await Tour.updateOne(
+      { _id: tour._id, archived: { $ne: true }, departures: { $elemMatch: { _id: departure._id, date: { $gt: new Date() }, spotsLeft: { $gte: input.guests } } } },
+      { $inc: { 'departures.$.spotsLeft': -input.guests } },
+      { session }
+    );
+    if (departureReserved.modifiedCount !== 1) throw new ApiError(409, 'Not enough spots remain or this departure is no longer bookable.');
+    const [booking] = await Booking.create([{ user: userId, tour: tour._id, departureId: departure._id, departureDate: departure.date, guide: input.guideId, guests: input.guests, totalPrice: calculateTotal(tour.price, input.guests), status: 'pending', active: true }], { session });
     const result = booking.toObject(); delete result.active; return result;
   });
 }
@@ -57,11 +85,9 @@ export async function changeBookingStatus(guideId, id, nextStatus) {
   return inTransaction(async session => {
     const booking = await Booking.findById(id).session(session);
     if (!booking) throw new ApiError(404, 'Booking not found.');
-    // Write-lock ownership so reassignment and old-owner status changes conflict.
-    const tour = await Tour.findOneAndUpdate({ _id: booking.tour, guide: guideId }, { $inc: { mutationVersion: 1 } }, { session, new: true });
-    if (!tour) throw new ApiError(403, 'You can change bookings only for your own tours.');
+    if (String(booking.guide) !== String(guideId)) throw new ApiError(403, 'You can manage only bookings assigned to you.');
     if (!transitionAllowed(booking.status, nextStatus)) throw new ApiError(409, `Cannot change ${booking.status} to ${nextStatus}. Allowed: pending → confirmed/declined; confirmed → completed.`);
-    const updated = await Booking.findOneAndUpdate({ _id: id, status: booking.status }, { $set: { status: nextStatus, active: ['pending', 'confirmed'].includes(nextStatus) } }, { session, new: true, runValidators: true });
+    const updated = await Booking.findOneAndUpdate({ _id: id, guide: guideId, status: booking.status }, { $set: { status: nextStatus, active: ['pending', 'confirmed'].includes(nextStatus) } }, { session, new: true, runValidators: true });
     if (!updated) throw new ApiError(409, 'Booking changed. Refresh and try again.');
     if (nextStatus === 'declined') await restoreSeats(booking, session);
     return updated.toObject();

@@ -12,11 +12,12 @@ export function bookingInput(body) {
   if (!body || typeof body !== 'object' || Array.isArray(body)) throw new ApiError(400, 'A JSON object is required.');
   const tour = objectId(body.tour, 'tour');
   const departureId = objectId(body.departureId, 'departureId');
+  const guideId = objectId(body.guideId, 'guideId');
   if (typeof body.guests !== 'number' || !Number.isSafeInteger(body.guests) || body.guests < 1 || body.guests > 1000) {
     const error = new ApiError(400, 'Guests must be a whole number between 1 and 1000.');
     error.errors = { guests: error.message }; throw error;
   }
-  return { tour, departureId, guests: body.guests };
+  return { tour, departureId, guideId, guests: body.guests };
 }
 export function statusInput(body) {
   if (!body || typeof body !== 'object' || Array.isArray(body) || !['confirmed', 'declined', 'completed'].includes(body.status)) {

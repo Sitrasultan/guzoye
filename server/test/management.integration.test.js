@@ -19,7 +19,7 @@ async function write(agent, method, path, body = {}) {
 const uri = process.env.TEST_MONGODB_URI;
 test('guide studio and admin management integration', { skip: !uri }, async t => {
   const target = new URL(uri), base = decodeURIComponent(target.pathname.slice(1));
-  if (!/wondu/i.test(base) || !/test/i.test(base)) throw new Error('Test DB name must contain wondu and test.');
+  if (!/guzoye/i.test(base) || !/test/i.test(base)) throw new Error('Test DB name must contain guzoye and test.');
   target.pathname = `/${base}_management_${process.pid}_${randomBytes(4).toString('hex')}`;
   await mongoose.connect(target.toString());
   try {

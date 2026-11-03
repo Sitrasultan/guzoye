@@ -4,7 +4,7 @@ const http = axios.create({ baseURL, withCredentials: true, timeout: 60000 });
 http.interceptors.response.use(response => response, error => {
   const problem = new Error(error.response?.data?.message || 'Image request failed. Check your connection and refresh before retrying.');
   problem.status = error.response?.status;
-  if (problem.status === 401) window.dispatchEvent(new Event('wondu:session-expired'));
+  if (problem.status === 401) window.dispatchEvent(new Event('guzoye:session-expired'));
   return Promise.reject(problem);
 });
 // Serialize this service's mutations so rotating the double-submit cookie does not

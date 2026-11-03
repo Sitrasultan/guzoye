@@ -20,7 +20,7 @@ function Editor({ guide, destinations }) {
     catch (problem) { setError(problem.message); } finally { setBusy(false); }
   }
   return <div className="management-split"><div>
-    <section className="account-panel"><ImageUploader kind="avatar" value={photo} onChange={setPhoto} name={guide.user.name} disabled={busy || guide.status === 'rejected'} onBusyChange={setUploading} onPhotoChanged={() => window.dispatchEvent(new Event('wondu:photo-updated'))} />{guide.status === 'rejected' && <p className="notice">Photo changes require a pending or approved application. Other profile fields can still be edited.</p>}</section>
+    <section className="account-panel"><ImageUploader kind="avatar" value={photo} onChange={setPhoto} name={guide.user.name} disabled={busy || guide.status === 'rejected'} onBusyChange={setUploading} onPhotoChanged={() => window.dispatchEvent(new Event('guzoye:photo-updated'))} />{guide.status === 'rejected' && <p className="notice">Photo changes require a pending or approved application. Other profile fields can still be edited.</p>}</section>
     <form className="account-panel management-form" onSubmit={save}><h2>My profile</h2>{error && <p className="form-error" role="alert">{error}</p>}{message && <p className="success-message" role="status">{message}</p>}<fieldset disabled={busy || uploading}>
       <label>About you<textarea name="bio" value={form.bio} onChange={change} required minLength={20} maxLength={3000} rows={7} /></label>
       {[['languages', 'Languages (comma separated)'], ['specialties', 'Specialties (comma separated)']].map(([name, label]) => <label key={name}>{label}<input name={name} value={form[name]} onChange={change} /></label>)}

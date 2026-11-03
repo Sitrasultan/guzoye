@@ -20,7 +20,7 @@ const credentials = { name: 'Test Traveler', email: 'traveler@example.com', pass
 test('Phase 3 authentication and role integration', { skip: !testUri }, async t => {
   const target = new URL(testUri);
   const base = decodeURIComponent(target.pathname.slice(1));
-  if (!/wondu/i.test(base) || !/test/i.test(base)) throw new Error('TEST_MONGODB_URI database name must contain both wondu and test.');
+  if (!/guzoye/i.test(base) || !/test/i.test(base)) throw new Error('TEST_MONGODB_URI database name must contain both guzoye and test.');
   // Only the unique database created by THIS test process is dropped.
   target.pathname = `/${base}_phase3_${process.pid}_${randomBytes(4).toString('hex')}`;
   await mongoose.connect(target.toString());
@@ -33,7 +33,7 @@ test('Phase 3 authentication and role integration', { skip: !testUri }, async t 
       assert.equal(response.body.data.user.role, 'traveler');
       assert.equal(response.body.token, undefined);
       assert.equal(response.body.data.user.password, undefined);
-      assert.ok(response.headers['set-cookie'].some(cookie => cookie.startsWith('wondu_session=') && cookie.includes('HttpOnly') && cookie.includes('SameSite=Lax')));
+      assert.ok(response.headers['set-cookie'].some(cookie => cookie.startsWith('guzoye_session=') && cookie.includes('HttpOnly') && cookie.includes('SameSite=Lax')));
       const user = await User.findOne({ email: credentials.email }).select('+password');
       assert.notEqual(user.password, credentials.password);
       assert.match(user.password, /^\$2[aby]\$/);
@@ -92,7 +92,7 @@ test('Phase 3 authentication and role integration', { skip: !testUri }, async t 
     await t.test('logout clears cookie and revokes a copied JWT', async () => {
       // Capture the current cookie via a fresh login response, without relying on jar internals.
       const login = await write(traveler, 'post', '/api/auth/login', credentials);
-      const copied = login.headers['set-cookie'].find(cookie => cookie.startsWith('wondu_session=')).split(';')[0];
+      const copied = login.headers['set-cookie'].find(cookie => cookie.startsWith('guzoye_session=')).split(';')[0];
       const response = await write(traveler, 'post', '/api/auth/logout');
       assert.equal(response.status, 200);
       assert.equal((await traveler.get('/api/auth/me')).status, 401);

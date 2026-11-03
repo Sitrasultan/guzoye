@@ -5,6 +5,7 @@ const schema = new mongoose.Schema({
   tour: { type: mongoose.Schema.Types.ObjectId, ref: 'Tour', required: true, index: true },
   departureId: { type: mongoose.Schema.Types.ObjectId, required: true },
   departureDate: { type: Date, required: true }, // Snapshot for booking history.
+  guide: { type: mongoose.Schema.Types.ObjectId, ref: 'Guide', required: true, index: true }, // Guide chosen for this departure group.
   guests: { type: Number, required: true, min: 1, max: 1000, validate: Number.isInteger },
   totalPrice: { type: Number, required: true, min: 0 }, // USD, calculated server-side.
   status: { type: String, enum: BOOKING_STATUSES, default: 'pending', required: true },

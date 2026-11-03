@@ -26,7 +26,7 @@ const uri = process.env.TEST_MONGODB_URI;
 test('Phase 4 transactional booking integration', { skip: !uri }, async t => {
   const target = new URL(uri);
   const base = decodeURIComponent(target.pathname.slice(1));
-  if (!/wondu/i.test(base) || !/test/i.test(base)) throw new Error('Test database name must contain wondu and test.');
+  if (!/guzoye/i.test(base) || !/test/i.test(base)) throw new Error('Test database name must contain guzoye and test.');
   target.pathname = `/${base}_bookings_${process.pid}_${randomBytes(4).toString('hex')}`;
   await mongoose.connect(target.toString());
   try {

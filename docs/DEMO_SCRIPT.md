@@ -7,7 +7,7 @@ payment is collected. Never display .env or passwords on screen.
 
 ## 0:00–0:35 — traveler discovery and request
 
-“Wondu connects travelers with local Ethiopian guides. The public site shows approved
+“Guzoye connects travelers with local Ethiopian guides. The public site shows approved
 active guides and published tours. I can choose a future departure and see actual remaining
 spots. As a traveler, I send a request with two guests. The server calculates the price
 and holds spots transactionally; client-supplied prices are ignored.”
@@ -15,7 +15,7 @@ Show My Bookings with pending status, Ethiopia departure time, guests and total.
 
 ## 0:35–1:40 — a real guide workspace
 
-Switch to guide1@wondu.example with the environment-configured demo password.
+Switch to guide1@guzoye.example with the environment-configured demo password.
 “This is the guide’s studio, not the traveler dashboard: owned tours, booking counts and
 incoming requests. My Profile edits my bio, languages, specialties, regions and photo with
 a live public preview. Approved guides create their own tours and own their requests.”

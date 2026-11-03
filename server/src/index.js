@@ -7,7 +7,7 @@ try {
   validateEnvironment();
   validateMediaEnvironment();
   await connectDB();
-  const server = app.listen(env.port, () => console.log(`Wondu API listening on http://localhost:${env.port}`));
+  const server = app.listen(env.port, () => console.log(`Guzoye API listening on http://localhost:${env.port}`));
   let closing = false;
   function shutdown(signal) {
     if (closing) return;

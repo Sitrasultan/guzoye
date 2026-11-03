@@ -1,9 +1,9 @@
 import axios from 'axios';
 const http = axios.create({ baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api', withCredentials: true, timeout: 20000 });
 http.interceptors.response.use(response => response, error => {
-  const problem = new Error(error.response?.data?.message || 'Cannot reach Wondu. Refresh the page and check the result before retrying a write.');
+  const problem = new Error(error.response?.data?.message || 'Cannot reach Guzoye. Refresh the page and check the result before retrying a write.');
   problem.status = error.response?.status; problem.fields = error.response?.data?.errors || {};
-  if (problem.status === 401) window.dispatchEvent(new Event('wondu:session-expired'));
+  if (problem.status === 401) window.dispatchEvent(new Event('guzoye:session-expired'));
   return Promise.reject(problem);
 });
 async function write(method, url, body = {}) {
@@ -25,4 +25,11 @@ export const adminManagement = {
   approve: id => write('patch', `/admin/guides/${id}/approve`), reject: (id, reason) => write('patch', `/admin/guides/${id}/reject`, { reason }),
   tours: params => get('/admin/tours', params), archive: id => write('patch', `/admin/tours/${id}/archive`), reassign: (id, guideId) => write('patch', `/admin/tours/${id}/guide`, { guideId }),
   users: params => get('/admin/users', params), deactivate: (id, reason) => write('patch', `/admin/users/${id}/deactivate`, { reason }), audit: params => get('/admin/audit', params)
+};
+
+export const adminTourApi = {
+  list: async (params = {}) => (await http.get('/admin/tours', { params })).data,
+  create: async body => (await mutate('post', '/admin/tours', body)).data,
+  assignGuides: async (id, guideIds) => (await mutate('patch', `/admin/tours/${id}/assigned-guides`, { guideIds })).data,
+  addDeparture: async (id, body) => (await mutate('post', `/admin/tours/${id}/departures`, body)).data
 };

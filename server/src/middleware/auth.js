@@ -9,7 +9,7 @@ export const requireAuth = asyncHandler(async (req, res, next) => {
   const token = req.cookies[COOKIE_NAME];
   if (!token) throw new ApiError(401, 'Please log in to continue.');
   let payload;
-  try { payload = jwt.verify(token, env.jwtSecret, { algorithms: ['HS256'], issuer: 'wondu-api', audience: 'wondu-web' }); }
+  try { payload = jwt.verify(token, env.jwtSecret, { algorithms: ['HS256'], issuer: 'guzoye-api', audience: 'guzoye-web' }); }
   catch { throw new ApiError(401, 'Your session has expired or is invalid. Please log in again.'); }
   if (typeof payload.sub !== 'string' || !/^[a-f0-9]{24}$/i.test(payload.sub)) throw new ApiError(401, 'Invalid session.');
   const user = await User.findById(payload.sub).select('+tokenVersion');

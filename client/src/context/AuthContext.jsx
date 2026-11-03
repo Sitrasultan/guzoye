@@ -22,8 +22,8 @@ export function AuthProvider({ children }) {
   useEffect(() => { refresh(); return () => { revision.current += 1; }; }, [refresh]);
   useEffect(() => {
     const expired = () => { revision.current += 1; setUser(null); setLoading(false); setSessionError(''); };
-    window.addEventListener('wondu:session-expired', expired);
-    return () => window.removeEventListener('wondu:session-expired', expired);
+    window.addEventListener('guzoye:session-expired', expired);
+    return () => window.removeEventListener('guzoye:session-expired', expired);
   }, []);
   async function authenticate(action, values) {
     revision.current += 1;

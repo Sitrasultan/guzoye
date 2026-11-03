@@ -1,4 +1,4 @@
-# Wondu API — Phase 3
+# Guzoye API — Phase 3
 
 Base URL: http://localhost:5000/api. Local frontend origin: http://localhost:5173.
 Use the same hostname consistently: localhost, not a mixture of localhost and 127.0.0.1.
@@ -11,7 +11,7 @@ then send JSON, `Origin: http://localhost:5173`, and `X-CSRF-Token: <token>`.
 Tokens are signed and bound to the current session cookie; obtain a new one after
 login/register/logout. The frontend implements this automatically.
 
-A successful register/login sets wondu_session as an httpOnly, SameSite=Lax cookie.
+A successful register/login sets guzoye_session as an httpOnly, SameSite=Lax cookie.
 Secure is false only for localhost HTTP; production requires Secure=true and HTTPS.
 The JWT is never returned in JSON and is not read or stored by React. CORS allows
 credentials for the exact configured CLIENT_ORIGIN, not a wildcard.

@@ -1,5 +1,5 @@
 {
-  "source": "wondu-current.zip",
+  "source": "guzoye-current.zip",
   "scope": "Delivery 1 partial: items 1 and 2 implemented; items 3\u20137 incomplete; Delivery 2 not started.",
   "package_json_supplied": [
     "server/package.json"

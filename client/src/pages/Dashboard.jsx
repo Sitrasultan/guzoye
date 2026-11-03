@@ -6,5 +6,5 @@ export function DashboardRedirect() { const { user } = useAuth(); return <Naviga
 export default function Dashboard() {
   const { user } = useAuth();
   if (user.role === 'guide') return <GuideDashboard />;
-  return <main className="container page"><header className="page-heading"><span className="eyebrow">YOUR WONDU</span><h1>Welcome, {user.name.split(' ')[0]}.</h1><p>Your next chapter starts here.</p></header><section className="account-panel"><h2>Traveler dashboard</h2><p>Discover future departures and manage your booking requests.</p><div className="account-actions"><Button to="/tours">Explore journeys</Button><Button to="/bookings" variant="secondary">My bookings</Button></div></section></main>;
+  return <main className="container page"><header className="page-heading"><span className="eyebrow">YOUR GUZOYE</span><h1>Welcome, {user.name.split(' ')[0]}.</h1><p>Your next chapter starts here.</p></header><section className="account-panel"><h2>Traveler dashboard</h2><p>Discover future departures and manage your booking requests.</p><div className="account-actions"><Button to="/tours">Explore journeys</Button><Button to="/bookings" variant="secondary">My bookings</Button></div></section></main>;
 }

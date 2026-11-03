@@ -1,0 +1,16 @@
+import { Router } from 'express';
+import { requireAuth, requireRoles } from '../middleware/auth.js';
+import { requireCsrf } from '../middleware/csrf.js';
+import { validateId, validateQuery } from '../middleware/validate.js';
+import { asyncHandler } from '../middleware/errors.js';
+import * as controller from '../controllers/adminTourController.js';
+const router = Router();
+router.use(requireAuth, requireRoles('admin'));
+router.use(validateQuery);
+router.get('/tours', asyncHandler(controller.listTours));
+router.post('/tours', requireCsrf, asyncHandler(controller.createTour));
+router.patch('/tours/:id', requireCsrf, validateId, asyncHandler(controller.updateTour));
+router.patch('/tours/:id/assigned-guides', requireCsrf, validateId, asyncHandler(controller.assignGuides));
+router.post('/tours/:id/departures', requireCsrf, validateId, asyncHandler(controller.addDeparture));
+router.delete('/tours/:id/departures/:departureId', requireCsrf, validateId, asyncHandler(controller.removeDeparture));
+export default router;

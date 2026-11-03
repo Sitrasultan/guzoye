@@ -1,6 +1,6 @@
 # Final Delivery 1 exact file inventory
 
-Built against uploaded wondu-current.zip. Complete replacement/new files, no snippets.
+Built against uploaded guzoye-current.zip. Complete replacement/new files, no snippets.
 Scope: items 1–2; items 3–7 and Delivery 2 still incomplete.
 
 ## Changed existing files

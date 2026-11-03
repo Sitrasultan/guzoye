@@ -7,9 +7,9 @@ See docs/FINAL_DELIVERY_1.md for exact install/migration/manual tests and docs/S
 Required after copying: npm install, then the non-destructive place migration. No re-seed
 is required. New dependencies: multer, sharp, cloudinary. Local mode needs no new secrets.
 
-# Wondu — Ethiopia, with a local
+# Guzoye — Ethiopia, with a local
 
-Wondu is a MERN tour and local-guide booking platform. This complete-file upgrade builds
+Guzoye is a MERN tour and local-guide booking platform. This complete-file upgrade builds
 Parts A and C of the requested final phase on working Phases 1–4. Read docs/STATUS.md:
 verified reviews/wishlist/discovery upgrades and some final polish remain unfinished.
 Do not describe this as a fully completed final release.
@@ -76,7 +76,7 @@ Keep existing JWT_SECRET, DEMO_ADMIN_PASSWORD and connection settings. For a loc
 replica set the existing URI can be:
 
 ```dotenv
-MONGODB_URI=mongodb://127.0.0.1:27017/wondu?replicaSet=rs0
+MONGODB_URI=mongodb://127.0.0.1:27017/guzoye?replicaSet=rs0
 ```
 
 Stop frontend/API. Set ALLOW_DEMO_SEED=true in server/.env, then:
@@ -114,7 +114,7 @@ Only DEMO_GUIDE_PASSWORD is new. Existing configuration is retained:
 | DEMO_ADMIN_EMAIL | server seed | Seed-only demo admin identity |
 | DEMO_ADMIN_PASSWORD | server seed | Strong admin password; never hardcoded |
 | DEMO_GUIDE_PASSWORD | server seed | NEW; shared demo guide password for six seed accounts |
-| TEST_MONGODB_URI | test shell | Existing optional test URI with wondu and test in DB name |
+| TEST_MONGODB_URI | test shell | Existing optional test URI with guzoye and test in DB name |
 | CATALOG_TEST_MONGODB_URI | test shell | Existing optional read-only seeded discovery test DB |
 | VITE_API_URL | client build | Public API URL, local http://localhost:5000/api |
 | VITE_DATA_SOURCE | client build | api for real profiles/tours/bookings; mock is demonstration only |
@@ -123,7 +123,7 @@ No secret belongs in a VITE-prefixed variable. .env remains excluded by existing
 
 ## Demo accounts
 
-- guide1@wondu.example through guide6@wondu.example: password is YOUR DEMO_GUIDE_PASSWORD.
+- guide1@guzoye.example through guide6@guzoye.example: password is YOUR DEMO_GUIDE_PASSWORD.
   Each linked User has role guide, an approved Guide, and their existing seeded tours.
 - Admin: YOUR DEMO_ADMIN_EMAIL + DEMO_ADMIN_PASSWORD.
 - Traveler: register your own traveler account. The legacy sample reviewer has a random
@@ -183,13 +183,13 @@ npm run build
 Run DB integration tests against a dedicated transaction-capable test URI:
 
 ```powershell
-$env:TEST_MONGODB_URI='mongodb://127.0.0.1:27017/wondu_management_test?replicaSet=rs0'
+$env:TEST_MONGODB_URI='mongodb://127.0.0.1:27017/guzoye_management_test?replicaSet=rs0'
 npm test
 Remove-Item Env:TEST_MONGODB_URI
 ```
 
 Each suite creates and drops only its uniquely generated test DB. Base DB name must
-contain wondu and test. Without a URI, integration suites are skipped, not passed.
+contain guzoye and test. Without a URI, integration suites are skipped, not passed.
 Existing suites remain. A/C tests cover own/foreign tour edit, pending publish denial,
 active departure deletion guard, admin reassignment, archive, stats, reject reason,
 deactivation and traveler role denial. Review/wishlist tests are not written because
@@ -236,7 +236,7 @@ are guidance, not proof of a deployed or fully completed production release.
 
 ## Manual guide checks
 
-1. Login as guide1@wondu.example with YOUR DEMO_GUIDE_PASSWORD. Confirm the guide-specific
+1. Login as guide1@guzoye.example with YOUR DEMO_GUIDE_PASSWORD. Confirm the guide-specific
    workspace, owned fixture tours, status counts and incoming requests.
 2. Save My Profile; verify live preview and public regions/languages/bio/photo.
 3. Create a tour with valid images, destination, itinerary/duration and future departure.

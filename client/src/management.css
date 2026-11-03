@@ -1,4 +1,4 @@
-/* Guide/admin additions reuse Wondu's existing design tokens. */
+/* Guide/admin additions reuse Guzoye's existing design tokens. */
 .management-section { margin-top:38px; }
 .management-split { display:grid; grid-template-columns:1fr; gap:28px; }
 .management-form fieldset { border:0; padding:0; margin:0; min-width:0; }

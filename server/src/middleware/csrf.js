@@ -2,7 +2,7 @@ import { randomBytes, createHmac, timingSafeEqual } from 'node:crypto';
 import { env } from '../config/env.js';
 import { COOKIE_NAME } from '../services/session.js';
 import { ApiError } from './errors.js';
-const CSRF_COOKIE = 'wondu_csrf';
+const CSRF_COOKIE = 'guzoye_csrf';
 function signature(nonce, session) {
   return createHmac('sha256', env.jwtSecret).update(`${nonce}|${session}`).digest('hex');
 }

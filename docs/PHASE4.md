@@ -1,9 +1,9 @@
-# Wondu Phase 4 — booking flow and availability
+# Guzoye Phase 4 — booking flow and availability
 
 ## Applying this upgrade
 
 This is a minimal complete-file overlay for Phase 3, not a standalone app. The ZIP has
-client/, server/, docs/ and scripts/ directly at its top level, with no wondu/ wrapper.
+client/, server/, docs/ and scripts/ directly at its top level, with no guzoye/ wrapper.
 Extract to your existing project root. Back up/commit first and preserve all unchanged
 files. See PHASE4_CHANGELOG.md for exact replacement/new paths.
 
@@ -36,17 +36,17 @@ volume below is NEW development data, not your old standalone DB. Existing regis
 accounts are not copied automatically. Re-register test users in a fresh database.
 
 ```sh
-docker run -d --name wondu-mongo-rs -p 127.0.0.1:27017:27017 -v wondu_phase4_mongo:/data/db mongo:8 --replSet rs0 --bind_ip_all
-docker exec wondu-mongo-rs mongosh --quiet --eval 'rs.initiate({_id:"rs0",members:[{_id:0,host:"localhost:27017"}]})'
-docker exec wondu-mongo-rs mongosh --quiet --eval 'db.hello().isWritablePrimary'
+docker run -d --name guzoye-mongo-rs -p 127.0.0.1:27017:27017 -v guzoye_phase4_mongo:/data/db mongo:8 --replSet rs0 --bind_ip_all
+docker exec guzoye-mongo-rs mongosh --quiet --eval 'rs.initiate({_id:"rs0",members:[{_id:0,host:"localhost:27017"}]})'
+docker exec guzoye-mongo-rs mongosh --quiet --eval 'db.hello().isWritablePrimary'
 ```
 
 Wait until the last command returns true. On shells where quote escaping differs, enter
-`docker exec -it wondu-mongo-rs mongosh` and run the rs.initiate expression interactively.
+`docker exec -it guzoye-mongo-rs mongosh` and run the rs.initiate expression interactively.
 Use this existing environment variable in server/.env:
 
 ```dotenv
-MONGODB_URI=mongodb://127.0.0.1:27017/wondu?replicaSet=rs0
+MONGODB_URI=mongodb://127.0.0.1:27017/guzoye?replicaSet=rs0
 ```
 
 Keep the existing CLIENT_ORIGIN, JWT settings and DEMO_ADMIN_* values. For Atlas use your
@@ -135,17 +135,17 @@ npm run build
 ```
 
 The new integration suite uses the EXISTING optional TEST_MONGODB_URI from Phase 3.
-It derives a uniquely named disposable DB, requires wondu and test in the base DB name,
+It derives a uniquely named disposable DB, requires guzoye and test in the base DB name,
 and drops only that generated DB. Never point it at a real user database.
 
 ```sh
-TEST_MONGODB_URI='mongodb://127.0.0.1:27017/wondu_booking_test?replicaSet=rs0' npm test
+TEST_MONGODB_URI='mongodb://127.0.0.1:27017/guzoye_booking_test?replicaSet=rs0' npm test
 ```
 
 PowerShell:
 
 ```powershell
-$env:TEST_MONGODB_URI='mongodb://127.0.0.1:27017/wondu_booking_test?replicaSet=rs0'
+$env:TEST_MONGODB_URI='mongodb://127.0.0.1:27017/guzoye_booking_test?replicaSet=rs0'
 npm test
 ```
 

@@ -7,7 +7,7 @@ http.interceptors.response.use(response => response, error => {
   const problem = new Error(error.response?.data?.message || 'Cannot confirm the result. Check My Bookings and refresh availability before retrying; your request may have reached the server.');
   problem.status = error.response?.status;
   problem.fields = error.response?.data?.errors || {};
-  if (problem.status === 401) window.dispatchEvent(new Event('wondu:session-expired'));
+  if (problem.status === 401) window.dispatchEvent(new Event('guzoye:session-expired'));
   return Promise.reject(problem);
 });
 // Same signed CSRF-cookie + JSON token + X-CSRF-Token flow as Phase 3 auth.

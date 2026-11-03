@@ -1,6 +1,6 @@
 # Final Delivery 1 — apply this partial upgrade
 
-This is a complete-file OVERLAY for the uploaded wondu-current.zip. Only changed/new
+This is a complete-file OVERLAY for the uploaded guzoye-current.zip. Only changed/new
 files are included. ZIP folders client/server/docs/scripts are directly at root, no wrapper.
 Keep unchanged files. Scope is items 1–2, not the entire Delivery 1. Read STATUS.md.
 
@@ -93,7 +93,7 @@ npm run build
 For real DB tests (disposable transaction-capable database only):
 
 ```powershell
-$env:TEST_MONGODB_URI='mongodb://127.0.0.1:27017/wondu_media_test?replicaSet=rs0'
+$env:TEST_MONGODB_URI='mongodb://127.0.0.1:27017/guzoye_media_test?replicaSet=rs0'
 npm test
 Remove-Item Env:TEST_MONGODB_URI
 ```
@@ -112,7 +112,7 @@ without a DB URI; DB/HTTP integration is explicitly skipped without that URI.
 
 ## Manual guide steps
 
-1. Login guide1@wondu.example with your DEMO_GUIDE_PASSWORD. Open My Profile.
+1. Login guide1@guzoye.example with your DEMO_GUIDE_PASSWORD. Open My Profile.
 2. Upload a JPEG/PNG/WebP from disk/phone, then replace it. Check progress/circular preview,
    public card/profile/tour guide photo/Navbar; reload and verify persistence.
 3. Remove photo; initials appear. A pending guide may do this; a rejected guide may not.
