@@ -617,7 +617,7 @@ export default function AdminDashboard() {
       ) : tab === 'bookings' ? (
         <>
           <div className="account-actions">
-            <Button to="/dashboard/admin/tours">
+            <Button to="/admin/tours">
               Manage tours & guide assignments
             </Button>
           </div>

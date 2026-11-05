@@ -5,4 +5,4 @@ export function useAuth() {
   if (!context) throw new Error('useAuth must be used inside AuthProvider.');
   return context;
 }
-export const dashboardPath = role => role === 'admin' ? '/dashboard/admin' : role === 'guide' ? '/dashboard/guide' : '/dashboard/traveler';
+export const dashboardPath = role => role === 'admin' ? '/admin' : role === 'guide' ? '/dashboard/guide' : '/dashboard/traveler';

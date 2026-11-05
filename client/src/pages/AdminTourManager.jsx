@@ -58,6 +58,6 @@ export default function AdminTourManager() {
       )}
       {guides.data?.data?.length ? <p className="muted">Approved guides: {guides.data.data.map(guide => `${guide.user?.name} (${guide._id})`).join(' · ')}</p> : null}
     </section>
-    <Button variant="secondary" to="/dashboard/admin">Back to admin dashboard</Button>
+    <Button variant="secondary" to="/admin">Back to admin dashboard</Button>
   </main>;
 }
