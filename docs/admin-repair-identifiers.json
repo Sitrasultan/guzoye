@@ -1,0 +1,1950 @@
+[
+  {
+    "file": "client/src/App.jsx",
+    "bindings": [
+      "AdminActivity",
+      "AdminAudit",
+      "AdminDestinations",
+      "AdminGuideRequests",
+      "AdminGuides",
+      "AdminLayout",
+      "AdminLoginRedirect",
+      "AdminOverview",
+      "AdminPlaceholder",
+      "AdminTourManager",
+      "AdminUnavailable",
+      "AdminUsers",
+      "App",
+      "Auth",
+      "BookingsList",
+      "Button",
+      "Dashboard",
+      "DashboardRedirect",
+      "EmptyState",
+      "Footer",
+      "GuideMyProfile",
+      "GuideProfile",
+      "Guides",
+      "Home",
+      "MyBookings",
+      "Navbar",
+      "Navigate",
+      "ProtectedRoute",
+      "PublicShell",
+      "Route",
+      "Routes",
+      "ScrollReset",
+      "TourDetails",
+      "Tours",
+      "children",
+      "location",
+      "message",
+      "pathname",
+      "title",
+      "useAuth",
+      "useEffect",
+      "useLocation",
+      "user"
+    ],
+    "references": [
+      "AdminActivity",
+      "AdminAudit",
+      "AdminDestinations",
+      "AdminGuideRequests",
+      "AdminGuides",
+      "AdminLayout",
+      "AdminLoginRedirect",
+      "AdminOverview",
+      "AdminPlaceholder",
+      "AdminTourManager",
+      "AdminUnavailable",
+      "AdminUsers",
+      "Auth",
+      "BookingsList",
+      "Button",
+      "Dashboard",
+      "DashboardRedirect",
+      "EmptyState",
+      "Footer",
+      "GuideMyProfile",
+      "GuideProfile",
+      "Guides",
+      "Home",
+      "MyBookings",
+      "Navbar",
+      "Navigate",
+      "ProtectedRoute",
+      "PublicShell",
+      "Route",
+      "Routes",
+      "ScrollReset",
+      "TourDetails",
+      "Tours",
+      "children",
+      "location",
+      "message",
+      "pathname",
+      "title",
+      "useAuth",
+      "useEffect",
+      "useLocation",
+      "user",
+      "window"
+    ],
+    "unresolved": [],
+    "imports": [
+      {
+        "source": "react",
+        "names": [
+          "useEffect"
+        ]
+      },
+      {
+        "source": "react-router-dom",
+        "names": [
+          "Navigate",
+          "Route",
+          "Routes",
+          "useLocation"
+        ]
+      },
+      {
+        "source": "./components/Navbar",
+        "names": [
+          "Navbar"
+        ]
+      },
+      {
+        "source": "./components/Footer",
+        "names": [
+          "Footer"
+        ]
+      },
+      {
+        "source": "./components/ProtectedRoute",
+        "names": [
+          "ProtectedRoute"
+        ]
+      },
+      {
+        "source": "./pages/Home",
+        "names": [
+          "Home"
+        ]
+      },
+      {
+        "source": "./pages/Tours",
+        "names": [
+          "Tours"
+        ]
+      },
+      {
+        "source": "./pages/TourDetails",
+        "names": [
+          "TourDetails"
+        ]
+      },
+      {
+        "source": "./pages/Guides",
+        "names": [
+          "Guides"
+        ]
+      },
+      {
+        "source": "./pages/GuideProfile",
+        "names": [
+          "GuideProfile"
+        ]
+      },
+      {
+        "source": "./pages/Auth",
+        "names": [
+          "Auth"
+        ]
+      },
+      {
+        "source": "./pages/MyBookings",
+        "names": [
+          "MyBookings"
+        ]
+      },
+      {
+        "source": "./pages/Dashboard",
+        "names": [
+          "Dashboard",
+          "DashboardRedirect"
+        ]
+      },
+      {
+        "source": "./pages/AdminTourManager",
+        "names": [
+          "AdminTourManager"
+        ]
+      },
+      {
+        "source": "./pages/GuideMyProfile",
+        "names": [
+          "GuideMyProfile"
+        ]
+      },
+      {
+        "source": "./pages/admin/AdminLayout",
+        "names": [
+          "AdminLayout"
+        ]
+      },
+      {
+        "source": "./pages/admin/AdminOverview",
+        "names": [
+          "AdminOverview"
+        ]
+      },
+      {
+        "source": "./pages/admin/AdminActivity",
+        "names": [
+          "AdminActivity"
+        ]
+      },
+      {
+        "source": "./pages/admin/AdminDestinations",
+        "names": [
+          "AdminDestinations"
+        ]
+      },
+      {
+        "source": "./pages/admin/AdminGuides",
+        "names": [
+          "AdminGuides"
+        ]
+      },
+      {
+        "source": "./pages/admin/AdminGuideRequests",
+        "names": [
+          "AdminGuideRequests"
+        ]
+      },
+      {
+        "source": "./pages/admin/AdminUsers",
+        "names": [
+          "AdminUsers"
+        ]
+      },
+      {
+        "source": "./pages/admin/AdminAudit",
+        "names": [
+          "AdminAudit"
+        ]
+      },
+      {
+        "source": "./pages/admin/AdminUnavailable",
+        "names": [
+          "AdminUnavailable"
+        ]
+      },
+      {
+        "source": "./components/States",
+        "names": [
+          "EmptyState"
+        ]
+      },
+      {
+        "source": "./components/Button",
+        "names": [
+          "Button"
+        ]
+      },
+      {
+        "source": "./components/BookingsList",
+        "names": [
+          "BookingsList"
+        ]
+      },
+      {
+        "source": "./hooks/useAuth",
+        "names": [
+          "useAuth"
+        ]
+      },
+      {
+        "source": "./admin.css",
+        "names": []
+      }
+    ],
+    "calls": []
+  },
+  {
+    "file": "client/src/components/BookingsList.jsx",
+    "bindings": [
+      "BookingsList",
+      "Button",
+      "EmptyState",
+      "ErrorState",
+      "Link",
+      "Modal",
+      "action",
+      "booking",
+      "bookingsApi",
+      "busy",
+      "error",
+      "event",
+      "formatDeparture",
+      "formatMoney",
+      "message",
+      "mode",
+      "page",
+      "perform",
+      "problem",
+      "resetFilter",
+      "response",
+      "rows",
+      "setAction",
+      "setBusy",
+      "setError",
+      "setMessage",
+      "setPage",
+      "setStatus",
+      "setVersion",
+      "state",
+      "status",
+      "statuses",
+      "useResource",
+      "useState",
+      "value",
+      "version"
+    ],
+    "references": [
+      "Boolean",
+      "Button",
+      "EmptyState",
+      "ErrorState",
+      "Link",
+      "Modal",
+      "action",
+      "booking",
+      "bookingsApi",
+      "busy",
+      "error",
+      "event",
+      "formatDeparture",
+      "formatMoney",
+      "message",
+      "mode",
+      "page",
+      "perform",
+      "problem",
+      "resetFilter",
+      "response",
+      "rows",
+      "setAction",
+      "setBusy",
+      "setError",
+      "setMessage",
+      "setPage",
+      "setStatus",
+      "setVersion",
+      "state",
+      "status",
+      "statuses",
+      "useResource",
+      "useState",
+      "value",
+      "version"
+    ],
+    "unresolved": [],
+    "imports": [
+      {
+        "source": "../bookings.css",
+        "names": []
+      },
+      {
+        "source": "react",
+        "names": [
+          "useState"
+        ]
+      },
+      {
+        "source": "react-router-dom",
+        "names": [
+          "Link"
+        ]
+      },
+      {
+        "source": "../hooks/useResource",
+        "names": [
+          "useResource"
+        ]
+      },
+      {
+        "source": "../services/bookings",
+        "names": [
+          "bookingsApi",
+          "formatDeparture",
+          "formatMoney"
+        ]
+      },
+      {
+        "source": "./States",
+        "names": [
+          "ErrorState",
+          "EmptyState"
+        ]
+      },
+      {
+        "source": "./Button",
+        "names": [
+          "Button"
+        ]
+      },
+      {
+        "source": "./Modal",
+        "names": [
+          "Modal"
+        ]
+      }
+    ],
+    "calls": [
+      "bookingsApi.[computed]",
+      "bookingsApi.cancel",
+      "bookingsApi.status"
+    ]
+  },
+  {
+    "file": "client/src/components/admin/AdminUI.jsx",
+    "bindings": [
+      "Badge",
+      "ChartCard",
+      "DataTable",
+      "Drawer",
+      "EmptyState",
+      "Link",
+      "PageHeader",
+      "Skeleton",
+      "Sparkline",
+      "StatCard",
+      "StatusBadge",
+      "Toast",
+      "action",
+      "caption",
+      "change",
+      "children",
+      "column",
+      "columns",
+      "content",
+      "description",
+      "empty",
+      "event",
+      "eyebrow",
+      "height",
+      "hint",
+      "icon",
+      "index",
+      "label",
+      "loading",
+      "max",
+      "message",
+      "onClose",
+      "onDone",
+      "onKey",
+      "open",
+      "points",
+      "previous",
+      "ref",
+      "renderRow",
+      "row",
+      "rows",
+      "setShowTable",
+      "showTable",
+      "sparkline",
+      "table",
+      "timer",
+      "title",
+      "to",
+      "tone",
+      "useEffect",
+      "useRef",
+      "useState",
+      "value",
+      "values",
+      "width"
+    ],
+    "references": [
+      "Badge",
+      "EmptyState",
+      "Link",
+      "Math",
+      "Skeleton",
+      "action",
+      "caption",
+      "change",
+      "children",
+      "clearTimeout",
+      "column",
+      "columns",
+      "content",
+      "description",
+      "document",
+      "empty",
+      "event",
+      "eyebrow",
+      "height",
+      "hint",
+      "icon",
+      "index",
+      "label",
+      "loading",
+      "max",
+      "message",
+      "onClose",
+      "onDone",
+      "onKey",
+      "open",
+      "points",
+      "previous",
+      "ref",
+      "renderRow",
+      "row",
+      "rows",
+      "setShowTable",
+      "setTimeout",
+      "showTable",
+      "sparkline",
+      "table",
+      "timer",
+      "title",
+      "to",
+      "tone",
+      "undefined",
+      "useEffect",
+      "useRef",
+      "useState",
+      "value",
+      "values",
+      "width"
+    ],
+    "unresolved": [],
+    "imports": [
+      {
+        "source": "react",
+        "names": [
+          "useEffect",
+          "useRef",
+          "useState"
+        ]
+      },
+      {
+        "source": "react-router-dom",
+        "names": [
+          "Link"
+        ]
+      }
+    ],
+    "calls": []
+  },
+  {
+    "file": "client/src/pages/AdminDashboard.jsx",
+    "bindings": [
+      "AdminDashboard",
+      "Navigate"
+    ],
+    "references": [
+      "Navigate"
+    ],
+    "unresolved": [],
+    "imports": [
+      {
+        "source": "react-router-dom",
+        "names": [
+          "Navigate"
+        ]
+      }
+    ],
+    "calls": []
+  },
+  {
+    "file": "client/src/pages/AdminTourManager.jsx",
+    "bindings": [
+      "AdminTourManager",
+      "Button",
+      "EmptyState",
+      "Link",
+      "PageHeader",
+      "STEPS",
+      "Skeleton",
+      "StatusBadge",
+      "_",
+      "a",
+      "addDepartures",
+      "adminApi",
+      "allTours",
+      "b",
+      "blankDay",
+      "blankForm",
+      "busy",
+      "changeStatus",
+      "chosenGuides",
+      "createDestination",
+      "created",
+      "current",
+      "date",
+      "dates",
+      "day",
+      "departure",
+      "destination",
+      "destinationDraft",
+      "destinations",
+      "dirty",
+      "editTour",
+      "editingId",
+      "error",
+      "event",
+      "file",
+      "files",
+      "filtered",
+      "filters",
+      "form",
+      "guide",
+      "guides",
+      "handler",
+      "i",
+      "id",
+      "image",
+      "index",
+      "item",
+      "label",
+      "limit",
+      "message",
+      "missing",
+      "mode",
+      "next",
+      "nextDeparture",
+      "page",
+      "pages",
+      "patch",
+      "payload",
+      "previous",
+      "previousGuides",
+      "problem",
+      "publish",
+      "recurring",
+      "recurringPreview",
+      "result",
+      "rows",
+      "save",
+      "search",
+      "searchParams",
+      "selected",
+      "selectedGuides",
+      "set",
+      "setBusy",
+      "setDestinationDraft",
+      "setDirty",
+      "setEditingId",
+      "setError",
+      "setFilters",
+      "setForm",
+      "setMessage",
+      "setMode",
+      "setPage",
+      "setRecurring",
+      "setSearch",
+      "setSingle",
+      "setStep",
+      "shortId",
+      "single",
+      "startNew",
+      "status",
+      "step",
+      "target",
+      "term",
+      "tour",
+      "tourId",
+      "tours",
+      "uploadImages",
+      "url",
+      "useEffect",
+      "useMemo",
+      "useResource",
+      "useSearchParams",
+      "useState",
+      "validateStep",
+      "value"
+    ],
+    "references": [
+      "Array",
+      "Boolean",
+      "Button",
+      "Date",
+      "EmptyState",
+      "JSON",
+      "Math",
+      "Number",
+      "PageHeader",
+      "STEPS",
+      "Skeleton",
+      "StatusBadge",
+      "String",
+      "a",
+      "addDepartures",
+      "adminApi",
+      "allTours",
+      "b",
+      "blankDay",
+      "blankForm",
+      "busy",
+      "changeStatus",
+      "chosenGuides",
+      "createDestination",
+      "created",
+      "current",
+      "date",
+      "dates",
+      "day",
+      "departure",
+      "destination",
+      "destinationDraft",
+      "destinations",
+      "dirty",
+      "editTour",
+      "editingId",
+      "error",
+      "event",
+      "file",
+      "files",
+      "filtered",
+      "filters",
+      "form",
+      "guide",
+      "guides",
+      "handler",
+      "i",
+      "id",
+      "image",
+      "index",
+      "item",
+      "label",
+      "limit",
+      "message",
+      "missing",
+      "mode",
+      "next",
+      "nextDeparture",
+      "page",
+      "pages",
+      "patch",
+      "payload",
+      "previous",
+      "previousGuides",
+      "problem",
+      "publish",
+      "recurring",
+      "recurringPreview",
+      "result",
+      "rows",
+      "save",
+      "search",
+      "searchParams",
+      "selected",
+      "selectedGuides",
+      "set",
+      "setBusy",
+      "setDestinationDraft",
+      "setDirty",
+      "setEditingId",
+      "setError",
+      "setFilters",
+      "setForm",
+      "setMessage",
+      "setMode",
+      "setPage",
+      "setRecurring",
+      "setSearch",
+      "setSingle",
+      "setStep",
+      "shortId",
+      "single",
+      "startNew",
+      "status",
+      "step",
+      "target",
+      "term",
+      "tour",
+      "tourId",
+      "tours",
+      "uploadImages",
+      "url",
+      "useEffect",
+      "useMemo",
+      "useResource",
+      "useSearchParams",
+      "useState",
+      "validateStep",
+      "value",
+      "window"
+    ],
+    "unresolved": [],
+    "imports": [
+      {
+        "source": "react",
+        "names": [
+          "useEffect",
+          "useMemo",
+          "useState"
+        ]
+      },
+      {
+        "source": "react-router-dom",
+        "names": [
+          "Link",
+          "useSearchParams"
+        ]
+      },
+      {
+        "source": "../services/adminApi",
+        "names": [
+          "adminApi"
+        ]
+      },
+      {
+        "source": "../hooks/useResource",
+        "names": [
+          "useResource"
+        ]
+      },
+      {
+        "source": "../components/admin/AdminUI",
+        "names": [
+          "EmptyState",
+          "PageHeader",
+          "Skeleton",
+          "StatusBadge"
+        ]
+      },
+      {
+        "source": "../components/Button",
+        "names": [
+          "Button"
+        ]
+      },
+      {
+        "source": "../admin.css",
+        "names": []
+      }
+    ],
+    "calls": [
+      "adminApi.tours",
+      "adminApi.destinations",
+      "adminApi.tourGuides",
+      "adminApi.createDestination",
+      "adminApi.uploadTourImageFile",
+      "adminApi.updateTour",
+      "adminApi.createTour",
+      "adminApi.assignGuides",
+      "adminApi.removeDeparture",
+      "adminApi.addDeparture",
+      "adminApi.setTourStatus"
+    ]
+  },
+  {
+    "file": "client/src/pages/admin/AdminActivity.jsx",
+    "bindings": [
+      "AdminActivity",
+      "Area",
+      "AreaChart",
+      "CartesianGrid",
+      "ChartCard",
+      "DataTable",
+      "EmptyState",
+      "Link",
+      "PageHeader",
+      "ResponsiveContainer",
+      "Skeleton",
+      "Tooltip",
+      "XAxis",
+      "YAxis",
+      "active",
+      "activity",
+      "adminApi",
+      "error",
+      "index",
+      "item",
+      "label",
+      "overview",
+      "payload",
+      "row",
+      "setState",
+      "state",
+      "tooltip",
+      "useEffect",
+      "useState"
+    ],
+    "references": [
+      "Area",
+      "AreaChart",
+      "CartesianGrid",
+      "ChartCard",
+      "DataTable",
+      "Date",
+      "EmptyState",
+      "Link",
+      "PageHeader",
+      "Promise",
+      "ResponsiveContainer",
+      "Skeleton",
+      "Tooltip",
+      "XAxis",
+      "YAxis",
+      "active",
+      "activity",
+      "adminApi",
+      "error",
+      "index",
+      "item",
+      "label",
+      "overview",
+      "payload",
+      "row",
+      "setState",
+      "state",
+      "tooltip",
+      "useEffect",
+      "useState"
+    ],
+    "unresolved": [],
+    "imports": [
+      {
+        "source": "react",
+        "names": [
+          "useEffect",
+          "useState"
+        ]
+      },
+      {
+        "source": "react-router-dom",
+        "names": [
+          "Link"
+        ]
+      },
+      {
+        "source": "recharts",
+        "names": [
+          "Area",
+          "AreaChart",
+          "CartesianGrid",
+          "ResponsiveContainer",
+          "Tooltip",
+          "XAxis",
+          "YAxis"
+        ]
+      },
+      {
+        "source": "../../services/adminApi",
+        "names": [
+          "adminApi"
+        ]
+      },
+      {
+        "source": "../../components/admin/AdminUI",
+        "names": [
+          "ChartCard",
+          "DataTable",
+          "EmptyState",
+          "PageHeader",
+          "Skeleton"
+        ]
+      },
+      {
+        "source": "../../admin.css",
+        "names": []
+      }
+    ],
+    "calls": [
+      "adminApi.activity",
+      "adminApi.overview"
+    ]
+  },
+  {
+    "file": "client/src/pages/admin/AdminAudit.jsx",
+    "bindings": [
+      "AdminAudit",
+      "Button",
+      "EmptyState",
+      "PageHeader",
+      "Skeleton",
+      "adminApi",
+      "audit",
+      "entry",
+      "page",
+      "setPage",
+      "useResource",
+      "useState",
+      "value"
+    ],
+    "references": [
+      "Button",
+      "Date",
+      "EmptyState",
+      "PageHeader",
+      "Skeleton",
+      "String",
+      "adminApi",
+      "audit",
+      "entry",
+      "page",
+      "setPage",
+      "useResource",
+      "useState",
+      "value"
+    ],
+    "unresolved": [],
+    "imports": [
+      {
+        "source": "react",
+        "names": [
+          "useState"
+        ]
+      },
+      {
+        "source": "../../services/adminApi",
+        "names": [
+          "adminApi"
+        ]
+      },
+      {
+        "source": "../../hooks/useResource",
+        "names": [
+          "useResource"
+        ]
+      },
+      {
+        "source": "../../components/admin/AdminUI",
+        "names": [
+          "EmptyState",
+          "PageHeader",
+          "Skeleton"
+        ]
+      },
+      {
+        "source": "../../components/Button",
+        "names": [
+          "Button"
+        ]
+      },
+      {
+        "source": "../../admin.css",
+        "names": []
+      }
+    ],
+    "calls": [
+      "adminApi.audit"
+    ]
+  },
+  {
+    "file": "client/src/pages/admin/AdminDestinations.jsx",
+    "bindings": [
+      "AdminDestinations",
+      "Button",
+      "EmptyState",
+      "PageHeader",
+      "Skeleton",
+      "StatusBadge",
+      "adminApi",
+      "busy",
+      "destination",
+      "destinations",
+      "error",
+      "event",
+      "form",
+      "message",
+      "problem",
+      "result",
+      "setBusy",
+      "setError",
+      "setForm",
+      "setMessage",
+      "submit",
+      "useResource",
+      "useState",
+      "value"
+    ],
+    "references": [
+      "Button",
+      "EmptyState",
+      "PageHeader",
+      "Skeleton",
+      "StatusBadge",
+      "String",
+      "adminApi",
+      "busy",
+      "destination",
+      "destinations",
+      "error",
+      "event",
+      "form",
+      "message",
+      "problem",
+      "result",
+      "setBusy",
+      "setError",
+      "setForm",
+      "setMessage",
+      "submit",
+      "useResource",
+      "useState",
+      "value"
+    ],
+    "unresolved": [],
+    "imports": [
+      {
+        "source": "react",
+        "names": [
+          "useState"
+        ]
+      },
+      {
+        "source": "../../services/adminApi",
+        "names": [
+          "adminApi"
+        ]
+      },
+      {
+        "source": "../../hooks/useResource",
+        "names": [
+          "useResource"
+        ]
+      },
+      {
+        "source": "../../components/admin/AdminUI",
+        "names": [
+          "EmptyState",
+          "PageHeader",
+          "Skeleton",
+          "StatusBadge"
+        ]
+      },
+      {
+        "source": "../../components/Button",
+        "names": [
+          "Button"
+        ]
+      },
+      {
+        "source": "../../admin.css",
+        "names": []
+      }
+    ],
+    "calls": [
+      "adminApi.destinations",
+      "adminApi.createDestination"
+    ]
+  },
+  {
+    "file": "client/src/pages/admin/AdminGuideRequests.jsx",
+    "bindings": [
+      "AdminGuideRequests",
+      "Button",
+      "EmptyState",
+      "PageHeader",
+      "Skeleton",
+      "StatusBadge",
+      "action",
+      "adminApi",
+      "decide",
+      "event",
+      "note",
+      "page",
+      "problem",
+      "request",
+      "requests",
+      "setPage",
+      "setStatus",
+      "setType",
+      "status",
+      "type",
+      "useResource",
+      "useState",
+      "value"
+    ],
+    "references": [
+      "Button",
+      "EmptyState",
+      "PageHeader",
+      "Skeleton",
+      "StatusBadge",
+      "String",
+      "action",
+      "adminApi",
+      "decide",
+      "event",
+      "note",
+      "page",
+      "problem",
+      "request",
+      "requests",
+      "setPage",
+      "setStatus",
+      "setType",
+      "status",
+      "type",
+      "useResource",
+      "useState",
+      "value",
+      "window"
+    ],
+    "unresolved": [],
+    "imports": [
+      {
+        "source": "react",
+        "names": [
+          "useState"
+        ]
+      },
+      {
+        "source": "../../services/adminApi",
+        "names": [
+          "adminApi"
+        ]
+      },
+      {
+        "source": "../../hooks/useResource",
+        "names": [
+          "useResource"
+        ]
+      },
+      {
+        "source": "../../components/admin/AdminUI",
+        "names": [
+          "EmptyState",
+          "PageHeader",
+          "Skeleton",
+          "StatusBadge"
+        ]
+      },
+      {
+        "source": "../../components/Button",
+        "names": [
+          "Button"
+        ]
+      },
+      {
+        "source": "../../admin.css",
+        "names": []
+      }
+    ],
+    "calls": [
+      "adminApi.guideRequests",
+      "adminApi.decideGuideRequest"
+    ]
+  },
+  {
+    "file": "client/src/pages/admin/AdminGuides.jsx",
+    "bindings": [
+      "AdminGuides",
+      "Button",
+      "EmptyState",
+      "PageHeader",
+      "Skeleton",
+      "StatusBadge",
+      "action",
+      "adminApi",
+      "decide",
+      "event",
+      "guide",
+      "guides",
+      "page",
+      "problem",
+      "reason",
+      "rows",
+      "search",
+      "setPage",
+      "setSearch",
+      "setStatus",
+      "status",
+      "useResource",
+      "useState",
+      "value"
+    ],
+    "references": [
+      "Button",
+      "EmptyState",
+      "PageHeader",
+      "Skeleton",
+      "StatusBadge",
+      "String",
+      "action",
+      "adminApi",
+      "decide",
+      "event",
+      "guide",
+      "guides",
+      "page",
+      "problem",
+      "reason",
+      "rows",
+      "search",
+      "setPage",
+      "setSearch",
+      "setStatus",
+      "status",
+      "useResource",
+      "useState",
+      "value",
+      "window"
+    ],
+    "unresolved": [],
+    "imports": [
+      {
+        "source": "react",
+        "names": [
+          "useState"
+        ]
+      },
+      {
+        "source": "../../services/adminApi",
+        "names": [
+          "adminApi"
+        ]
+      },
+      {
+        "source": "../../hooks/useResource",
+        "names": [
+          "useResource"
+        ]
+      },
+      {
+        "source": "../../components/admin/AdminUI",
+        "names": [
+          "EmptyState",
+          "PageHeader",
+          "Skeleton",
+          "StatusBadge"
+        ]
+      },
+      {
+        "source": "../../components/Button",
+        "names": [
+          "Button"
+        ]
+      },
+      {
+        "source": "../../admin.css",
+        "names": []
+      }
+    ],
+    "calls": [
+      "adminApi.guides",
+      "adminApi.decideGuide"
+    ]
+  },
+  {
+    "file": "client/src/pages/admin/AdminLayout.jsx",
+    "bindings": [
+      "AdminLayout",
+      "BarChart3",
+      "Bell",
+      "CalendarClock",
+      "ClipboardList",
+      "Compass",
+      "FileText",
+      "GROUPS",
+      "Gauge",
+      "Icon",
+      "LogOut",
+      "MapPin",
+      "Menu",
+      "NavLink",
+      "Outlet",
+      "PanelLeftClose",
+      "PanelLeftOpen",
+      "Star",
+      "UserCheck",
+      "Users",
+      "X",
+      "active",
+      "adminApi",
+      "alerts",
+      "bellOpen",
+      "collapsed",
+      "count",
+      "event",
+      "group",
+      "initials",
+      "isActive",
+      "item",
+      "location",
+      "logout",
+      "mobileOpen",
+      "navigate",
+      "onKey",
+      "overview",
+      "part",
+      "requests",
+      "setAlerts",
+      "setBellOpen",
+      "setCollapsed",
+      "setMobileOpen",
+      "term",
+      "total",
+      "useAuth",
+      "useEffect",
+      "useLocation",
+      "useNavigate",
+      "useState",
+      "user",
+      "value"
+    ],
+    "references": [
+      "BarChart3",
+      "Bell",
+      "CalendarClock",
+      "ClipboardList",
+      "Compass",
+      "FileText",
+      "FormData",
+      "GROUPS",
+      "Gauge",
+      "Icon",
+      "LogOut",
+      "MapPin",
+      "Menu",
+      "NavLink",
+      "Outlet",
+      "PanelLeftClose",
+      "PanelLeftOpen",
+      "Promise",
+      "Star",
+      "String",
+      "UserCheck",
+      "Users",
+      "X",
+      "active",
+      "adminApi",
+      "alerts",
+      "bellOpen",
+      "collapsed",
+      "count",
+      "document",
+      "encodeURIComponent",
+      "event",
+      "group",
+      "initials",
+      "isActive",
+      "item",
+      "localStorage",
+      "location",
+      "logout",
+      "mobileOpen",
+      "navigate",
+      "onKey",
+      "overview",
+      "part",
+      "requests",
+      "setAlerts",
+      "setBellOpen",
+      "setCollapsed",
+      "setMobileOpen",
+      "term",
+      "total",
+      "undefined",
+      "useAuth",
+      "useEffect",
+      "useLocation",
+      "useNavigate",
+      "useState",
+      "user",
+      "value"
+    ],
+    "unresolved": [],
+    "imports": [
+      {
+        "source": "react",
+        "names": [
+          "useEffect",
+          "useState"
+        ]
+      },
+      {
+        "source": "react-router-dom",
+        "names": [
+          "NavLink",
+          "Outlet",
+          "useLocation",
+          "useNavigate"
+        ]
+      },
+      {
+        "source": "lucide-react",
+        "names": [
+          "BarChart3",
+          "Bell",
+          "CalendarClock",
+          "ClipboardList",
+          "Compass",
+          "FileText",
+          "Gauge",
+          "LogOut",
+          "MapPin",
+          "Menu",
+          "PanelLeftClose",
+          "PanelLeftOpen",
+          "Star",
+          "Users",
+          "UserCheck",
+          "X"
+        ]
+      },
+      {
+        "source": "../../hooks/useAuth",
+        "names": [
+          "useAuth"
+        ]
+      },
+      {
+        "source": "../../services/adminApi",
+        "names": [
+          "adminApi"
+        ]
+      },
+      {
+        "source": "../../admin.css",
+        "names": []
+      }
+    ],
+    "calls": [
+      "adminApi.overview",
+      "adminApi.guideRequests"
+    ]
+  },
+  {
+    "file": "client/src/pages/admin/AdminOverview.jsx",
+    "bindings": [
+      "AdminOverview",
+      "Area",
+      "AreaChart",
+      "Bar",
+      "BarChart",
+      "COLORS",
+      "CalendarClock",
+      "CartesianGrid",
+      "Cell",
+      "ChartCard",
+      "ClipboardIcon",
+      "Compass",
+      "DataTable",
+      "EmptyState",
+      "Legend",
+      "Link",
+      "PageHeader",
+      "Pie",
+      "PieChart",
+      "RANGES",
+      "ResponsiveContainer",
+      "Skeleton",
+      "Sparkline",
+      "Star",
+      "StatCard",
+      "StatusBadge",
+      "Tooltip",
+      "UserCheck",
+      "Users",
+      "Wallet",
+      "XAxis",
+      "YAxis",
+      "active",
+      "adminApi",
+      "chartTooltip",
+      "custom",
+      "data",
+      "error",
+      "event",
+      "index",
+      "item",
+      "label",
+      "money",
+      "name",
+      "params",
+      "payload",
+      "point",
+      "range",
+      "reload",
+      "row",
+      "setCustom",
+      "setRange",
+      "setReload",
+      "setState",
+      "state",
+      "statusRows",
+      "useEffect",
+      "useState",
+      "value"
+    ],
+    "references": [
+      "Area",
+      "AreaChart",
+      "Bar",
+      "BarChart",
+      "COLORS",
+      "CalendarClock",
+      "CartesianGrid",
+      "Cell",
+      "ChartCard",
+      "ClipboardIcon",
+      "Compass",
+      "DataTable",
+      "EmptyState",
+      "Intl",
+      "Legend",
+      "Link",
+      "Object",
+      "PageHeader",
+      "Pie",
+      "PieChart",
+      "RANGES",
+      "ResponsiveContainer",
+      "Skeleton",
+      "Sparkline",
+      "Star",
+      "StatCard",
+      "StatusBadge",
+      "Tooltip",
+      "UserCheck",
+      "Users",
+      "Wallet",
+      "XAxis",
+      "YAxis",
+      "active",
+      "adminApi",
+      "chartTooltip",
+      "custom",
+      "data",
+      "error",
+      "event",
+      "index",
+      "item",
+      "label",
+      "money",
+      "name",
+      "params",
+      "payload",
+      "point",
+      "range",
+      "reload",
+      "row",
+      "setCustom",
+      "setRange",
+      "setReload",
+      "setState",
+      "state",
+      "statusRows",
+      "useEffect",
+      "useState",
+      "value",
+      "window"
+    ],
+    "unresolved": [],
+    "imports": [
+      {
+        "source": "react",
+        "names": [
+          "useEffect",
+          "useState"
+        ]
+      },
+      {
+        "source": "react-router-dom",
+        "names": [
+          "Link"
+        ]
+      },
+      {
+        "source": "recharts",
+        "names": [
+          "Area",
+          "AreaChart",
+          "Bar",
+          "BarChart",
+          "CartesianGrid",
+          "Cell",
+          "Legend",
+          "Pie",
+          "PieChart",
+          "ResponsiveContainer",
+          "Tooltip",
+          "XAxis",
+          "YAxis"
+        ]
+      },
+      {
+        "source": "lucide-react",
+        "names": [
+          "CalendarClock",
+          "Compass",
+          "Star",
+          "UserCheck",
+          "Users",
+          "Wallet"
+        ]
+      },
+      {
+        "source": "../../services/adminApi",
+        "names": [
+          "adminApi"
+        ]
+      },
+      {
+        "source": "../../components/admin/AdminUI",
+        "names": [
+          "ChartCard",
+          "DataTable",
+          "EmptyState",
+          "PageHeader",
+          "Skeleton",
+          "Sparkline",
+          "StatCard",
+          "StatusBadge"
+        ]
+      },
+      {
+        "source": "../../admin.css",
+        "names": []
+      }
+    ],
+    "calls": [
+      "adminApi.overview"
+    ]
+  },
+  {
+    "file": "client/src/pages/admin/AdminUsers.jsx",
+    "bindings": [
+      "AdminUsers",
+      "Button",
+      "EmptyState",
+      "PageHeader",
+      "Skeleton",
+      "StatusBadge",
+      "adminApi",
+      "deactivate",
+      "event",
+      "page",
+      "problem",
+      "reason",
+      "role",
+      "search",
+      "setPage",
+      "setRole",
+      "setSearch",
+      "useResource",
+      "useState",
+      "user",
+      "users",
+      "value"
+    ],
+    "references": [
+      "Button",
+      "EmptyState",
+      "PageHeader",
+      "Skeleton",
+      "StatusBadge",
+      "String",
+      "adminApi",
+      "deactivate",
+      "event",
+      "page",
+      "problem",
+      "reason",
+      "role",
+      "search",
+      "setPage",
+      "setRole",
+      "setSearch",
+      "useResource",
+      "useState",
+      "user",
+      "users",
+      "value",
+      "window"
+    ],
+    "unresolved": [],
+    "imports": [
+      {
+        "source": "react",
+        "names": [
+          "useState"
+        ]
+      },
+      {
+        "source": "../../services/adminApi",
+        "names": [
+          "adminApi"
+        ]
+      },
+      {
+        "source": "../../hooks/useResource",
+        "names": [
+          "useResource"
+        ]
+      },
+      {
+        "source": "../../components/admin/AdminUI",
+        "names": [
+          "EmptyState",
+          "PageHeader",
+          "Skeleton",
+          "StatusBadge"
+        ]
+      },
+      {
+        "source": "../../components/Button",
+        "names": [
+          "Button"
+        ]
+      },
+      {
+        "source": "../../admin.css",
+        "names": []
+      }
+    ],
+    "calls": [
+      "adminApi.users",
+      "adminApi.deactivateUser"
+    ]
+  },
+  {
+    "file": "client/src/services/adminApi.js",
+    "bindings": [
+      "action",
+      "adminApi",
+      "axios",
+      "baseURL",
+      "body",
+      "data",
+      "departureId",
+      "error",
+      "file",
+      "getAll",
+      "guideIds",
+      "http",
+      "id",
+      "job",
+      "limit",
+      "method",
+      "mutate",
+      "page",
+      "params",
+      "payload",
+      "problem",
+      "queue",
+      "reason",
+      "response",
+      "result",
+      "rows",
+      "status",
+      "token",
+      "url"
+    ],
+    "references": [
+      "Array",
+      "Error",
+      "Event",
+      "FormData",
+      "Math",
+      "Promise",
+      "action",
+      "axios",
+      "baseURL",
+      "body",
+      "data",
+      "departureId",
+      "error",
+      "file",
+      "getAll",
+      "guideIds",
+      "http",
+      "id",
+      "job",
+      "limit",
+      "method",
+      "mutate",
+      "page",
+      "params",
+      "payload",
+      "problem",
+      "queue",
+      "reason",
+      "response",
+      "result",
+      "rows",
+      "status",
+      "token",
+      "url",
+      "window"
+    ],
+    "unresolved": [],
+    "imports": [
+      {
+        "source": "axios",
+        "names": [
+          "axios"
+        ]
+      }
+    ],
+    "calls": []
+  },
+  {
+    "file": "client/src/services/management.js",
+    "bindings": [
+      "adminManagement",
+      "adminTourApi",
+      "axios",
+      "body",
+      "departureId",
+      "error",
+      "get",
+      "guideId",
+      "guideIds",
+      "guideManagement",
+      "http",
+      "id",
+      "method",
+      "params",
+      "problem",
+      "reason",
+      "response",
+      "token",
+      "url",
+      "write"
+    ],
+    "references": [
+      "Error",
+      "Event",
+      "Promise",
+      "axios",
+      "body",
+      "departureId",
+      "error",
+      "get",
+      "guideId",
+      "guideIds",
+      "http",
+      "id",
+      "method",
+      "params",
+      "problem",
+      "reason",
+      "response",
+      "token",
+      "url",
+      "window",
+      "write"
+    ],
+    "unresolved": [],
+    "imports": [
+      {
+        "source": "axios",
+        "names": [
+          "axios"
+        ]
+      }
+    ],
+    "calls": []
+  }
+]

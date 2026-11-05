@@ -176,3 +176,62 @@ export async function removeDeparture(req, res) {
   });
   res.json({ data, message: 'Departure removed.' });
 }
+
+
+function destinationInput(body) {
+  const input = requireObject(body);
+  const name = typeof input.name === 'string' ? input.name.trim() : '';
+  const region = typeof input.region === 'string' ? input.region.trim() : '';
+  const description = typeof input.description === 'string' ? input.description.trim() : '';
+  const image = typeof input.image === 'string' ? input.image.trim() : '';
+  if (name.length < 2 || name.length > 100) throw new ApiError(400, 'Destination name must be 2-100 characters.');
+  if (region.length < 2 || region.length > 100) throw new ApiError(400, 'Region must be 2-100 characters.');
+  if (description.length < 20 || description.length > 3000) throw new ApiError(400, 'Destination description must be 20-3000 characters.');
+  if (!/^https:\/\/.+/i.test(image) || image.length > 2000) throw new ApiError(400, 'Provide a valid https image URL.');
+  return { name, region, description, image };
+}
+export async function createDestination(req, res) {
+  const input = destinationInput(req.body);
+  const data = await transaction(async session => {
+    if (await Destination.exists({ name: input.name }).session(session)) throw new ApiError(409, 'A destination with this name already exists.');
+    const [created] = await Destination.create([input], { session });
+    await audit(req.user._id, 'destination_create', 'Destination', created._id, { name: created.name }, session);
+    return created;
+  });
+  res.status(201).json({ data, message: 'Destination created.' });
+}
+export async function setTourStatus(req, res) {
+  const status = requireObject(req.body).status;
+  if (!['draft', 'published', 'archived'].includes(status)) throw new ApiError(400, 'Tour status is invalid.');
+  const data = await transaction(async session => {
+    const tour = await Tour.findById(req.params.id).session(session);
+    if (!tour) throw new ApiError(404, 'Tour not found.');
+    if (status === 'published') {
+      if (!tour.images?.length) throw new ApiError(409, 'Add at least one image before publishing.');
+      if (!tour.assignedGuides?.length) throw new ApiError(409, 'Assign at least one approved guide before publishing.');
+      if (!tour.departures.some(item => +new Date(item.date) > Date.now())) throw new ApiError(409, 'Add at least one future departure before publishing.');
+    }
+    tour.status = status; tour.archived = status === 'archived';
+    if (status === 'archived') tour.archivedAt = new Date();
+    await tour.save({ session });
+    await audit(req.user._id, 'tour_status_change', 'Tour', tour._id, { status }, session);
+    return tour;
+  });
+  res.json({ data, message: `Tour marked ${status}.` });
+}
+export async function listGuides(req, res) {
+  const guides = await Guide.find({ status: 'approved', isActive: { $ne: false } })
+    .populate('user', 'name email').populate('coveredDestinations', 'name').lean();
+  const workload = await Booking.aggregate([{ $match: { status: { $in: ['pending', 'confirmed'] } } }, { $group: { _id: '$guide', count: { $sum: 1 } } }]);
+  const workloadMap = Object.fromEntries(workload.map(row => [String(row._id), row.count]));
+  res.json({ data: guides.map(guide => ({ ...guide, currentWorkload: workloadMap[String(guide._id)] || 0 })) });
+}
+export async function uploadTourImage(req, res) {
+  if (!req.file?.buffer) throw new ApiError(400, 'Choose an image to upload.');
+  const { prepareImage } = await import('../services/imageValidation.js');
+  const { storeImage } = await import('../services/mediaStorage.js');
+  const bytes = await prepareImage(req.file.buffer, 'tour');
+  const stored = await storeImage(bytes);
+  await audit(req.user._id, 'admin_media_upload', 'Tour', req.user._id, { url: stored.url });
+  res.status(201).json({ data: { url: stored.url, _id: stored.key || stored.url }, message: 'Image uploaded.' });
+}
