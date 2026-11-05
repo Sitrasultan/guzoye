@@ -13,6 +13,14 @@ import MyBookings from './pages/MyBookings';
 import Dashboard, { DashboardRedirect } from './pages/Dashboard';
 import AdminTourManager from './pages/AdminTourManager';
 import GuideMyProfile from './pages/GuideMyProfile';
+import GuideLayout from './pages/guide/GuideLayout';
+import GuideOverview from './pages/guide/GuideOverview';
+import GuideBookingRequests from './pages/guide/GuideBookingRequests';
+import GuideRequests from './pages/guide/GuideRequests';
+import GuideSchedule from './pages/guide/GuideSchedule';
+import GuideFeedback from './pages/guide/GuideFeedback';
+import GuidePerformance from './pages/guide/GuidePerformance';
+import GuideAreaProfile from './pages/guide/GuideProfile';
 import AdminLayout from './pages/admin/AdminLayout';
 import AdminOverview from './pages/admin/AdminOverview';
 import AdminActivity from './pages/admin/AdminActivity';
@@ -27,6 +35,7 @@ import Button from './components/Button';
 import BookingsList from './components/BookingsList';
 import { useAuth } from './hooks/useAuth';
 import './admin.css';
+import './guide.css';
 function ScrollReset() {
   const {
     pathname
@@ -39,7 +48,9 @@ function ScrollReset() {
 function PublicShell({
   children
 }) {
-  return <><Navbar /><ScrollReset /><div id="content" tabIndex={-1}>{children}</div><Footer /></>;
+    const { pathname } = useLocation();
+  const bare = pathname === '/guide' || pathname.startsWith('/guide/');
+  return <>{!bare && <Navbar />}<ScrollReset /><div id="content" tabIndex={-1}>{children}</div>{!bare && <Footer />}</>;
 }
 function AdminLoginRedirect({
   children
@@ -78,7 +89,7 @@ export default function App() {
       <Route path="/login" element={<Auth key="login" />} /><Route path="/register" element={<Auth key="register" register />} />
       <Route element={<ProtectedRoute />}><Route path="/dashboard" element={<AdminLoginRedirect><DashboardRedirect /></AdminLoginRedirect>} /><Route path="/bookings" element={<MyBookings />} /></Route>
       <Route element={<ProtectedRoute roles={['traveler']} />}><Route path="/dashboard/traveler" element={<Dashboard />} /></Route>
-      <Route element={<ProtectedRoute roles={['guide']} />}><Route path="/dashboard/guide" element={<Dashboard />} /><Route path="/dashboard/guide/profile" element={<GuideMyProfile />} /><Route path="*" element={<EmptyState title="Tour studio retired" message="Guzoye admins now create tours and assign guides." />} /></Route>
+      <Route element={<ProtectedRoute roles={['guide']} />}><Route path="/guide" element={<GuideLayout />}><Route index element={<GuideOverview />} /><Route path="booking-requests" element={<GuideBookingRequests />} /><Route path="schedule" element={<GuideSchedule />} /><Route path="requests" element={<GuideRequests />} /><Route path="feedback" element={<GuideFeedback />} /><Route path="performance" element={<GuidePerformance />} /><Route path="profile" element={<GuideAreaProfile />} /></Route><Route path="/dashboard/guide" element={<Navigate to="/guide" replace />} /><Route path="/dashboard/guide/profile" element={<Navigate to="/guide/profile" replace />} /><Route path="*" element={<EmptyState title="Tour studio retired" message="Guzoye admins now create tours and assign guides." />} /></Route>
       <Route element={<ProtectedRoute roles={['admin']} />}><Route path="/dashboard/admin" element={<Navigate to="/admin" replace />} /><Route path="/dashboard/admin/tours" element={<Navigate to="/admin/tours" replace />} /></Route>
       <Route path="*" element={<main className="container page"><EmptyState title="A little off the beaten path" message="This page doesn’t exist. Let’s find your way back."><Button to="/">Back to discovery</Button></EmptyState></main>} />
     </Routes></PublicShell>} />
