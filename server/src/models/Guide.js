@@ -1,6 +1,10 @@
 import mongoose from 'mongoose';
+import { normalizeSlug, validateSlug } from '../services/identifiers.js';
 const schema = new mongoose.Schema({
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, unique: true },
+  slug: { type: String, required: true, unique: true, trim: true, lowercase: true, minlength: 2, maxlength: 80, validate: { validator: value => /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value), message: 'Invalid guide slug.' } },
+  slugHistory: { type: [String], default: [] },
+  code: { type: String, required: true, unique: true, uppercase: true, match: /^GUIDE-\d{4}$/ },
   status: { type: String, enum: ['pending', 'approved', 'rejected'], default: 'pending', index: true },
   isActive: { type: Boolean, default: true },
   mutationVersion: { type: Number, default: 0, select: false },
@@ -19,5 +23,13 @@ const schema = new mongoose.Schema({
   availabilityNotes: { type: String, default: '', maxlength: 1000 }
 }, { timestamps: true });
 schema.index({ languages: 1, status: 1 });
+schema.index({ slug: 1 }, { unique: true });
+schema.index({ code: 1 }, { unique: true });
+schema.index({ slugHistory: 1 });
+schema.pre('validate', function (next) {
+  if (!this.slug) this.slug = normalizeSlug(this.location || 'guide');
+  if (this.slug) this.slug = validateSlug(this.slug);
+  next();
+});
 schema.set('toJSON', { transform(_doc, value) { delete value.mutationVersion; return value; } });
 export default mongoose.model('Guide', schema);

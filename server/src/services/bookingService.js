@@ -4,6 +4,7 @@ import User from '../models/User.js';
 import Tour from '../models/Tour.js';
 import Guide from '../models/Guide.js';
 import { ApiError } from '../middleware/errors.js';
+import { nextBookingReference } from './identifiers.js';
 import { calculateTotal, transitionAllowed } from '../middleware/bookingValidation.js';
 export async function inTransaction(operation) {
   const session = await mongoose.startSession();
@@ -66,7 +67,8 @@ export async function createBooking(userId, input) {
       { session }
     );
     if (departureReserved.modifiedCount !== 1) throw new ApiError(409, 'Not enough spots remain or this departure is no longer bookable.');
-    const [booking] = await Booking.create([{ user: userId, tour: tour._id, departureId: departure._id, departureDate: departure.date, guide: input.guideId, guests: input.guests, totalPrice: calculateTotal(tour.price, input.guests), status: 'pending', active: true }], { session });
+    const reference = await nextBookingReference(session);
+    const [booking] = await Booking.create([{ reference, user: userId, tour: tour._id, departureId: departure._id, departureDate: departure.date, guide: input.guideId, guests: input.guests, totalPrice: calculateTotal(tour.price, input.guests), status: 'pending', active: true }], { session });
     const result = booking.toObject(); delete result.active; return result;
   });
 }

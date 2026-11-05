@@ -17,27 +17,88 @@ import dashboardRoutes from './routes/dashboardRoutes.js';
 import bookingRoutes from './routes/bookingRoutes.js';
 import guideManagementRoutes from './routes/guideManagementRoutes.js';
 import guideRequestRoutes from './routes/guideRequestRoutes.js';
+import travelerRoutes from './routes/travelerRoutes.js';
 import guideAreaRoutes from './routes/guideAreaRoutes.js';
 import adminGuideWorkspaceRoutes from './routes/adminGuideWorkspaceRoutes.js';
 import adminAnalyticsRoutes from './routes/adminAnalyticsRoutes.js';
 import adminMediaRoutes from './routes/adminMediaRoutes.js';
 import adminExportRoutes from './routes/adminExportRoutes.js';
 import { notFound, errorHandler } from './middleware/errors.js';
+
 const app = express();
-app.disable('x-powered-by'); app.set('query parser', 'simple');
-app.use(helmet()); app.use(cors({ origin: env.clientOrigin, credentials: true }));
-app.use(express.json({ limit: '128kb' })); app.use(cookieParser());
+
+app.disable('x-powered-by');
+app.set('query parser', 'simple');
+
+app.use(helmet());
+app.use(cors({ origin: env.clientOrigin, credentials: true }));
+app.use(express.json({ limit: '128kb' }));
+app.use(cookieParser());
+
 if (env.mode !== 'test') app.use(morgan('dev'));
-app.use('/api', rateLimit({ windowMs: 15 * 60 * 1000, limit: 500, standardHeaders: 'draft-7', legacyHeaders: false, message: { message: 'Too many requests. Please try again later.' } }));
-app.get('/api/health', (_req, res) => { const connected = mongoose.connection.readyState === 1; res.status(connected ? 200 : 503).json({ status: connected ? 'ok' : 'unavailable', database: connected ? 'connected' : 'disconnected' }); });
-app.use('/api/auth', authRoutes); app.use('/api/admin', adminGuideWorkspaceRoutes);
-app.use('/api', guideAreaRoutes);
-app.use('/api/admin', adminTourRoutes); app.use('/api/admin', adminRoutes); app.use('/api/admin', adminAnalyticsRoutes); app.use('/api/admin', adminMediaRoutes); app.use('/api/admin', adminExportRoutes); app.use('/api', guideRequestRoutes); app.use('/api/dashboard', dashboardRoutes);
-app.get('/uploads/:name', (req, res, next) => {
-  if (!/^[0-9a-f-]{36}\.webp$/.test(req.params.name)) return res.sendStatus(404);
-  res.set({ 'Cross-Origin-Resource-Policy': 'cross-origin', 'X-Content-Type-Options': 'nosniff', 'Content-Type': 'image/webp', 'Cache-Control': 'public, max-age=3600' });
-  res.sendFile(path.join(uploadDirectory, req.params.name), error => { if (error) { if (error.status === 404) res.status(404).json({ message: 'Image not found.' }); else next(error); } });
+
+app.use('/api', rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 500,
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
+  message: { message: 'Too many requests. Please try again later.' }
+}));
+
+app.get('/api/health', (_req, res) => {
+  const connected = mongoose.connection.readyState === 1;
+  res.status(connected ? 200 : 503).json({
+    status: connected ? 'ok' : 'unavailable',
+    database: connected ? 'connected' : 'disconnected'
+  });
 });
-app.use('/api', bookingRoutes); app.use('/api/guide', mediaRoutes); app.use('/api/guide', guideManagementRoutes); app.use('/api', catalogRoutes);
-app.use(notFound); app.use(errorHandler);
+
+app.use('/api/auth', authRoutes);
+app.use('/api/admin', adminGuideWorkspaceRoutes);
+
+// Public catalog routes must be registered before traveler and guide-area routers.
+app.use('/api', catalogRoutes);
+
+app.use('/api', travelerRoutes);
+app.use('/api', guideAreaRoutes);
+
+app.use('/api/admin', adminTourRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/admin', adminAnalyticsRoutes);
+app.use('/api/admin', adminMediaRoutes);
+app.use('/api/admin', adminExportRoutes);
+
+app.use('/api', guideRequestRoutes);
+app.use('/api/dashboard', dashboardRoutes);
+app.use('/api', bookingRoutes);
+
+app.use('/api/guide', mediaRoutes);
+app.use('/api/guide', guideManagementRoutes);
+
+app.get('/uploads/:name', (req, res, next) => {
+  if (!/^[0-9a-f-]{36}\.webp$/.test(req.params.name)) {
+    return res.sendStatus(404);
+  }
+
+  res.set({
+    'Cross-Origin-Resource-Policy': 'cross-origin',
+    'X-Content-Type-Options': 'nosniff',
+    'Content-Type': 'image/webp',
+    'Cache-Control': 'public, max-age=3600'
+  });
+
+  res.sendFile(path.join(uploadDirectory, req.params.name), error => {
+    if (error) {
+      if (error.status === 404) {
+        res.status(404).json({ message: 'Image not found.' });
+      } else {
+        next(error);
+      }
+    }
+  });
+});
+
+app.use(notFound);
+app.use(errorHandler);
+
 export default app;

@@ -1,4 +1,5 @@
 import { guideFilters, discoveryPipeline } from '../services/guideDiscovery.js';
+import { identifierFilter } from '../services/identifiers.js';
 import mongoose from 'mongoose';
 import Tour from '../models/Tour.js';
 import Guide from '../models/Guide.js';
@@ -30,7 +31,9 @@ export async function listTours(req, res) {
   send(res, data, total, page, limit);
 }
 export async function getTour(req, res) {
-  const data = await Tour.findOne({ _id: req.params.id, archived: { $ne: true } }).populate('destination').populate(population).lean();
+  const filter = identifierFilter(Tour, req.params.id);
+  if (!filter) throw new ApiError(400, 'Invalid tour identifier.');
+  const data = await Tour.findOne({ ...filter, archived: { $ne: true } }).populate('destination').populate(population).lean();
   const hasAvailableGuide = (data?.assignedGuides || []).some(guide => guide.status === 'approved' && guide.isActive !== false);
   if (!data || !hasAvailableGuide) throw new ApiError(404, 'Tour not found.'); res.json({ data });
 }
@@ -38,7 +41,11 @@ export async function listDestinations(req, res) {
   const { page, limit } = pagination(req.query), filter = req.query.search ? { name: new RegExp(escapeRegex(req.query.search), 'i') } : {};
   const [data, total] = await Promise.all([Destination.find(filter).sort({ _id: 1 }).skip((page - 1) * limit).limit(limit).lean(), Destination.countDocuments(filter)]); send(res, data, total, page, limit);
 }
-export async function getDestination(req, res) { const data = await Destination.findById(req.params.id).lean(); if (!data) throw new ApiError(404, 'Destination not found.'); res.json({ data }); }
+export async function getDestination(req, res) {
+  const filter = identifierFilter(Destination, req.params.id);
+  if (!filter) throw new ApiError(400, 'Invalid destination identifier.');
+  const data = await Destination.findOne(filter).lean(); if (!data) throw new ApiError(404, 'Destination not found.'); res.json({ data });
+}
 export async function listGuides(req, res) {
   const filters = guideFilters(req.query);
   const order = filters.sort === 'name' ? { 'user.name': 1, _id: 1 } : filters.sort === 'experience' ? { yearsExperience: -1, _id: 1 } : { rating: -1, _id: 1 };
@@ -46,13 +53,17 @@ export async function listGuides(req, res) {
   send(res, result?.data || [], result?.total[0]?.count || 0, filters.page, filters.limit);
 }
 export async function getGuide(req, res) {
-  const [data] = await Guide.aggregate(discoveryPipeline({ minRating: 0 }, req.params.id));
+  const filter = identifierFilter(Guide, req.params.id);
+  if (!filter) throw new ApiError(400, 'Invalid guide identifier.');
+  const [data] = await Guide.aggregate([{ $match: filter }, ...discoveryPipeline({ minRating: 0 })]);
   if (!data) throw new ApiError(404, 'Guide not found.'); res.json({ data });
 }
 export async function listReviews(req, res) {
-  const tour = await Tour.findOne({ _id: req.params.id, archived: { $ne: true } }).select('assignedGuides').populate('assignedGuides', 'status isActive').lean();
+  const tourFilter = identifierFilter(Tour, req.params.id);
+  if (!tourFilter) throw new ApiError(400, 'Invalid tour identifier.');
+  const tour = await Tour.findOne({ ...tourFilter, archived: { $ne: true } }).select('assignedGuides').populate('assignedGuides', 'status isActive').lean();
   const hasAvailableGuide = (tour?.assignedGuides || []).some(guide => guide.status === 'approved' && guide.isActive !== false);
   if (!tour || !hasAvailableGuide) throw new ApiError(404, 'Tour not found.');
-  const { page, limit } = pagination(req.query), filter = { tour: req.params.id };
+  const { page, limit } = pagination(req.query), filter = { tour: tour._id };
   const [data, total] = await Promise.all([Review.find(filter).sort({ createdAt: -1, _id: 1 }).skip((page - 1) * limit).limit(limit).populate('user', 'name').lean(), Review.countDocuments(filter)]); send(res, data, total, page, limit);
 }

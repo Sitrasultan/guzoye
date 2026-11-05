@@ -1,3 +1,6 @@
+import TravelerVisualDashboard from './pages/TravelerVisualDashboard';
+import TravelerVisualLayout from './pages/TravelerVisualLayout';
+import './travel-visual.css';
 import { useEffect } from 'react';
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
@@ -33,7 +36,13 @@ import AdminUnavailable from './pages/admin/AdminUnavailable';
 import { EmptyState } from './components/States';
 import Button from './components/Button';
 import BookingsList from './components/BookingsList';
-import { useAuth } from './hooks/useAuth';
+import { useAuth, dashboardPath } from './hooks/useAuth';
+import AccountLayout from './pages/account/AccountLayout';
+import AccountOverview from './pages/account/AccountOverview';
+import AccountTrips from './pages/account/AccountTrips';
+import AccountWishlist from './pages/account/AccountWishlist';
+import AccountReviews from './pages/account/AccountReviews';
+import AccountProfile from './pages/account/AccountProfile';
 import './admin.css';
 import './guide.css';
 function ScrollReset() {
@@ -49,7 +58,7 @@ function PublicShell({
   children
 }) {
     const { pathname } = useLocation();
-  const bare = pathname === '/guide' || pathname.startsWith('/guide/');
+  const bare = pathname === '/guide' || pathname.startsWith('/guide/') || pathname === '/account' || pathname.startsWith('/account/');
   return <>{!bare && <Navbar />}<ScrollReset /><div id="content" tabIndex={-1}>{children}</div>{!bare && <Footer />}</>;
 }
 function AdminLoginRedirect({
@@ -68,8 +77,17 @@ function AdminPlaceholder({
 }) {
   return <AdminUnavailable title={title} message={message} />;
 }
+function TravelVisualScope() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    const protectedArea = /^\/(admin|guide)(\/|$)/.test(pathname) || /^\/dashboard\/(admin|guide)(\/|$)/.test(pathname);
+    document.body.dataset.travelVisual = protectedArea ? 'off' : /^\/account(\/|$)/.test(pathname) ? 'account' : 'public';
+    return () => { delete document.body.dataset.travelVisual; };
+  }, [pathname]);
+  return null;
+}
 export default function App() {
-  return <Routes>
+  return <><TravelVisualScope /><Routes>
     <Route path="/admin" element={<ProtectedRoute roles={['admin']} />}>
       <Route element={<AdminLayout />}>
         <Route index element={<AdminOverview />} />
@@ -88,10 +106,10 @@ export default function App() {
       <Route path="/" element={<Home />} /><Route path="/tours" element={<Tours />} /><Route path="/tours/:id" element={<TourDetails />} /><Route path="/guides" element={<Guides />} /><Route path="/guides/:id" element={<GuideProfile />} />
       <Route path="/login" element={<Auth key="login" />} /><Route path="/register" element={<Auth key="register" register />} />
       <Route element={<ProtectedRoute />}><Route path="/dashboard" element={<AdminLoginRedirect><DashboardRedirect /></AdminLoginRedirect>} /><Route path="/bookings" element={<MyBookings />} /></Route>
-      <Route element={<ProtectedRoute roles={['traveler']} />}><Route path="/dashboard/traveler" element={<Dashboard />} /></Route>
+      <Route element={<ProtectedRoute roles={['traveler']} />}><Route path="/account" element={<AccountLayout />}><Route index element={<TravelerVisualDashboard />} /><Route path="trips" element={<AccountTrips />} /><Route path="wishlist" element={<AccountWishlist />} /><Route path="reviews" element={<AccountReviews />} /><Route path="profile" element={<AccountProfile />} /></Route><Route path="/dashboard/traveler" element={<Navigate to="/account" replace />} /></Route>
       <Route element={<ProtectedRoute roles={['guide']} />}><Route path="/guide" element={<GuideLayout />}><Route index element={<GuideOverview />} /><Route path="booking-requests" element={<GuideBookingRequests />} /><Route path="schedule" element={<GuideSchedule />} /><Route path="requests" element={<GuideRequests />} /><Route path="feedback" element={<GuideFeedback />} /><Route path="performance" element={<GuidePerformance />} /><Route path="profile" element={<GuideAreaProfile />} /></Route><Route path="/dashboard/guide" element={<Navigate to="/guide" replace />} /><Route path="/dashboard/guide/profile" element={<Navigate to="/guide/profile" replace />} /><Route path="*" element={<EmptyState title="Tour studio retired" message="Guzoye admins now create tours and assign guides." />} /></Route>
       <Route element={<ProtectedRoute roles={['admin']} />}><Route path="/dashboard/admin" element={<Navigate to="/admin" replace />} /><Route path="/dashboard/admin/tours" element={<Navigate to="/admin/tours" replace />} /></Route>
       <Route path="*" element={<main className="container page"><EmptyState title="A little off the beaten path" message="This page doesn’t exist. Let’s find your way back."><Button to="/">Back to discovery</Button></EmptyState></main>} />
     </Routes></PublicShell>} />
-  </Routes>;
+  </Routes></>;
 }

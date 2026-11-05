@@ -13,7 +13,7 @@ test('unknown routes return JSON 404', async () => {
   assert.equal((await request(app).get('/api/missing')).status, 404);
 });
 test('invalid IDs and unsafe pagination return 400 without database access', async () => {
-  assert.equal((await request(app).get('/api/tours/not-an-id')).status, 400);
+  assert.equal((await request(app).get('/api/tours/invalid%20slug')).status, 400);
   assert.equal((await request(app).get('/api/tours?page=-1')).status, 400);
 });
 test('repeated query values are rejected', async () => {
@@ -28,6 +28,6 @@ test('protected endpoints reject requests without a session', async () => {
 test('auth writes require trusted origin and CSRF token', async () => {
   assert.equal((await request(app).post('/api/auth/register').send({})).status, 403);
 });
-test('review writes remain absent', async () => {
-  assert.equal((await request(app).post('/api/reviews').send({})).status, 404);
+test('review writes require authentication', async () => {
+  assert.equal((await request(app).post('/api/reviews').send({})).status, 401);
 });

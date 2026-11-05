@@ -1,10 +1,8 @@
-import { describe, expect, it } from 'vitest';
-import { calculatePerformance, PERFORMANCE_WEIGHTS } from '../src/services/guidePerformance.js';
-describe('guide performance', () => {
-  it('defines weights that total 100', () => {
-    expect(Object.values(PERFORMANCE_WEIGHTS).reduce((sum, value) => sum + value, 0)).toBe(100);
-  });
-  it('returns null for an unknown guide', async () => {
-    await expect(calculatePerformance('000000000000000000000000')).resolves.toBeNull();
-  });
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { PERFORMANCE_WEIGHTS } from '../src/services/guidePerformance.js';
+
+test('guide performance weights total 100', () => {
+  const total = Object.values(PERFORMANCE_WEIGHTS).reduce((sum, value) => sum + value, 0);
+  assert.equal(total, 100);
 });

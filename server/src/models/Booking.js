@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 export const BOOKING_STATUSES = ['pending', 'confirmed', 'declined', 'cancelled', 'completed'];
 const schema = new mongoose.Schema({
+  reference: { type: String, required: true, unique: true, uppercase: true, match: /^GZY-\d{4}-\d{6}$/ },
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, index: true },
   tour: { type: mongoose.Schema.Types.ObjectId, ref: 'Tour', required: true, index: true },
   departureId: { type: mongoose.Schema.Types.ObjectId, required: true },
@@ -12,6 +13,7 @@ const schema = new mongoose.Schema({
   // Internal index key: exactly pending/confirmed. Never accepted from a request.
   active: { type: Boolean, default: true, required: true, select: false }
 }, { timestamps: true });
+// schema.index({ reference: 1 }, { unique: true });
 schema.index({ user: 1, tour: 1, departureId: 1 }, {
   unique: true, name: 'one_active_booking_per_departure', partialFilterExpression: { active: true }
 });

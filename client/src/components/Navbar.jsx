@@ -5,6 +5,7 @@ import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { Mountain, Menu, X, ArrowUpRight, LogOut } from 'lucide-react';
 import Button from './Button';
 import { useAuth, dashboardPath } from '../hooks/useAuth';
+import ThemeToggle from './ThemeToggle';
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -27,6 +28,7 @@ export default function Navbar() {
       <nav id="main-navigation" className={open ? 'navigation open' : 'navigation'} aria-label="Main navigation">
         {[['/', 'Discover'], ['/tours', 'Explore tours'], ['/guides', 'Local guides'], ['/bookings', 'My bookings']].map(([to, label]) => <NavLink key={to} to={to} end={to === '/'} onClick={() => setOpen(false)}>{label}</NavLink>)}
         <div className="nav-auth">
+          <ThemeToggle compact />
           {loading ? <span role="status">Checking session…</span> : user ? <>
             <Avatar src={photo} name={user.name} size={34} /><span className="nav-user" title={user.name}>{user.name}</span>
             <Link to={dashboardPath(user.role)} onClick={() => setOpen(false)}>Dashboard</Link>

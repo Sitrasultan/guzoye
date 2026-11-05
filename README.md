@@ -1,261 +1,352 @@
-# Current upgrade: Final Delivery 1, items 1–2
+# Guzoye — Discover Ethiopia Through Local Eyes
 
-Built against the supplied project. Real uploads and place-based guide discovery are added.
-This is a partial Delivery 1: reviews/wishlist/tour discovery/meta work is still missing.
-See docs/FINAL_DELIVERY_1.md for exact install/migration/manual tests and docs/STATUS.md.
+### Extraordinary places. Local knowledge. Meaningful journeys.
 
-Required after copying: npm install, then the non-destructive place migration. No re-seed
-is required. New dependencies: multer, sharp, cloudinary. Local mode needs no new secrets.
+Guzoye is a travel discovery and booking platform that connects travelers with locally led experiences across Ethiopia. From ancient heritage sites and vibrant cities to dramatic highlands and natural wonders, Guzoye brings destinations, tours, guides, and trip planning into one connected experience.
 
-# Guzoye — Ethiopia, with a local
+Built around three dedicated workspaces—Traveler, Guide, and Admin—the platform supports a coordinated journey from discovery and booking requests to guide assignments and departure management.
 
-Guzoye is a MERN tour and local-guide booking platform. This complete-file upgrade builds
-Parts A and C of the requested final phase on working Phases 1–4. Read docs/STATUS.md:
-verified reviews/wishlist/discovery upgrades and some final polish remain unfinished.
-Do not describe this as a fully completed final release.
+> Development status: Active development. Features and interfaces are being refined, and some workflows require further integration testing before production use.
 
-## Features by role
+---
 
-- Guests: discover published tours and approved active guides; view future departures.
-- Travelers: httpOnly-cookie login, CSRF-protected booking requests, server pricing,
-  capacity-safe transactions, cancellation and booking history.
-- Guides: pending/approved/rejected application status, editable public profile with live
-  preview, own-tour publishing, itinerary/images/pricing, departure management, owned-tour
-  booking decisions, guide-specific dashboard and counts. Rejected/pending guides can edit
-  their profile, but cannot publish or manage tours.
-- Admins: stats, readable bar charts, guide approval/rejection reasons, tour reassignment
-  and archive, booking filters, user search/deactivation, and audit history.
+## The Guzoye Experience
 
-## Stack and architecture
+Travel is more than reaching a destination. It is understanding the place, meeting its people, and returning with a story worth sharing.
 
-React + Vite, React Router, Axios, Lucide and custom CSS variables. Express + Node.js,
-MongoDB/Mongoose, bcrypt, jsonwebtoken, cookie-parser, CORS, helmet and rate limits.
-MongoDB replica set or Atlas REQUIRED for transaction-backed inventory/admin actions.
+Guzoye aims to make that experience easier through:
 
-UI → credentialed Axios → existing CSRF handshake → Express auth/current DB role →
-controller validation → Mongoose/transactions. Tour.guide is always the server-assigned
-owner. Conditional seat increments, unique active booking index and transaction rollback
-prevent overbooking/double release. Tour locking serializes active-booking edits and
-reassignment with guide booking actions. Admin action and audit insert commit together.
+- Image-led destination and tour discovery.
+- Local guide profiles and performance insights.
+- Departure-based booking with guide selection.
+- Dedicated workspaces for travelers, guides, and administrators.
+- A responsive interface designed for desktop and mobile use.
 
-New booking creation also locks the traveler account to serialize it with deactivation.
-Guide deactivation archives remaining owned tours; active bookings must first be resolved
-or reassigned. No admin account can be deactivated via the dashboard.
+---
 
-## Apply the upgrade
+## Platform Workspaces
 
-The ZIP is an OVERLAY for the existing Phase 4 repository, not a standalone application.
-Its client/, server/, docs/ and scripts/ folders are directly at the root, without a wrapper.
-README.md replaces the old root README. Keep all unlisted files unchanged. Commit/back up
-both code and development DB first. Exact changes are in docs/CHANGELOG_GUIDE_ADMIN.md.
+### Traveler Experience
 
-No npm package or dependency changes. No package.json files are supplied. The helper
-parses all three of your existing manifests as actual JSON before installation.
+Discover journeys and manage travel plans through a dedicated account area.
 
-## Windows setup (PowerShell)
+The traveler experience includes or is being developed around:
 
-Use Node.js 22.12+ and your existing Phase 4 project with a working replica set or Atlas.
-Do not run two MongoDB processes on the same port. Existing .env files should be MERGED,
-not blindly replaced by examples.
+- Tour and destination discovery.
+- Tour details and departure selection.
+- Booking requests with guide choice.
+- Upcoming and past trip views.
+- A personalized dashboard.
+- Wishlist and feedback workflows.
+- Profile, account settings, and appearance preferences.
 
-```powershell
-node scripts/verify-guide-admin.mjs
+Availability varies by the current development branch. Some traveler workflows remain under integration and review.
+
+### Guide Workspace
+
+A focused workspace for managing assigned journeys and traveler requests.
+
+Guide functionality includes:
+
+- Application status and profile management.
+- Assigned tours and destinations.
+- Booking request management.
+- Departure schedules and per-guide groups.
+- Availability and blocked dates.
+- Requests to administrators for assignments or time off.
+- Performance and ranking views.
+- Feedback-related interfaces.
+
+Guides do not create tours or assign themselves. Administrators manage the catalog and approve assignments.
+
+### Admin Workspace
+
+A dedicated administration area for coordinating platform operations.
+
+Admin functionality includes:
+
+- Tour and destination management.
+- Guide application review and management.
+- Tour and destination assignments.
+- Guide request review.
+- Departure and group management.
+- Booking oversight.
+- Analytics, exports, and audit-related tools.
+
+---
+
+## Design Direction
+
+Guzoye combines an image-led travel experience with clear, task-focused workspaces.
+
+The traveler and public interface is evolving toward:
+
+- Navy navigation and soft backgrounds.
+- Rounded cards and spacious layouts.
+- Pastel dashboard highlights.
+- Destination photography and welcoming travel banners.
+- Responsive navigation and mobile drawers.
+
+Guide and administrator workspaces retain their own role-focused layouts and established styling.
+
+---
+
+## Technology Stack
+
+### Frontend
+
+- React
+- Vite
+- React Router
+- Axios
+- Recharts
+- Lucide React
+- CSS
+
+### Backend
+
+- Node.js
+- Express
+- MongoDB
+- Mongoose
+
+### Authentication and Request Protection
+
+- Cookie-based authentication
+- Role-based authorization
+- CSRF protection
+- Request validation
+- Rate limiting
+- Security headers
+
+### Image Processing
+
+- Multer
+- Sharp
+- Image validation and processing utilities
+
+---
+
+## Booking and Assignment Model
+
+Guzoye organizes bookings around tours, departures, and assigned guides.
+
+1. An administrator creates a tour and its departures.
+2. Approved guides are assigned to the tour.
+3. Departures can contain separate guide groups.
+4. A traveler selects a departure and an available guide.
+5. The booking request enters the guide workflow.
+6. Booking status and availability are updated through the server.
+
+Assignment and booking operations use MongoDB transactions where implemented. A MongoDB replica set or compatible Atlas deployment is therefore required for those workflows.
+
+---
+
+## Project Structure
+
+```text
+wondu/
+├── client/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── context/
+│   │   ├── hooks/
+│   │   ├── pages/
+│   │   └── services/
+│   ├── index.html
+│   └── package.json
+│
+├── server/
+│   ├── src/
+│   │   ├── config/
+│   │   ├── controllers/
+│   │   ├── middleware/
+│   │   ├── models/
+│   │   ├── routes/
+│   │   ├── scripts/
+│   │   └── services/
+│   ├── test/
+│   └── package.json
+│
+├── shared/
+├── docs/
+├── scripts/
+├── package.json
+└── README.md
+```
+
+---
+
+## Getting Started
+
+### Prerequisites
+
+Before running Guzoye locally, install:
+
+- Node.js and npm compatible with the project dependencies.
+- Git.
+- MongoDB configured as a replica set, or access to MongoDB Atlas.
+
+### 1. Clone the Repository
+
+Replace `YOUR-USERNAME` with the repository owner's GitHub username.
+
+```bash
+git clone [https://github.com/YOUR-USERNAME/guzoye.git](https://github.com/YOUR-USERNAME/guzoye.git)
+cd guzoye
+```
+
+### 2. Install Dependencies
+
+From the repository root:
+
+```bash
 npm install
 ```
 
-npm install is only needed if dependencies are missing; this upgrade adds none. Keep
-and commit the valid existing package-lock.json after installation. Use npm ci thereafter.
+### 3. Configure Environment Variables
 
-Add just this new variable to server/.env, choosing your own strong password:
+Use the example files included in the project as the starting point.
 
-```dotenv
-DEMO_GUIDE_PASSWORD=choose-your-own-strong-demo-guide-password
+Windows Command Prompt:
+
+```bat
+copy server\.env.example server\.env
+copy client\.env.example client\.env
 ```
 
-Keep existing JWT_SECRET, DEMO_ADMIN_PASSWORD and connection settings. For a local
-replica set the existing URI can be:
+macOS or Linux:
 
-```dotenv
-MONGODB_URI=mongodb://127.0.0.1:27017/guzoye?replicaSet=rs0
+```bash
+cp server/.env.example server/.env
+cp client/.env.example client/.env
 ```
 
-Stop frontend/API. Set ALLOW_DEMO_SEED=true in server/.env, then:
+Review each example and configure the required values, including:
 
-```powershell
-npm run seed
-node server/src/scripts/checkBookingDB.js
-```
+- MongoDB connection settings.
+- Authentication secrets.
+- Client origin.
+- Client API URL.
+- Any optional storage or demo configuration.
 
-Set ALLOW_DEMO_SEED=false, ensure client/.env uses VITE_DATA_SOURCE=api, then:
+Never commit real `.env` files, passwords, authentication secrets, or database credentials.
 
-```powershell
+### 4. Start the Application
+
+From the repository root:
+
+```bash
 npm run dev
 ```
 
-Open http://localhost:5173. API http://localhost:5000/api. Use localhost consistently.
-No more manual assignDemoTour script is needed for newly registered guides: they can
-create their own tours after approval. The old development helper can remain unused.
+Open the address printed by Vite. The local frontend commonly runs at:
 
-## Environment variables
-
-Only DEMO_GUIDE_PASSWORD is new. Existing configuration is retained:
-
-| Variable | Location | Purpose |
-| --- | --- | --- |
-| PORT | server | API port, local 5000; hosting provider supplies production value |
-| NODE_ENV | server | development/test/production |
-| MONGODB_URI | server | Replica-set/Atlas URI; keep credentials secret |
-| CLIENT_ORIGIN | server | Exact frontend origin, no trailing slash; local http://localhost:5173 |
-| JWT_SECRET | server | Random 32+ characters; never a placeholder |
-| JWT_EXPIRES_SECONDS | server | Session duration, default 3600; allowed 60–86400 |
-| COOKIE_SECURE | server | false only for localhost HTTP; true in HTTPS production |
-| ALLOW_DEMO_SEED | server | Explicit opt-in; false except while seeding a disposable development DB |
-| DEMO_ADMIN_NAME | server seed | Admin display name |
-| DEMO_ADMIN_EMAIL | server seed | Seed-only demo admin identity |
-| DEMO_ADMIN_PASSWORD | server seed | Strong admin password; never hardcoded |
-| DEMO_GUIDE_PASSWORD | server seed | NEW; shared demo guide password for six seed accounts |
-| TEST_MONGODB_URI | test shell | Existing optional test URI with guzoye and test in DB name |
-| CATALOG_TEST_MONGODB_URI | test shell | Existing optional read-only seeded discovery test DB |
-| VITE_API_URL | client build | Public API URL, local http://localhost:5000/api |
-| VITE_DATA_SOURCE | client build | api for real profiles/tours/bookings; mock is demonstration only |
-
-No secret belongs in a VITE-prefixed variable. .env remains excluded by existing .gitignore.
-
-## Demo accounts
-
-- guide1@guzoye.example through guide6@guzoye.example: password is YOUR DEMO_GUIDE_PASSWORD.
-  Each linked User has role guide, an approved Guide, and their existing seeded tours.
-- Admin: YOUR DEMO_ADMIN_EMAIL + DEMO_ADMIN_PASSWORD.
-- Traveler: register your own traveler account. The legacy sample reviewer has a random
-  password, not a published demo login.
-
-The environment example contains placeholders only. Never deploy shared demo passwords
-or publish the real .env. Public registration can never request admin role.
-
-## Exactly what seed resets
-
-On a disposable development DB, seed replaces eight fixture tours (including departure
-IDs, ownership, archived status, spots and pricing), six fixture guides, seven fixture
-users, fixture destinations/reviews and configured admin credentials. All bookings for
-the eight fixture tours are deleted. Guide fixtures become approved, active and loggable
-in using DEMO_GUIDE_PASSWORD. Prior fixture sessions and admin sessions are revoked.
-
-Unrelated registered users, their guide applications, guide-created tours/bookings and
-existing audit history are retained. Existing manual ownership assignments on fixture
-tours are reset. Dates are regenerated relative to the seed day. The seed is NOT a
-transactional production migration; failure can leave partial fixtures. Never point it
-at a real user database. Runtime production mode refuses demo seeding.
-
-## API summary
-
-Existing Phase 3 auth and Phase 4 bookings remain. New/extended endpoints:
-
-| Method | Endpoint | Access |
-| --- | --- | --- |
-| GET/PATCH | /api/guide/profile | guide, including pending/rejected |
-| GET | /api/guide/summary | approved guide |
-| GET/POST | /api/guide/tours | approved guide; own/create |
-| GET/PATCH | /api/guide/tours/:id | approved guide; owner |
-| PATCH | /api/guide/tours/:id/archive | approved guide; owner |
-| POST | /api/guide/tours/:id/departures | approved guide; owner |
-| DELETE | /api/guide/tours/:id/departures/:departureId | approved guide; owner |
-| GET | /api/admin/stats | admin |
-| GET | /api/admin/guides?status=pending/approved/rejected | admin |
-| PATCH | /api/admin/guides/:id/approve or /reject | admin; reject reason required |
-| GET | /api/admin/tours | admin |
-| PATCH | /api/admin/tours/:id/guide | admin; approved active guideId |
-| PATCH | /api/admin/tours/:id/archive | admin |
-| GET | /api/admin/users | admin; search/role/page/limit |
-| PATCH | /api/admin/users/:id/deactivate | admin; reason required |
-| GET | /api/admin/audit | admin |
-
-All new writes use existing auth/roles/CSRF plus write rate limits. Lists are paginated.
-See docs/GUIDE_ADMIN_API.md for payloads, validation and business rules.
-
-## Testing
-
-```powershell
-node scripts/verify-guide-admin.mjs
-npm test
-npm run build
+```text
+http://localhost:5173
 ```
 
-Run DB integration tests against a dedicated transaction-capable test URI:
+Check the server terminal as well as the browser console when testing features.
 
-```powershell
-$env:TEST_MONGODB_URI='mongodb://127.0.0.1:27017/guzoye_management_test?replicaSet=rs0'
-npm test
-Remove-Item Env:TEST_MONGODB_URI
-```
+---
 
-Each suite creates and drops only its uniquely generated test DB. Base DB name must
-contain guzoye and test. Without a URI, integration suites are skipped, not passed.
-Existing suites remain. A/C tests cover own/foreign tour edit, pending publish denial,
-active departure deletion guard, admin reassignment, archive, stats, reject reason,
-deactivation and traveler role denial. Review/wishlist tests are not written because
-those features remain missing.
+## Useful Commands
 
-Delivery: six pure new validation tests executed successfully; .js/.mjs syntax checked.
-Dependency installation, Vite/JSX build, Supertest, DB integration, browser/device and
-screen-reader checks were NOT executed in the delivery environment. Run them locally.
+Run these from the repository root:
 
-## What I would improve next
+| Command | Purpose |
+|---------|---------|
+| `npm install` | Install project dependencies |
+| `npm run dev` | Start the development environment |
+| `npm run build` | Build the frontend for production |
+| `npm test` | Run the configured server test suite |
 
-- Finish completed-booking reviews/ratings, persistent wishlist, soonest departure sort
-  and available-spots filter (Part B is not implemented by this delivery).
-- Finish route metadata and executed responsive/accessibility/E2E QA.
-- Real payments/refunds, notifications, pending booking expiry and cancellation policy.
-- Expand image content moderation and interactive cropping; local/Cloudinary file uploads now exist.
-- Email verification, password reset, MFA, secure production admin provisioning.
-- User reactivation and formal guide rejection/resubmission workflow.
-- Shared rate-limit store/proxy configuration for multiple API instances.
-- Immutable external audit retention, metrics, backups, dependency scanning and recovery drills.
+Database-dependent tests may require additional environment configuration. Review the test files and project documentation for the conditions under which integration tests run or are skipped.
 
-See docs/DEPLOYMENT.md, docs/DEMO_SCRIPT.md and docs/SECURITY_GUIDE_ADMIN.md. These docs
-are guidance, not proof of a deployed or fully completed production release.
+A successful frontend build does not replace runtime testing, API testing, or database integration testing.
 
+---
 
-## Setup checklist
+## Main Application Areas
 
-- [ ] Commit/back up code and development database.
-- [ ] Copy this overlay into the Phase 4 root, preserving unchanged files.
-- [ ] Run node scripts/verify-guide-admin.mjs and install only if needed.
-- [ ] Set DEMO_GUIDE_PASSWORD in server/.env; keep existing secrets.
-- [ ] Stop app, opt in to dev seed, seed, verify Booking indexes/topology, disable seed flag.
-- [ ] Start npm run dev using VITE_DATA_SOURCE=api.
-- [ ] Run npm test, opt-in integration suites, npm run build, and browser/manual checks.
+| Route | Area |
+|-------|------|
+| `/` | Public homepage |
+| `/tours` | Tour discovery |
+| `/guides` | Guide discovery |
+| `/login` | Sign in |
+| `/register` | Registration |
+| `/account` | Traveler workspace |
+| `/guide` | Guide workspace |
+| `/admin` | Admin workspace |
 
-## Manual traveler checks
+Protected areas require the appropriate account role. Available routes can vary while features are under development.
 
-1. Register/login as a traveler. Open a guide-created future tour, select guests/departure
-   and confirm a request. Verify server total and pending status in My Bookings.
-2. Guide confirms; refresh status. Cancel another request and verify availability returns.
-3. Tour archive hides it publicly and blocks new booking while history remains.
-4. Guide/admin management routes return 403 for traveler accounts.
-5. Do not demonstrate review/wishlist persistence: those features are not implemented.
+---
 
-## Manual guide checks
+## Security and Privacy
 
-1. Login as guide1@guzoye.example with YOUR DEMO_GUIDE_PASSWORD. Confirm the guide-specific
-   workspace, owned fixture tours, status counts and incoming requests.
-2. Save My Profile; verify live preview and public regions/languages/bio/photo.
-3. Create a tour with valid images, destination, itinerary/duration and future departure.
-4. Book it from a separate traveler profile; confirm request appears only for its owner.
-5. Confirm/decline via existing booking list; verify appropriate inventory changes.
-6. Try deleting its booked departure or editing core details while active: expect 409.
-7. Try editing another guide's tour by ID: expect 403.
-8. New pending guide can edit profile but cannot create tours; rejected status shows reason.
+Guzoye includes security controls intended to protect user accounts and platform operations:
 
-## Manual admin checks
+- Role-based access to protected workflows.
+- Ownership checks for user-specific operations.
+- CSRF validation for protected writes.
+- Server-side validation of submitted data.
+- Rate limits on selected endpoints.
+- Validation and processing of uploaded images.
+- Audit logging for selected administrative actions.
 
-1. Login with environment-configured demo admin. Review stats and chart labels; completed
-   booking revenue is an estimate, not payment revenue.
-2. Reject a pending application with a reason; verify reason on guide dashboard. Approve it
-   later to unlock tour creation. Both changes appear in the audit log.
-3. Reassign a tour to an approved guide. Old owner loses edit/booking authority; new owner
-   sees its existing requests. Unapproved/inactive target guide is rejected.
-4. Archive any tour. Verify public listing/detail and booking creation reject it.
-5. Search users and deactivate one without active work. Old session/login must stop working.
-   Active-work deactivation is blocked with explanation; admins cannot deactivate admins.
-6. Inspect audit records for approve/reject/reassign/archive/deactivate. Check existing
-   booking status filter and paginate users/tours/audit records.
+These controls require continued testing and review. The project should not be treated as production-ready solely because the development server starts or the build completes.
+
+Before deployment:
+
+- Use strong, unique secrets.
+- Configure HTTPS and secure cookies appropriately.
+- Restrict allowed origins.
+- Review upload storage and access policies.
+- Keep dependencies maintained.
+- Verify authorization, transactions, and error handling.
+- Confirm private profile information is not exposed.
+
+---
+
+## Development Status
+
+Guzoye is an evolving project.
+
+Current work focuses on:
+
+- Refining the traveler dashboard and public interface.
+- Completing traveler profile and settings workflows.
+- Improving wishlist and feedback integration.
+- Strengthening readable identifiers and canonical links.
+- Validating guide performance and ranking behavior.
+- Expanding automated and manual test coverage.
+- Improving accessibility and responsive behavior.
+
+Some screens, endpoints, and tests are still being integrated. Consult the current source code and the `docs/` directory for implementation details rather than assuming every planned feature is complete.
+
+---
+
+## Contributing
+
+Suggestions, bug reports, and thoughtful improvements are welcome.
+
+Before submitting a change:
+
+1. Keep changes focused and clearly described.
+2. Preserve role, ownership, and CSRF protections.
+3. Avoid adding dependencies unless necessary.
+4. Check imports, exported functions, and API route alignment.
+5. Run the build and relevant tests.
+6. Test affected pages in the browser.
+7. Document limitations and any required migrations.
+8. Keep credentials and private data out of commits.
+
+---
+
+## Vision
+
+To make exploring Ethiopia more personal, accessible, and connected to the people who know it best.
+
+### Guzoye — Your next great story starts with a local.

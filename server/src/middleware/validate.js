@@ -15,6 +15,21 @@ export function integer(value,name,{min=1,max=10000,defaultValue}={}){
   if(!Number.isSafeInteger(n) || n<min || n>max)throw new ApiError(400,`${name} must be an integer between ${min} and ${max}.`);
   return n;
 }
+const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+const codePattern = /^(?:TOUR|GUIDE|DEST)-\d{4}$/;
+
+export function validateTourIdentifier(req, res, next) {
+  const value = String(req.params.id || '');
+  const isObjectId = /^[a-f0-9]{24}$/i.test(value);
+  const isCode = codePattern.test(value);
+  const isSlug = slugPattern.test(value);
+
+  if (!isObjectId && !isCode && !isSlug) {
+    return next(new ApiError(400, 'Invalid resource identifier.'));
+  }
+
+  next();
+}
 export function pagination(query){return {page:integer(query.page,'page',{max:10000,defaultValue:1}),limit:integer(query.limit,'limit',{max:50,defaultValue:8})};}
 export function enumValue(value,allowed,name){if(value&&!allowed.includes(value))throw new ApiError(400,`Invalid ${name}.`);return value;}
 export function escapeRegex(value=''){return value.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');}

@@ -25,7 +25,7 @@ export default function BookingPanel({ tour, onRefresh }) {
   const total = Math.round(tour.price * 100) * guests / 100;
   function preview(event) {
     event.preventDefault(); setError('');
-    if (!user) { navigate('/login', { state: { from: `/tours/${tour._id}` } }); return; }
+    if (!user) { navigate('/login', { state: { from: `/tours/${tour.slug || tour._id}` } }); return; }
     const group = guideGroups.find(item => String(item.guide) === guideId);
     if (!selected || !group || group.spotsLeft < guests || selected.spotsLeft < guests || new Date(selected.date).getTime() <= Date.now()) { setError('Choose an available departure, guide, and traveler count.'); return; }
     setOpen(true);

@@ -1,0 +1,34 @@
+{
+  "installerSyntax": "passed node --check",
+  "installerBaseline": "passed",
+  "installerIdempotence": "passed",
+  "existingAccountFixture": "passed",
+  "relativeImports": [
+    {
+      "file": "client/src/pages/TravelerVisualDashboard.jsx",
+      "imports": [
+        "react-router-dom",
+        "lucide-react",
+        "../hooks/useAuth",
+        "../hooks/useResource",
+        "../services/api",
+        "../services/bookings",
+        "../services/media",
+        "../components/States",
+        "../components/TourCard"
+      ]
+    },
+    {
+      "file": "client/src/pages/TravelerVisualLayout.jsx",
+      "imports": [
+        "react",
+        "react-router-dom",
+        "lucide-react",
+        "../hooks/useAuth"
+      ]
+    }
+  ],
+  "build": "not run: installed project node_modules not available",
+  "runtime": "not run",
+  "dependenciesAdded": []
+}

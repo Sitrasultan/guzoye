@@ -1,15 +1,19 @@
 import { Router } from 'express';
 import { asyncHandler } from '../middleware/errors.js';
-import { validateId, validateQuery } from '../middleware/validate.js';
-import { listTours,getTour,listDestinations,getDestination,listGuides,getGuide,listReviews } from '../controllers/catalogController.js';
-const router=Router();
-router.use(validateQuery);
-router.get('/tours',asyncHandler(listTours));
-router.get('/tours/:id/reviews',validateId,asyncHandler(listReviews));
-router.get('/tours/:id',validateId,asyncHandler(getTour));
-router.get('/destinations',asyncHandler(listDestinations));
-router.get('/destinations/:id',validateId,asyncHandler(getDestination));
-router.get('/guides',asyncHandler(listGuides));
-router.get('/guides/:id',validateId,asyncHandler(getGuide));
-// All data writes are deliberately absent until authentication and roles exist.
+import { validateQuery, validateTourIdentifier } from '../middleware/validate.js';
+import * as controller from '../controllers/catalogController.js';
+
+const router = Router();
+
+// Public catalog endpoints. Validation runs before any database query.
+router.get('/tours', validateQuery, asyncHandler(controller.listTours));
+router.get('/tours/:id', validateTourIdentifier, asyncHandler(controller.getTour));
+router.get('/tours/:id/reviews', validateTourIdentifier, asyncHandler(controller.listReviews));
+
+router.get('/destinations', validateQuery, asyncHandler(controller.listDestinations));
+router.get('/destinations/:id', validateTourIdentifier, asyncHandler(controller.getDestination));
+
+router.get('/guides', validateQuery, asyncHandler(controller.listGuides));
+router.get('/guides/:id', validateTourIdentifier, asyncHandler(controller.getGuide));
+
 export default router;

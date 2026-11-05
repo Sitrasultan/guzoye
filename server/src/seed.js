@@ -1,6 +1,10 @@
 import { readFile } from 'node:fs/promises';
 import { randomBytes } from 'node:crypto';
 import mongoose from 'mongoose';
+import Tour from './models/Tour.js';
+import Guide from './models/Guide.js';
+import Destination from './models/Destination.js';
+import { nextCode } from './services/identifiers.js';
 import { connectDB } from './config/db.js';
 import { env, validateEnvironment } from './config/env.js';
 import { parseCredentials } from './middleware/authValidation.js';
@@ -63,3 +67,16 @@ await Tour.insertMany(catalog.tours.map((tour, index) => {
   console.log(`Seeded six approved guide logins with owned tours, future departures and demo admin. Removed ${removed.deletedCount} fixture-tour bookings. Passwords are never printed.`);
 } catch (error) { console.error('Seed failed:', error.message); process.exitCode = 1; }
 finally { await mongoose.disconnect(); }
+
+
+export async function ensureReadableIdentifiers() {
+  for (const [Model, kind, field] of [[Tour, 'tour', 'title'], [Guide, 'guide', 'location'], [Destination, 'destination', 'name']]) {
+    const rows = await Model.find({ $or: [{ slug: { $exists: false } }, { slug: '' }, { code: { $exists: false } }, { code: '' }] });
+    for (const row of rows) {
+      const code = await nextCode(kind);
+      row.code = code;
+      if (!row.slug) row.slug = String(row[field] || kind).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+      await row.save();
+    }
+  }
+}
