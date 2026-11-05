@@ -1,0 +1,619 @@
+===== client\src\App.jsx =====  
+import { useEffect } from 'react';
+import { Routes, Route, useLocation } from 'react-router-dom';
+import Navbar from './components/Navbar';
+import Footer from './components/Footer';
+import ProtectedRoute from './components/ProtectedRoute';
+import Home from './pages/Home';
+import Tours from './pages/Tours';
+import TourDetails from './pages/TourDetails';
+import Guides from './pages/Guides';
+import GuideProfile from './pages/GuideProfile';
+import Auth from './pages/Auth';
+import MyBookings from './pages/MyBookings';
+import Dashboard, { DashboardRedirect } from './pages/Dashboard';
+import AdminTourManager from './pages/AdminTourManager';
+import GuideMyProfile from './pages/GuideMyProfile';
+import AdminLayout from './pages/admin/AdminLayout';
+import AdminOverview from './pages/admin/AdminOverview';
+import { EmptyState } from './components/States';
+import Button from './components/Button';
+function ScrollReset() { const { pathname } = useLocation(); useEffect(() => { window.scrollTo(0, 0); }, [pathname]); return null; }
+function PublicShell({ children }) { return <><Navbar /><ScrollReset /><div id="content" tabIndex={-1}>{children}</div><Footer /></>; }
+function AdminPlaceholder({ title }) { return <div className="admin-page"><EmptyState title={title} message="This admin section is delivered in Guzoye Admin B." /></div>; }
+export default function App() {
+  return <Routes>
+    <Route path="/admin" element={<ProtectedRoute roles={['admin']} />}>
+      <Route element={<AdminLayout />}>
+        <Route index element={<AdminOverview />} />
+        <Route path="tours" element={<AdminTourManager />} />
+        <Route path="destinations" element={<AdminPlaceholder title="Destinations" />} />
+        <Route path="guides" element={<AdminPlaceholder title="Guides" />} />
+        <Route path="guide-requests" element={<AdminPlaceholder title="Guide Requests" />} />
+        <Route path="bookings" element={<AdminPlaceholder title="Bookings" />} />
+        <Route path="reviews" element={<AdminPlaceholder title="Reviews" />} />
+        <Route path="users" element={<AdminPlaceholder title="Users" />} />
+        <Route path="activity" element={<AdminPlaceholder title="Activity and Reports" />} />
+        <Route path="audit" element={<AdminPlaceholder title="Audit Log" />} />
+      </Route>
+    </Route>
+    <Route path="*" element={<PublicShell>
+      <Routes>
+        <Route path="/" element={<Home />} /><Route path="/tours" element={<Tours />} /><Route path="/tours/:id" element={<TourDetails />} /><Route path="/guides" element={<Guides />} /><Route path="/guides/:id" element={<GuideProfile />} />
+        <Route path="/login" element={<Auth key="login" />} /><Route path="/register" element={<Auth key="register" register />} />
+        <Route element={<ProtectedRoute />}><Route path="/dashboard" element={<DashboardRedirect />} /><Route path="/bookings" element={<MyBookings />} /></Route>
+        <Route element={<ProtectedRoute roles={['traveler']} />}><Route path="/dashboard/traveler" element={<Dashboard />} /></Route>
+        <Route element={<ProtectedRoute roles={['guide']} />}><Route path="/dashboard/guide" element={<Dashboard />} /><Route path="/dashboard/guide/profile" element={<GuideMyProfile />} /><Route path="*" element={<EmptyState title="Tour studio retired" message="Guzoye admins now create tours and assign guides." />} /></Route>
+        <Route element={<ProtectedRoute roles={['admin']} />}><Route path="/dashboard/admin" element={<AdminTourManager />} /><Route path="/dashboard/admin/tours" element={<AdminTourManager />} /></Route>
+        <Route path="*" element={<main className="container page"><EmptyState title="A little off the beaten path" message="This page doesn’t exist. Let’s find your way back."><Button to="/">Back to discovery</Button></EmptyState></main>} />
+      </Routes>
+    </PublicShell>} />
+  </Routes>;
+}
+ 
+===== client\src\pages\AdminTourManager.jsx =====  
+import { useState } from 'react';
+import { adminManagement, adminTourApi } from '../services/management';
+import { useResource } from '../hooks/useResource';
+import { Skeletons, ErrorState, EmptyState } from '../components/States';
+import Button from '../components/Button';
+import '../management.css';
+export default function AdminTourManager() {
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [form, setForm] = useState({ title: '', destination: '', description: '', price: 100, duration: 3, difficulty: 'Moderate', capacity: 8, images: 'https://images.unsplash.com/photo-1533676802871-eca1ae998cd5?w=1200', guideIds: '' });
+  const tours = useResource(() => adminTourApi.list({ page: 1, limit: 20 }), 'admin-tour-manager');
+  const guides = useResource(() => adminManagement.guides({ status: 'approved', page: 1, limit: 50 }), 'admin-approved-guides');
+  async function submit(event) {
+    event.preventDefault(); setBusy(true); setError(''); setMessage('');
+    try {
+      const response = await adminTourApi.create({
+        ...form,
+        price: Number(form.price), duration: Number(form.duration), capacity: Number(form.capacity),
+        images: form.images.split('\n').map(value => value.trim()).filter(Boolean),
+        itinerary: Array.from({ length: Number(form.duration) }, (_, index) => ({ day: index + 1, title: `Day ${index + 1}`, description: `Guided experiences and transfer time for day ${index + 1}.` })),
+        assignedGuides: form.guideIds.split(',').map(value => value.trim()).filter(Boolean),
+        departures: [{ date: new Date(Date.now() + 21 * 86400000).toISOString(), capacity: Number(form.capacity) }]
+      });
+      setMessage(response.message); tours.retry();
+    } catch (problem) { setError(problem.message); } finally { setBusy(false); }
+  }
+  async function assign(tour) {
+    const guideIds = window.prompt('Enter approved guide IDs, separated by commas:', (tour.assignedGuides || []).map(item => item._id).join(','));
+    if (!guideIds) return;
+    setBusy(true); setError(''); setMessage('');
+    try { const response = await adminTourApi.assignGuides(tour._id, guideIds.split(',').map(value => value.trim()).filter(Boolean)); setMessage(response.message); tours.retry(); }
+    catch (problem) { setError(problem.message); } finally { setBusy(false); }
+  }
+  return <main className="container page">
+    <header className="guide-workspace-header"><span className="eyebrow">GUZOYE ADMIN</span><h1>Tours & guide assignments</h1><p>Create platform-owned tours, assign approved guides, and manage departure groups.</p></header>
+    {message && <p className="success-message" role="status">{message}</p>}
+    {error && <p className="form-error" role="alert">{error}</p>}
+    <section className="management-section"><h2>Create a tour</h2>
+      <form onSubmit={submit} className="account-panel">
+        <label>Title<input required value={form.title} onChange={event => setForm({ ...form, title: event.target.value })} /></label>
+        <label>Destination ID<input required value={form.destination} onChange={event => setForm({ ...form, destination: event.target.value })} /></label>
+        <label>Approved guide IDs (comma separated)<input required value={form.guideIds} onChange={event => setForm({ ...form, guideIds: event.target.value })} /></label>
+        <label>Price (USD)<input type="number" min="1" required value={form.price} onChange={event => setForm({ ...form, price: event.target.value })} /></label>
+        <label>Duration (days)<input type="number" min="1" max="365" required value={form.duration} onChange={event => setForm({ ...form, duration: event.target.value })} /></label>
+        <label>Capacity<input type="number" min="1" required value={form.capacity} onChange={event => setForm({ ...form, capacity: event.target.value })} /></label>
+        <label>Difficulty<select value={form.difficulty} onChange={event => setForm({ ...form, difficulty: event.target.value })}>{['Easy', 'Moderate', 'Challenging'].map(value => <option key={value}>{value}</option>)}</select></label>
+        <label>Description<textarea required rows="4" value={form.description} onChange={event => setForm({ ...form, description: event.target.value })} /></label>
+        <label>Image URLs (one per line)<textarea rows="2" value={form.images} onChange={event => setForm({ ...form, images: event.target.value })} /></label>
+        <Button type="submit" disabled={busy}>{busy ? 'Creating…' : 'Create tour'}</Button>
+      </form>
+    </section>
+    <section className="management-section"><h2>Existing tours</h2>
+      {tours.loading ? <Skeletons count={3} /> : tours.error ? <ErrorState message={tours.error} retry={tours.retry} /> : !tours.data.data.length ? <EmptyState title="No tours yet" message="Create the first Guzoye tour above." /> : (
+        <div className="booking-table-wrap"><table className="booking-table"><thead><tr><th>Tour</th><th>Destination</th><th>Assigned guides</th><th>Action</th></tr></thead><tbody>
+          {tours.data.data.map(tour => <tr key={tour._id}><td>{tour.title}</td><td>{tour.destination?.name}</td><td>{(tour.assignedGuides || []).map(guide => guide.user?.name).join(', ') || 'None'}</td><td><Button variant="secondary" disabled={busy} onClick={() => assign(tour)}>Assign guides</Button></td></tr>)}
+        </tbody></table></div>
+      )}
+      {guides.data?.data?.length ? <p className="muted">Approved guides: {guides.data.data.map(guide => `${guide.user?.name} (${guide._id})`).join(' · ')}</p> : null}
+    </section>
+    <Button variant="secondary" to="/dashboard/admin">Back to admin dashboard</Button>
+  </main>;
+}
+ 
+===== client\src\services\management.js =====  
+import axios from 'axios';
+const http = axios.create({ baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api', withCredentials: true, timeout: 20000 });
+http.interceptors.response.use(response => response, error => {
+  const problem = new Error(error.response?.data?.message || 'Cannot reach Guzoye. Refresh the page and check the result before retrying a write.');
+  problem.status = error.response?.status; problem.fields = error.response?.data?.errors || {};
+  if (problem.status === 401) window.dispatchEvent(new Event('guzoye:session-expired'));
+  return Promise.reject(problem);
+});
+async function write(method, url, body = {}) {
+  const token = (await http.get('/auth/csrf')).data.data.csrfToken;
+  return (await http.request({ method, url, data: body, headers: { 'X-CSRF-Token': token } })).data;
+}
+const get = async (url, params) => (await http.get(url, { params })).data;
+export const guideManagement = {
+  profile: () => get('/guide/profile'), saveProfile: body => write('patch', '/guide/profile', body), summary: () => get('/guide/summary'),
+  tours: params => get('/guide/tours', params), tour: id => get(`/guide/tours/${id}`),
+  create: body => write('post', '/guide/tours', body), save: (id, body) => write('patch', `/guide/tours/${id}`, body),
+  archive: id => write('patch', `/guide/tours/${id}/archive`),
+  addDeparture: (id, body) => write('post', `/guide/tours/${id}/departures`, body),
+  removeDeparture: (id, departureId) => write('delete', `/guide/tours/${id}/departures/${departureId}`),
+  destinations: () => get('/destinations', { limit: 50 })
+};
+export const adminManagement = {
+  stats: () => get('/admin/stats'), guides: params => get('/admin/guides', params),
+  approve: id => write('patch', `/admin/guides/${id}/approve`), reject: (id, reason) => write('patch', `/admin/guides/${id}/reject`, { reason }),
+  tours: params => get('/admin/tours', params), archive: id => write('patch', `/admin/tours/${id}/archive`), reassign: (id, guideId) => write('patch', `/admin/tours/${id}/guide`, { guideId }),
+  users: params => get('/admin/users', params), deactivate: (id, reason) => write('patch', `/admin/users/${id}/deactivate`, { reason }), audit: params => get('/admin/audit', params)
+};
+
+export const adminTourApi = {
+  list: async (params = {}) => (await http.get('/admin/tours', { params })).data,
+  create: async body => (await mutate('post', '/admin/tours', body)).data,
+  assignGuides: async (id, guideIds) => (await mutate('patch', `/admin/tours/${id}/assigned-guides`, { guideIds })).data,
+  addDeparture: async (id, body) => (await mutate('post', `/admin/tours/${id}/departures`, body)).data
+};
+ 
+===== client\src\services\adminApi.js =====  
+import axios from 'axios';
+const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const http = axios.create({ baseURL, withCredentials: true, timeout: 20000 });
+http.interceptors.response.use(response => response, error => {
+  const problem = new Error(error.response?.data?.message || 'Request failed. Please try again.');
+  problem.status = error.response?.status; problem.fields = error.response?.data?.errors || {};
+  if (problem.status === 401) window.dispatchEvent(new Event('guzoye:session-expired'));
+  return Promise.reject(problem);
+});
+let queue = Promise.resolve();
+async function mutate(method, url, data = {}) {
+  const job = queue.catch(() => {}).then(async () => {
+    const token = (await http.get('/auth/csrf')).data.data.csrfToken;
+    return (await http.request({ method, url, data, headers: { 'X-CSRF-Token': token } })).data;
+  });
+  queue = job; return job;
+}
+export const adminApi = {
+  overview: async params => (await http.get('/admin/overview', { params })).data.data,
+  activity: async params => (await http.get('/admin/activity', { params })).data.data,
+  guideRequests: async params => (await http.get('/admin/guide-requests', { params })).data,
+  decideGuideRequest: (id, action, payload) => mutate('patch', `/admin/guide-requests/${id}/${action}`, payload),
+  uploadTourImage: (tourId, file, onProgress) => {
+    const job = queue.catch(() => {}).then(async () => {
+      const token = (await http.get('/auth/csrf')).data.data.csrfToken;
+      const data = new FormData(); data.append('photo', file);
+      return (await http.post(`/admin/tours/${tourId}/images`, data, { headers: { 'X-CSRF-Token': token }, onUploadProgress: event => { if (event.total) onProgress?.(Math.round(event.loaded / event.total * 100)); } })).data;
+    });
+    queue = job; return job;
+  },
+  removeTourImage: id => mutate('delete', `/admin/media/${id}`),
+  exportUrl: resource => `${baseURL}/admin/exports/${resource}.csv`
+};
+ 
+===== client\src\services\media.js =====  
+import axios from 'axios';
+const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const http = axios.create({ baseURL, withCredentials: true, timeout: 60000 });
+http.interceptors.response.use(response => response, error => {
+  const problem = new Error(error.response?.data?.message || 'Image request failed. Check your connection and refresh before retrying.');
+  problem.status = error.response?.status;
+  if (problem.status === 401) window.dispatchEvent(new Event('guzoye:session-expired'));
+  return Promise.reject(problem);
+});
+// Serialize this service's mutations so rotating the double-submit cookie does not
+// race another image request in the same tab. Existing auth flow is unchanged.
+let queue = Promise.resolve();
+function mutate(method, url, data, onUploadProgress) {
+  const job = queue.catch(() => {}).then(async () => {
+    const token = (await http.get('/auth/csrf')).data.data.csrfToken;
+    return (await http.request({ method, url, data, headers: { 'X-CSRF-Token': token }, onUploadProgress })).data;
+  });
+  queue = job; return job;
+}
+export const mediaApi = {
+  upload: (file, kind, onProgress) => {
+    const data = new FormData(); data.append('photo', file);
+    return mutate('post', kind === 'avatar' ? '/guide/profile/photo' : '/guide/media', data, event => { if (event.total) onProgress?.(Math.round(event.loaded / event.total * 100)); });
+  },
+  removePhoto: () => mutate('delete', '/guide/profile/photo', {}),
+  removeDraft: id => mutate('delete', `/guide/media/${id}`, {}),
+  library: async () => (await http.get('/guide/media')).data
+};
+export function mediaUrl(value) {
+  if (!value) return '';
+  return value.startsWith('/uploads/') ? `${new URL(baseURL, window.location.origin).origin}${value}` : value;
+}
+ 
+===== client\src\components\ImageUploader.jsx =====  
+import { useEffect, useId, useRef, useState } from 'react';
+import { mediaApi, mediaUrl } from '../services/media';
+import Avatar from './Avatar';
+import Button from './Button';
+import '../uploads.css';
+export default function ImageUploader({ kind = 'tour', value = [], onChange, name = 'Profile', disabled = false, onBusyChange, onPhotoChanged }) {
+  const busyRef = useRef(false);
+  const input = useRef(null), id = useId();
+  const [busy, setBusy] = useState(false), [progress, setProgress] = useState(0), [error, setError] = useState(''), [dragging, setDragging] = useState(false);
+  const [drafts, setDrafts] = useState([]);
+  const [libraryError, setLibraryError] = useState('');
+  function loadLibrary() { if (kind === 'tour') mediaApi.library().then(result => { setDrafts(result.data); setLibraryError(''); }).catch(problem => setLibraryError(problem.message)); }
+  useEffect(() => { loadLibrary(); }, [kind]);
+  const max = kind === 'avatar' ? 1 : 6;
+  function working(flag) { busyRef.current = flag; setBusy(flag); onBusyChange?.(flag); }
+  async function receive(files) {
+    if (disabled || busyRef.current) return;
+    const selected = Array.from(files || []);
+    if (!selected.length) return;
+    const remaining = kind === 'avatar' ? 1 : Math.max(0, max - value.length);
+    if (selected.length > remaining) { setError(`Choose at most ${remaining} more image${remaining === 1 ? '' : 's'}.`); return; }
+    if (selected.some(file => file.size > 2 * 1024 * 1024)) { setError('Each image must be 2 MB or smaller.'); return; }
+    working(true); setError(''); let next = [...value];
+    try {
+      for (const file of selected) {
+        setProgress(0);
+        const result = await mediaApi.upload(file, kind, setProgress);
+        next = kind === 'avatar' ? [result.data] : [...next, result.data];
+        onChange(next);
+      }
+      await onPhotoChanged?.();
+    } catch (problem) { setError(problem.message); }
+    finally { working(false); loadLibrary(); if (input.current) input.current.value = ''; }
+  }
+  async function remove(index) {
+    if (disabled || busyRef.current) return;
+    working(true); setError('');
+    try {
+      if (kind === 'avatar') { await mediaApi.removePhoto(); onChange([]); await onPhotoChanged?.(); }
+      else {
+        const item = value[index];
+        // Attached/legacy assets are removed only after a successful tour save.
+        if (item._id && !item.attached) await mediaApi.removeDraft(item._id);
+        onChange(value.filter((_, i) => i !== index));
+      }
+    } catch (problem) { setError(problem.message); } finally { working(false); loadLibrary(); }
+  }
+  function move(index, offset) { const next = [...value]; [next[index], next[index + offset]] = [next[index + offset], next[index]]; onChange(next); }
+  return <section className="image-uploader" aria-label={kind === 'avatar' ? 'Profile photo upload' : 'Tour image upload'}>
+    <label htmlFor={id}>{kind === 'avatar' ? 'Profile photo' : 'Tour images — first image is the cover'}</label>
+    {kind === 'avatar' ? <Avatar src={value[0]?.url} name={name} size={140} /> : <ol className="upload-gallery">{value.map((item, index) => <li key={item._id || item.url}><img src={mediaUrl(item.url)} alt={`Tour image ${index + 1}${index === 0 ? ', cover' : ''}`} /><div className="upload-image-actions"><span>{index === 0 ? 'Cover' : `Image ${index + 1}`}</span><button type="button" disabled={disabled || busy || index === 0} onClick={() => move(index, -1)} aria-label={`Move image ${index + 1} earlier`}>←</button><button type="button" disabled={disabled || busy || index === value.length - 1} onClick={() => move(index, 1)} aria-label={`Move image ${index + 1} later`}>→</button><button type="button" disabled={disabled || busy} onClick={() => remove(index)}>Remove</button></div></li>)}</ol>}
+    <div className={`upload-dropzone ${dragging ? 'dragging' : ''}`} onDragOver={event => { event.preventDefault(); setDragging(true); }} onDragLeave={() => setDragging(false)} onDrop={event => { event.preventDefault(); setDragging(false); receive(event.dataTransfer.files); }}>
+      <input ref={input} id={id} type="file" accept="image/jpeg,image/png,image/webp" multiple={kind === 'tour'} disabled={disabled || busy || (kind === 'tour' && value.length >= max)} onChange={event => receive(event.target.files)} />
+      <p>Choose from your device or drop images here.<br />JPEG, PNG or WebP · 2 MB each{kind === 'tour' ? ' · maximum 6' : ' · centered square crop'}.</p>
+    </div>
+    {kind === 'avatar' && value.length > 0 && <Button type="button" variant="secondary" disabled={disabled || busy} onClick={() => remove(0)}>Remove photo</Button>}
+    {busy && <div role="status"><progress max="100" value={progress} aria-label="Upload progress" /><p>{progress < 100 ? `Uploading ${progress}%` : 'Processing and saving image…'}</p></div>}
+    {error && <p className="form-error" role="alert">{error}</p>}
+    {kind === 'tour' && drafts.filter(item => !value.some(selected => selected.url === item.url)).length > 0 && <details><summary>Reuse an unsaved upload</summary><ul>{drafts.filter(item => !value.some(selected => selected.url === item.url)).map(item => <li key={item._id}><img src={mediaUrl(item.url)} alt="Unsaved tour upload" style={{ width: 90, height: 65 }} /><Button type="button" variant="secondary" disabled={busy || disabled || value.length >= max} onClick={() => onChange([...value, item])}>Use image</Button><Button type="button" variant="secondary" disabled={busy || disabled} onClick={async () => { working(true); try { await mediaApi.removeDraft(item._id); loadLibrary(); } catch (problem) { setError(problem.message); } finally { working(false); } }}>Delete unused image</Button></li>)}</ul></details>}
+    {libraryError && kind === 'tour' && <p role="alert">{libraryError} <button type="button" onClick={loadLibrary}>Retry upload library</button></p>}
+    {kind === 'tour' && <small>Removal and reordering of saved tour images take effect when you save the tour. Unsaved uploads remain in your upload library for up to 24 hours.</small>}
+  </section>;
+}
+ 
+===== client\src\components\admin\AdminUI.jsx =====  
+import { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
+
+export function Badge({ tone = 'neutral', children }) {
+  return <span className={`admin-badge admin-badge-${tone}`}>{children}</span>;
+}
+export function Skeleton({ height = 18, width = '100%' }) {
+  return <div className="admin-skeleton" style={{ height, width }} aria-hidden="true" />;
+}
+export function EmptyState({ title, message, action }) {
+  return <div className="admin-empty"><h3>{title}</h3><p>{message}</p>{action}</div>;
+}
+export function StatCard({ label, value, change, to, loading, hint }) {
+  const content = (<>
+    <span className="admin-stat-label">{label}</span>
+    <strong className="admin-stat-value">{loading ? <Skeleton width="70%" /> : value}</strong>
+    {hint && <small>{hint}</small>}
+    {change !== undefined && !loading && <span className={`admin-change ${change >= 0 ? 'up' : 'down'}`}>{change >= 0 ? '+' : ''}{change}% vs previous period</span>}
+  </>);
+  return to ? <Link className="admin-stat-card" to={to}>{content}</Link> : <div className="admin-stat-card">{content}</div>;
+}
+export function Drawer({ open, onClose, title, children }) {
+  const ref = useRef(null);
+  useEffect(() => {
+    if (!open) return;
+    const previous = document.activeElement;
+    ref.current?.focus();
+    const onKey = event => { if (event.key === 'Escape') onClose(); };
+    document.addEventListener('keydown', onKey);
+    return () => { document.removeEventListener('keydown', onKey); previous?.focus?.(); };
+  }, [open, onClose]);
+  if (!open) return null;
+  return <div className="admin-overlay" onClick={onClose}><aside className="admin-drawer" role="dialog" aria-modal="true" aria-label={title} onClick={event => event.stopPropagation()} ref={ref} tabIndex={-1}><header><h2>{title}</h2><button type="button" onClick={onClose} aria-label="Close panel">×</button></header><div>{children}</div></aside></div>;
+}
+export function Toast({ message, tone = 'success', onDone }) {
+  useEffect(() => { if (!message) return; const timer = setTimeout(onDone, 4000); return () => clearTimeout(timer); }, [message, onDone]);
+  if (!message) return null;
+  return <div className={`admin-toast admin-toast-${tone}`} role="status">{message}</div>;
+}
+export function DataTable({ columns, rows, loading, empty, renderRow }) {
+  if (loading) return <div className="admin-table-skeleton">{[0, 1, 2, 3].map(i => <Skeleton key={i} height={38} />)}</div>;
+  if (!rows.length) return empty || <EmptyState title="No records" message="Nothing matches this view yet." />;
+  return <div className="admin-table-wrap"><table className="admin-table"><thead><tr>{columns.map(column => <th key={column.key} scope="col">{column.label}</th>)}</tr></thead><tbody>{rows.map(row => renderRow(row))}</tbody></table></div>;
+}
+export function Sparkline({ values }) {
+  if (!values?.length) return null;
+  const max = Math.max(...values, 1), points = values.map((value, index) => `${(index / Math.max(values.length - 1, 1)) * 100},${30 - (value / max) * 28}`).join(' ');
+  return <svg className="admin-sparkline" viewBox="0 0 100 30" aria-hidden="true"><polyline points={points} fill="none" stroke="currentColor" strokeWidth="2" /></svg>;
+}
+ 
+===== server\src\routes\adminTourRoutes.js =====  
+import { Router } from 'express';
+import { requireAuth, requireRoles } from '../middleware/auth.js';
+import { requireCsrf } from '../middleware/csrf.js';
+import { validateId, validateQuery } from '../middleware/validate.js';
+import { asyncHandler } from '../middleware/errors.js';
+import * as controller from '../controllers/adminTourController.js';
+const router = Router();
+router.use(requireAuth, requireRoles('admin'));
+router.use(validateQuery);
+router.get('/tours', asyncHandler(controller.listTours));
+router.post('/tours', requireCsrf, asyncHandler(controller.createTour));
+router.patch('/tours/:id', requireCsrf, validateId, asyncHandler(controller.updateTour));
+router.patch('/tours/:id/assigned-guides', requireCsrf, validateId, asyncHandler(controller.assignGuides));
+router.post('/tours/:id/departures', requireCsrf, validateId, asyncHandler(controller.addDeparture));
+router.delete('/tours/:id/departures/:departureId', requireCsrf, validateId, asyncHandler(controller.removeDeparture));
+export default router;
+ 
+===== server\src\controllers\adminTourController.js =====  
+import mongoose from 'mongoose';
+import Tour from '../models/Tour.js';
+import Guide from '../models/Guide.js';
+import Destination from '../models/Destination.js';
+import Booking from '../models/Booking.js';
+import User from '../models/User.js';
+import { ApiError } from '../middleware/errors.js';
+import { transaction, activeBookings, audit, pageResult } from '../services/management.js';
+import { pagination } from '../middleware/validate.js';
+
+function requireObject(body) {
+  if (!body || typeof body !== 'object' || Array.isArray(body)) throw new ApiError(400, 'A JSON object is required.');
+  return body;
+}
+function id(value, field) {
+  if (typeof value !== 'string' || !/^[a-f0-9]{24}$/i.test(value)) throw new ApiError(400, `${field} must be a valid resource identifier.`);
+  return value;
+}
+function guideIds(value) {
+  if (!Array.isArray(value) || value.length < 1 || value.length > 10) throw new ApiError(400, 'Assign between 1 and 10 guides.');
+  const ids = [...new Set(value.map(item => id(item, 'guideIds')))];
+  return ids.map(value => new mongoose.Types.ObjectId(value));
+}
+function evenGroups(guideList, capacity, spotsLeft) {
+  const count = guideList.length;
+  const base = Math.floor(capacity / count);
+  const remainder = capacity % count;
+  const baseSpots = Math.floor(spotsLeft / count);
+  const spotsRemainder = spotsLeft % count;
+  return guideList.map((guide, index) => ({
+    guide,
+    capacity: base + (index < remainder ? 1 : 0),
+    spotsLeft: baseSpots + (index < spotsRemainder ? 1 : 0)
+  }));
+}
+function tourInput(body, partial = false) {
+  const input = requireObject(body);
+  const required = partial ? [] : ['title', 'destination', 'description', 'price', 'duration', 'difficulty', 'capacity', 'itinerary', 'images'];
+  for (const field of required) if (input[field] === undefined) throw new ApiError(400, `${field} is required.`);
+  const clean = {};
+  if (input.title !== undefined) {
+    if (typeof input.title !== 'string' || input.title.trim().length < 3 || input.title.length > 180) throw new ApiError(400, 'Title must be 3-180 characters.');
+    clean.title = input.title.trim();
+  }
+  if (input.destination !== undefined) clean.destination = id(input.destination, 'destination');
+  if (input.description !== undefined) {
+    if (typeof input.description !== 'string' || input.description.length < 20 || input.description.length > 10000) throw new ApiError(400, 'Description must be 20-10000 characters.');
+    clean.description = input.description;
+  }
+  for (const field of ['price', 'duration', 'capacity']) {
+    if (input[field] !== undefined) {
+      const value = Number(input[field]);
+      const maximum = field === 'price' ? 1000000 : 365;
+      if (!Number.isSafeInteger(value) || value < 1 || value > maximum) throw new ApiError(400, `${field} is invalid.`);
+      clean[field] = value;
+    }
+  }
+  if (input.difficulty !== undefined) {
+    if (!['Easy', 'Moderate', 'Challenging'].includes(input.difficulty)) throw new ApiError(400, 'Difficulty is invalid.');
+    clean.difficulty = input.difficulty;
+  }
+  if (input.itinerary !== undefined) {
+    if (!Array.isArray(input.itinerary) || input.itinerary.length < 1) throw new ApiError(400, 'Itinerary is required.');
+    clean.itinerary = input.itinerary.map((day, index) => {
+      if (!day || typeof day !== 'object') throw new ApiError(400, 'Itinerary days are invalid.');
+      const dayNumber = Number(day.day ?? index + 1);
+      if (!Number.isInteger(dayNumber) || dayNumber < 1) throw new ApiError(400, 'Itinerary day numbers are invalid.');
+      if (typeof day.title !== 'string' || !day.title.trim() || typeof day.description !== 'string' || !day.description.trim()) throw new ApiError(400, 'Each itinerary day needs a title and description.');
+      return { day: dayNumber, title: day.title.trim(), description: day.description.trim() };
+    });
+  }
+  if (input.images !== undefined) {
+    if (!Array.isArray(input.images) || input.images.length < 1 || input.images.length > 12) throw new ApiError(400, 'Provide 1-12 image URLs.');
+    clean.images = input.images;
+  }
+  if (input.included !== undefined) clean.included = Array.isArray(input.included) ? input.included.filter(item => typeof item === 'string' && item.trim()) : [];
+  if (input.excluded !== undefined) clean.excluded = Array.isArray(input.excluded) ? input.excluded.filter(item => typeof item === 'string' && item.trim()) : [];
+  return clean;
+}
+export async function listTours(req, res) {
+  const { page, limit } = pagination(req.query);
+  const filter = {};
+  if (req.query.archived === 'true') filter.archived = true;
+  if (req.query.archived === 'false') filter.archived = { $ne: true };
+  const [data, total] = await Promise.all([
+    Tour.find(filter).sort({ createdAt: -1 }).skip((page - 1) * limit).limit(limit)
+      .populate('destination').populate({ path: 'assignedGuides', populate: { path: 'user', select: 'name email' } }).lean(),
+    Tour.countDocuments(filter)
+  ]);
+  pageResult(res, data, total, page, limit);
+}
+export async function createTour(req, res) {
+  const input = tourInput(req.body);
+  const assignedGuides = guideIds(req.body.assignedGuides);
+  const data = await transaction(async session => {
+    if (!await User.exists({ _id: req.user._id, role: 'admin', isActive: { $ne: false } }).session(session)) throw new ApiError(403, 'An active admin is required.');
+    if (!await Destination.exists({ _id: input.destination }).session(session)) throw new ApiError(400, 'Choose an existing destination.');
+    const guides = await Guide.find({ _id: { $in: assignedGuides }, status: 'approved', isActive: { $ne: false } }).session(session);
+    if (guides.length !== assignedGuides.length) throw new ApiError(400, 'All assigned guides must be approved and active.');
+    const departures = (req.body.departures || []).map(item => {
+      const date = new Date(item.date);
+      const capacity = Number(item.capacity);
+      if (!(date instanceof Date) || Number.isNaN(+date) || +date <= Date.now()) throw new ApiError(400, 'Departures must be in the future.');
+      if (!Number.isSafeInteger(capacity) || capacity < 1 || capacity > 1000) throw new ApiError(400, 'Departure capacity is invalid.');
+      return { date, capacity, spotsLeft: capacity, guideGroups: evenGroups(assignedGuides, capacity, capacity) };
+    });
+    const [created] = await Tour.create([{ ...input, owner: req.user._id, assignedGuides, guide: assignedGuides[0], departures, archived: false, rating: 0, reviewCount: 0 }], { session });
+    await audit(req.user._id, 'tour_create', 'Tour', created._id, { title: created.title }, session);
+    return created;
+  });
+  res.status(201).json({ data, message: 'Tour created and guides assigned.' });
+}
+export async function updateTour(req, res) {
+  const input = tourInput(req.body, true);
+  const data = await transaction(async session => {
+    const tour = await Tour.findOneAndUpdate({ _id: req.params.id }, { $inc: { mutationVersion: 1 } }, { session, new: true });
+    if (!tour) throw new ApiError(404, 'Tour not found.');
+    if (input.destination && !await Destination.exists({ _id: input.destination }).session(session)) throw new ApiError(400, 'Choose an existing destination.');
+    if (input.itinerary && (input.itinerary.length !== (input.duration || tour.duration))) throw new ApiError(400, 'The itinerary must have one entry per duration day.');
+    tour.set(input); await tour.save({ session });
+    await audit(req.user._id, 'tour_update', 'Tour', tour._id, { fields: Object.keys(input) }, session);
+    return tour;
+  });
+  res.json({ data, message: 'Tour updated.' });
+}
+export async function assignGuides(req, res) {
+  const assignedGuides = guideIds(requireObject(req.body).guideIds);
+  const data = await transaction(async session => {
+    const tour = await Tour.findOneAndUpdate({ _id: req.params.id }, { $inc: { mutationVersion: 1 } }, { session, new: true });
+    if (!tour) throw new ApiError(404, 'Tour not found.');
+    if (await activeBookings(tour._id, session)) throw new ApiError(409, 'Finish or cancel active bookings before changing guide assignments.');
+    const guides = await Guide.find({ _id: { $in: assignedGuides }, status: 'approved', isActive: { $ne: false } }).session(session);
+    if (guides.length !== assignedGuides.length) throw new ApiError(400, 'All assigned guides must be approved and active.');
+    tour.assignedGuides = assignedGuides;
+    tour.guide = assignedGuides[0];
+    for (const departure of tour.departures) {
+      if (+departure.date <= Date.now()) continue;
+      departure.guideGroups = evenGroups(assignedGuides, departure.capacity, departure.spotsLeft);
+    }
+    await tour.save({ session });
+    await audit(req.user._id, 'tour_guides_assign', 'Tour', tour._id, { assignedGuides }, session);
+    return tour;
+  });
+  res.json({ data, message: 'Guide assignments updated.' });
+}
+export async function addDeparture(req, res) {
+  const input = requireObject(req.body);
+  const date = new Date(input.date);
+  const capacity = Number(input.capacity);
+  if (!(date instanceof Date) || Number.isNaN(+date) || +date <= Date.now()) throw new ApiError(400, 'Departure must be in the future.');
+  if (!Number.isSafeInteger(capacity) || capacity < 1 || capacity > 1000) throw new ApiError(400, 'Capacity must be a whole number from 1 to 1000.');
+  const data = await transaction(async session => {
+    const tour = await Tour.findOneAndUpdate({ _id: req.params.id }, { $inc: { mutationVersion: 1 } }, { session, new: true });
+    if (!tour) throw new ApiError(404, 'Tour not found.');
+    if (tour.archived) throw new ApiError(409, 'Cannot add departures to an archived tour.');
+    if (!tour.assignedGuides?.length) throw new ApiError(409, 'Assign at least one guide first.');
+    if (tour.departures.some(item => +item.date === +date)) throw new ApiError(409, 'A departure already exists at that date and time.');
+    tour.departures.push({ date, capacity, spotsLeft: capacity, guideGroups: evenGroups(tour.assignedGuides, capacity, capacity) });
+    await tour.save({ session });
+    await audit(req.user._id, 'departure_create', 'Tour', tour._id, { date }, session);
+    return tour;
+  });
+  res.status(201).json({ data, message: 'Departure added with one group per assigned guide.' });
+}
+export async function removeDeparture(req, res) {
+  const data = await transaction(async session => {
+    const tour = await Tour.findOneAndUpdate({ _id: req.params.id }, { $inc: { mutationVersion: 1 } }, { session, new: true });
+    if (!tour) throw new ApiError(404, 'Tour not found.');
+    const departure = tour.departures.id(req.params.departureId);
+    if (!departure) throw new ApiError(404, 'Departure not found.');
+    if (+departure.date <= Date.now()) throw new ApiError(409, 'Only future departures can be removed.');
+    if (await activeBookings(tour._id, session, departure._id)) throw new ApiError(409, 'A departure with active bookings cannot be removed.');
+    departure.deleteOne(); await tour.save({ session });
+    await audit(req.user._id, 'departure_remove', 'Tour', tour._id, { departureId: departure._id }, session);
+    return tour;
+  });
+  res.json({ data, message: 'Departure removed.' });
+}
+ 
+===== server\src\routes\adminMediaRoutes.js =====  
+import { Router } from 'express';
+import rateLimit from 'express-rate-limit';
+import { requireAuth, requireRoles } from '../middleware/auth.js';
+import { requireCsrf, } from '../middleware/csrf.js';
+import { imageUpload, allowMultipartCsrf, uploadSlot } from '../middleware/imageUpload.js';
+import { validateId } from '../middleware/validate.js';
+import { asyncHandler } from '../middleware/errors.js';
+import * as controller from '../controllers/adminMediaController.js';
+const router = Router();
+const limit = rateLimit({ windowMs: 15 * 60 * 1000, limit: 40, skip: req => req.method === 'GET', message: { message: 'Too many image changes. Try again later.' } });
+router.use(requireAuth, requireRoles('admin'));
+router.post('/tours/:id/images', limit, allowMultipartCsrf, requireCsrf, uploadSlot, imageUpload, validateId, asyncHandler(controller.uploadTourImage));
+router.delete('/media/:mediaId', limit, requireCsrf, validateId, asyncHandler(controller.removeTourImage));
+export default router;
+ 
+===== server\src\models\Tour.js =====  
+import mongoose from 'mongoose';
+const integer = { validator: Number.isInteger, message: 'Value must be an integer.' };
+const guideGroupSchema = new mongoose.Schema({
+  guide: { type: mongoose.Schema.Types.ObjectId, ref: 'Guide', required: true },
+  capacity: { type: Number, required: true, min: 1, max: 1000, validate: integer },
+  spotsLeft: { type: Number, required: true, min: 0, max: 1000, validate: integer }
+});
+const departureSchema = new mongoose.Schema({
+  date: { type: Date, required: true },
+  capacity: { type: Number, required: true, min: 1, max: 1000, validate: integer },
+  spotsLeft: { type: Number, required: true, min: 0, max: 1000, validate: integer },
+  guideGroups: { type: [guideGroupSchema], default: [] }
+});
+departureSchema.pre('validate', function (next) {
+  if (this.spotsLeft > this.capacity) this.invalidate('spotsLeft', 'Spots left cannot exceed capacity.');
+  const groups = this.guideGroups || [];
+  const ids = groups.map(group => String(group.guide));
+  if (new Set(ids).size !== ids.length) this.invalidate('guideGroups', 'A guide can appear only once per departure.');
+  if (groups.length && groups.reduce((total, group) => total + group.capacity, 0) !== this.capacity) {
+    this.invalidate('guideGroups', 'Guide-group capacities must add up to the departure capacity.');
+  }
+  if (groups.length && groups.reduce((total, group) => total + group.spotsLeft, 0) !== this.spotsLeft) {
+    this.invalidate('guideGroups', 'Guide-group spots left must add up to the departure spots left.');
+  }
+  for (const group of groups) if (group.spotsLeft > group.capacity) this.invalidate('guideGroups', 'A guide group cannot have more spots left than capacity.');
+  next();
+});
+const daySchema = new mongoose.Schema({ day: { type: Number, required: true, min: 1, validate: integer }, title: { type: String, required: true }, description: { type: String, required: true } }, { _id: false });
+const schema = new mongoose.Schema({
+  title: { type: String, required: true, trim: true, maxlength: 180 },
+  destination: { type: mongoose.Schema.Types.ObjectId, ref: 'Destination', required: true },
+  description: { type: String, required: true, maxlength: 10000 },
+  price: { type: Number, required: true, min: 0, max: 1000000 },
+  duration: { type: Number, required: true, min: 1, max: 365, validate: integer },
+  difficulty: { type: String, enum: ['Easy', 'Moderate', 'Challenging'], required: true },
+  capacity: { type: Number, required: true, min: 1, max: 1000, validate: integer },
+  departures: { type: [departureSchema], default: [] },
+  itinerary: { type: [daySchema], validate: [v => v.length > 0, 'An itinerary is required.'] },
+  images: { type: [String], validate: [v => v.length > 0, 'At least one image is required.'] },
+  owner: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, index: true },
+  assignedGuides: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Guide', required: true }],
+  // Deprecated compatibility field retained for the 1a migration and rollback.
+  guide: { type: mongoose.Schema.Types.ObjectId, ref: 'Guide', default: null },
+  included: [String], excluded: [String], status: { type: String, enum: ['draft', 'published', 'archived'], default: 'draft', index: true },
+  archived: { type: Boolean, default: false, index: true }, archivedAt: Date,
+  mutationVersion: { type: Number, default: 0, select: false },
+  rating: { type: Number, min: 0, max: 5, default: 0 }, reviewCount: { type: Number, min: 0, default: 0 }, featured: { type: Boolean, default: false }
+}, { timestamps: true });
+schema.index({ destination: 1, price: 1 });
+schema.index({ assignedGuides: 1 });
+schema.index({ owner: 1 });
+schema.set('toJSON', { transform(_doc, value) { delete value.mutationVersion; return value; } });
+export default mongoose.model('Tour', schema);
+ 
+===== server\src\models\Destination.js =====  
+import mongoose from 'mongoose';
+const schema = new mongoose.Schema({
+  name:{type:String,required:true,trim:true,unique:true},
+  region:{type:String,required:true,trim:true},
+  description:{type:String,required:true},
+  image:{type:String,required:true}
+},{timestamps:true});
+export default mongoose.model('Destination',schema);
+ 

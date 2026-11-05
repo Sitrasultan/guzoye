@@ -41,7 +41,8 @@ const schema = new mongoose.Schema({
   assignedGuides: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Guide', required: true }],
   // Deprecated compatibility field retained for the 1a migration and rollback.
   guide: { type: mongoose.Schema.Types.ObjectId, ref: 'Guide', default: null },
-  included: [String], excluded: [String], archived: { type: Boolean, default: false, index: true }, archivedAt: Date,
+  included: [String], excluded: [String], status: { type: String, enum: ['draft', 'published', 'archived'], default: 'draft', index: true },
+  archived: { type: Boolean, default: false, index: true }, archivedAt: Date,
   mutationVersion: { type: Number, default: 0, select: false },
   rating: { type: Number, min: 0, max: 5, default: 0 }, reviewCount: { type: Number, min: 0, default: 0 }, featured: { type: Boolean, default: false }
 }, { timestamps: true });

@@ -1,0 +1,10 @@
+import { Router } from 'express';
+import { requireAuth, requireRoles } from '../middleware/auth.js';
+import { asyncHandler } from '../middleware/errors.js';
+import * as controller from '../controllers/adminExportController.js';
+const router = Router();
+router.use(requireAuth, requireRoles('admin'));
+router.get('/exports/bookings.csv', asyncHandler(controller.bookingsCsv));
+router.get('/exports/guides.csv', asyncHandler(controller.guidesCsv));
+router.get('/exports/tours.csv', asyncHandler(controller.toursCsv));
+export default router;

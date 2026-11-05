@@ -1,0 +1,14 @@
+import { Router } from 'express';
+import rateLimit from 'express-rate-limit';
+import { requireAuth, requireRoles } from '../middleware/auth.js';
+import { requireCsrf, } from '../middleware/csrf.js';
+import { imageUpload, allowMultipartCsrf, uploadSlot } from '../middleware/imageUpload.js';
+import { validateId } from '../middleware/validate.js';
+import { asyncHandler } from '../middleware/errors.js';
+import * as controller from '../controllers/adminMediaController.js';
+const router = Router();
+const limit = rateLimit({ windowMs: 15 * 60 * 1000, limit: 40, skip: req => req.method === 'GET', message: { message: 'Too many image changes. Try again later.' } });
+router.use(requireAuth, requireRoles('admin'));
+router.post('/tours/:id/images', limit, allowMultipartCsrf, requireCsrf, uploadSlot, imageUpload, validateId, asyncHandler(controller.uploadTourImage));
+router.delete('/media/:mediaId', limit, requireCsrf, validateId, asyncHandler(controller.removeTourImage));
+export default router;

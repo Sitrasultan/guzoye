@@ -1,0 +1,17 @@
+import { Router } from 'express';
+import rateLimit from 'express-rate-limit';
+import { requireAuth, requireRoles } from '../middleware/auth.js';
+import { requireCsrf } from '../middleware/csrf.js';
+import { validateId } from '../middleware/validate.js';
+import { asyncHandler } from '../middleware/errors.js';
+import * as controller from '../controllers/guideRequestController.js';
+const router = Router();
+const writeLimit = rateLimit({ windowMs: 15 * 60 * 1000, limit: 30, message: { message: 'Too many guide-request changes. Try again later.' } });
+router.use(requireAuth);
+router.get('/guide/requests', requireRoles('guide'), asyncHandler(controller.myRequests));
+router.post('/guide/requests', writeLimit, requireRoles('guide'), requireCsrf, asyncHandler(controller.createRequest));
+router.delete('/guide/requests/:id', writeLimit, requireRoles('guide'), requireCsrf, validateId, asyncHandler(controller.cancelRequest));
+router.get('/admin/guide-requests', requireRoles('admin'), asyncHandler(controller.listRequests));
+router.patch('/admin/guide-requests/:id/approve', writeLimit, requireRoles('admin'), requireCsrf, validateId, asyncHandler(controller.decideRequest));
+router.patch('/admin/guide-requests/:id/reject', writeLimit, requireRoles('admin'), requireCsrf, validateId, asyncHandler(controller.decideRequest));
+export default router;
