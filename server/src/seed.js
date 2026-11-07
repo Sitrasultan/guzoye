@@ -1,19 +1,34 @@
+// import { readFile } from 'node:fs/promises';
+// import { randomBytes } from 'node:crypto';
+// import mongoose from 'mongoose';
+// import Tour from './models/Tour.js';
+// import Guide from './models/Guide.js';
+// import Destination from './models/Destination.js';
+// import { nextCode } from './services/identifiers.js';
+// import { connectDB } from './config/db.js';
+// import { env, validateEnvironment } from './config/env.js';
+// import { parseCredentials } from './middleware/authValidation.js';
+// import User from './models/User.js';
+// import Guide from './models/Guide.js';
+// import Destination from './models/Destination.js';
+// import Tour from './models/Tour.js';
+// import Review from './models/Review.js';
+// import Booking from './models/Booking.js';
 import { readFile } from 'node:fs/promises';
 import { randomBytes } from 'node:crypto';
 import mongoose from 'mongoose';
+
 import Tour from './models/Tour.js';
 import Guide from './models/Guide.js';
 import Destination from './models/Destination.js';
+import User from './models/User.js';
+import Review from './models/Review.js';
+import Booking from './models/Booking.js';
+
 import { nextCode } from './services/identifiers.js';
 import { connectDB } from './config/db.js';
 import { env, validateEnvironment } from './config/env.js';
 import { parseCredentials } from './middleware/authValidation.js';
-import User from './models/User.js';
-import Guide from './models/Guide.js';
-import Destination from './models/Destination.js';
-import Tour from './models/Tour.js';
-import Review from './models/Review.js';
-import Booking from './models/Booking.js';
 const adminId = '0000000000000000000003e7';
 if (env.mode === 'production' || !env.allowSeed) { console.error('Use a disposable development DB and ALLOW_DEMO_SEED=true.'); process.exit(1); }
 try {
