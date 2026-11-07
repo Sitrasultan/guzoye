@@ -1,19 +1,4 @@
-// import { readFile } from 'node:fs/promises';
-// import { randomBytes } from 'node:crypto';
-// import mongoose from 'mongoose';
-// import Tour from './models/Tour.js';
-// import Guide from './models/Guide.js';
-// import Destination from './models/Destination.js';
-// import { nextCode } from './services/identifiers.js';
-// import { connectDB } from './config/db.js';
-// import { env, validateEnvironment } from './config/env.js';
-// import { parseCredentials } from './middleware/authValidation.js';
-// import User from './models/User.js';
-// import Guide from './models/Guide.js';
-// import Destination from './models/Destination.js';
-// import Tour from './models/Tour.js';
-// import Review from './models/Review.js';
-// import Booking from './models/Booking.js';
+
 import { readFile } from 'node:fs/promises';
 import { randomBytes } from 'node:crypto';
 import mongoose from 'mongoose';
@@ -38,13 +23,65 @@ try {
   parseCredentials({ name: 'Demo Guide', email: 'guide@guzoye.example', password: guidePassword, role: 'guide' }, true);
   if (env.adminPassword.startsWith('replace-') || guidePassword.startsWith('replace-')) throw new Error('Set real demo passwords before seeding.');
   const catalog = JSON.parse(await readFile(new URL('../../shared/catalog.json', import.meta.url), 'utf8'));
+    // Validate catalog relationships before changing database records.
+  if (!Array.isArray(catalog.tours) || !Array.isArray(catalog.guides) ||
+      !Array.isArray(catalog.destinations) || !Array.isArray(catalog.reviews)) {
+    throw new Error('Catalog must contain tours, guides, destinations, and reviews arrays.');
+  }
+
+  catalog.tours.forEach((tour, index) => {
+    if (!tour.guide?._id) {
+      throw new Error(
+        `Catalog error: Tour #${index + 1} (${tour.title || 'Untitled'}) is missing guide._id`
+      );
+    }
+
+    if (!tour.destination?._id) {
+      throw new Error(
+        `Catalog error: Tour #${index + 1} (${tour.title || 'Untitled'}) is missing destination._id`
+      );
+    }
+
+    if (!catalog.guides.some(guide => String(guide._id) === String(tour.guide._id))) {
+      throw new Error(
+        `Catalog error: Tour "${tour.title}" references a guide that does not exist in catalog.guides`
+      );
+    }
+
+    if (!catalog.destinations.some(destination =>
+      String(destination._id) === String(tour.destination._id)
+    )) {
+      throw new Error(
+        `Catalog error: Tour "${tour.title}" references a destination that does not exist in catalog.destinations`
+      );
+    }
+  });
+
+  catalog.guides.forEach((guide, index) => {
+    if (!guide.user?._id) {
+      throw new Error(`Catalog error: Guide #${index + 1} is missing user._id`);
+    }
+  });
+
+  catalog.reviews.forEach((review, index) => {
+    if (!review.user?._id) {
+      throw new Error(`Catalog error: Review #${index + 1} is missing user._id`);
+    }
+  });
+
+  console.log('Catalog validation passed.');
   await connectDB();
   const hello = await mongoose.connection.db.admin().command({ hello: 1 });
   if (!hello.setName && hello.msg !== 'isdbgrid') throw new Error('Replica set or Atlas required.');
   if (await User.exists({ email: adminInput.email, _id: { $ne: adminId } })) throw new Error('Demo admin email belongs to another user.');
   const tourIds = catalog.tours.map(t => t._id);
   const removed = await Booking.deleteMany({ tour: { $in: tourIds } });
-  await Review.deleteMany({ _id: { $in: catalog.reviews.map(r => r._id) } });
+  await Review.deleteMany({
+  $or: catalog.reviews.map(review => ({
+    user: review.user._id,
+    tour: review.tour
+  }))
+});
   await Tour.deleteMany({ _id: { $in: tourIds } });
   await Guide.deleteMany({ _id: { $in: catalog.guides.map(g => g._id) } });
   await Destination.deleteMany({ _id: { $in: catalog.destinations.map(d => d._id) } });
@@ -80,7 +117,10 @@ await Tour.insertMany(catalog.tours.map((tour, index) => {
   else { admin.name = adminInput.name; admin.email = adminInput.email; admin.password = adminInput.password; admin.role = 'admin'; admin.isActive = true; admin.tokenVersion = (admin.tokenVersion || 0) + 1; }
   await admin.save(); await Booking.createIndexes();
   console.log(`Seeded six approved guide logins with owned tours, future departures and demo admin. Removed ${removed.deletedCount} fixture-tour bookings. Passwords are never printed.`);
-} catch (error) { console.error('Seed failed:', error.message); process.exitCode = 1; }
+} catch (error) {
+  console.error('Seed failed:', error.stack);
+  process.exitCode = 1;
+}
 finally { await mongoose.disconnect(); }
 
 

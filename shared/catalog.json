@@ -4,57 +4,65 @@
       "_id": "00000000000000000000012d",
       "name": "Lalibela",
       "region": "Amhara",
-      "description": "Explore Lalibela\u2019s remarkable rock-hewn churches, quiet passageways, and living traditions with a local storyteller.",
-      "image": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1400&q=85"
+      "description": "Explore Lalibela’s remarkable rock-hewn churches, quiet passageways, and living traditions with a local storyteller.",
+      "image": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1400&q=85",
+      "code": "DEST-0001"
     },
     {
       "_id": "00000000000000000000012e",
       "name": "Simien Mountains",
       "region": "Amhara",
       "description": "Walk dramatic highland escarpments and discover the landscapes and wildlife of the Simien Mountains.",
-      "image": "https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1400&q=85"
+      "image": "https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1400&q=85",
+      "code": "DEST-0002"
     },
     {
       "_id": "00000000000000000000012f",
       "name": "Danakil Depression",
       "region": "Afar",
       "description": "An expedition through extraordinary salt landscapes and volcanic terrain, with an experienced local team.",
-      "image": "https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=1400&q=85"
+      "image": "https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=1400&q=85",
+      "code": "DEST-0003"
     },
     {
       "_id": "000000000000000000000130",
       "name": "Harar",
       "region": "Harari",
       "description": "Follow the narrow lanes of Harar, discovering markets, architecture, coffee, and stories of the old city.",
-      "image": "https://images.unsplash.com/photo-1516483638261-f4dbaf036963?auto=format&fit=crop&w=1400&q=85"
+      "image": "https://images.unsplash.com/photo-1516483638261-f4dbaf036963?auto=format&fit=crop&w=1400&q=85",
+      "code": "DEST-0004"
     },
     {
       "_id": "000000000000000000000131",
       "name": "Omo Valley",
       "region": "South Ethiopia",
       "description": "A community-minded journey shaped around local hosts, respectful conversation, and living cultural traditions.",
-      "image": "https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?auto=format&fit=crop&w=1400&q=85"
+      "image": "https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?auto=format&fit=crop&w=1400&q=85",
+      "code": "DEST-0005"
     },
     {
       "_id": "000000000000000000000132",
       "name": "Bale Mountains",
       "region": "Oromia",
       "description": "Explore high-altitude plateaus, forest trails, and the distinctive landscapes of the Bale Mountains.",
-      "image": "https://images.unsplash.com/photo-1472396961693-142e6e269027?auto=format&fit=crop&w=1400&q=85"
+      "image": "https://images.unsplash.com/photo-1472396961693-142e6e269027?auto=format&fit=crop&w=1400&q=85",
+      "code": "DEST-0006"
     },
     {
       "_id": "000000000000000000000133",
       "name": "Gondar",
       "region": "Amhara",
       "description": "Discover the royal enclosure, historic architecture, and stories that shaped Gondar.",
-      "image": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1400&q=85"
+      "image": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1400&q=85",
+      "code": "DEST-0007"
     },
     {
       "_id": "000000000000000000000134",
       "name": "Addis Ababa",
       "region": "Addis Ababa",
-      "description": "Get to know Ethiopia\u2019s capital through its museums, neighborhoods, coffee culture, and local food.",
-      "image": "https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?auto=format&fit=crop&w=1400&q=85"
+      "description": "Get to know Ethiopia’s capital through its museums, neighborhoods, coffee culture, and local food.",
+      "image": "https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?auto=format&fit=crop&w=1400&q=85",
+      "code": "DEST-0008"
     }
   ],
   "guides": [
@@ -65,7 +73,7 @@
         "name": "Solomon Bekele",
         "role": "guide"
       },
-      "bio": "I\u2019m Solomon, a local storyteller who loves sharing Ethiopia through thoughtful journeys, good conversation, and a fresh cup of coffee. My tours balance well-known landmarks with space to slow down and connect.",
+      "bio": "I’m Solomon, a local storyteller who loves sharing Ethiopia through thoughtful journeys, good conversation, and a fresh cup of coffee. My tours balance well-known landmarks with space to slow down and connect.",
       "languages": [
         "English",
         "Amharic"
@@ -78,7 +86,8 @@
       "reviewCount": 42,
       "yearsExperience": 5,
       "location": "Lalibela",
-      "image": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=1400&q=85"
+      "image": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=1400&q=85",
+      "code": "GUIDE-0001"
     },
     {
       "_id": "000000000000000000000066",
@@ -87,7 +96,7 @@
         "name": "Hana Tesfaye",
         "role": "guide"
       },
-      "bio": "I\u2019m Hana, a local storyteller who loves sharing Ethiopia through thoughtful journeys, good conversation, and a fresh cup of coffee. My tours balance well-known landmarks with space to slow down and connect.",
+      "bio": "I’m Hana, a local storyteller who loves sharing Ethiopia through thoughtful journeys, good conversation, and a fresh cup of coffee. My tours balance well-known landmarks with space to slow down and connect.",
       "languages": [
         "English",
         "Amharic",
@@ -101,7 +110,8 @@
       "reviewCount": 55,
       "yearsExperience": 6,
       "location": "Simien Mountains",
-      "image": "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=1400&q=85"
+      "image": "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=1400&q=85",
+      "code": "GUIDE-0002"
     },
     {
       "_id": "000000000000000000000067",
@@ -110,7 +120,7 @@
         "name": "Dawit Alemu",
         "role": "guide"
       },
-      "bio": "I\u2019m Dawit, a local storyteller who loves sharing Ethiopia through thoughtful journeys, good conversation, and a fresh cup of coffee. My tours balance well-known landmarks with space to slow down and connect.",
+      "bio": "I’m Dawit, a local storyteller who loves sharing Ethiopia through thoughtful journeys, good conversation, and a fresh cup of coffee. My tours balance well-known landmarks with space to slow down and connect.",
       "languages": [
         "English",
         "Afar",
@@ -124,7 +134,8 @@
       "reviewCount": 68,
       "yearsExperience": 7,
       "location": "Danakil Depression",
-      "image": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=1400&q=85"
+      "image": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=1400&q=85",
+      "code": "GUIDE-0003"
     },
     {
       "_id": "000000000000000000000068",
@@ -133,7 +144,7 @@
         "name": "Sara Mohammed",
         "role": "guide"
       },
-      "bio": "I\u2019m Sara, a local storyteller who loves sharing Ethiopia through thoughtful journeys, good conversation, and a fresh cup of coffee. My tours balance well-known landmarks with space to slow down and connect.",
+      "bio": "I’m Sara, a local storyteller who loves sharing Ethiopia through thoughtful journeys, good conversation, and a fresh cup of coffee. My tours balance well-known landmarks with space to slow down and connect.",
       "languages": [
         "English",
         "Harari",
@@ -147,7 +158,8 @@
       "reviewCount": 81,
       "yearsExperience": 8,
       "location": "Harar",
-      "image": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=1400&q=85"
+      "image": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=1400&q=85",
+      "code": "GUIDE-0004"
     },
     {
       "_id": "000000000000000000000069",
@@ -156,7 +168,7 @@
         "name": "Mekdes Tadesse",
         "role": "guide"
       },
-      "bio": "I\u2019m Mekdes, a local storyteller who loves sharing Ethiopia through thoughtful journeys, good conversation, and a fresh cup of coffee. My tours balance well-known landmarks with space to slow down and connect.",
+      "bio": "I’m Mekdes, a local storyteller who loves sharing Ethiopia through thoughtful journeys, good conversation, and a fresh cup of coffee. My tours balance well-known landmarks with space to slow down and connect.",
       "languages": [
         "English",
         "Oromo",
@@ -170,7 +182,8 @@
       "reviewCount": 94,
       "yearsExperience": 9,
       "location": "Bale Mountains",
-      "image": "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=crop&w=1400&q=85"
+      "image": "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=crop&w=1400&q=85",
+      "code": "GUIDE-0005"
     },
     {
       "_id": "00000000000000000000006a",
@@ -179,7 +192,7 @@
         "name": "Yonas Girma",
         "role": "guide"
       },
-      "bio": "I\u2019m Yonas, a local storyteller who loves sharing Ethiopia through thoughtful journeys, good conversation, and a fresh cup of coffee. My tours balance well-known landmarks with space to slow down and connect.",
+      "bio": "I’m Yonas, a local storyteller who loves sharing Ethiopia through thoughtful journeys, good conversation, and a fresh cup of coffee. My tours balance well-known landmarks with space to slow down and connect.",
       "languages": [
         "English",
         "German",
@@ -193,21 +206,23 @@
       "reviewCount": 107,
       "yearsExperience": 10,
       "location": "Gondar",
-      "image": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=1400&q=85"
+      "image": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=1400&q=85",
+      "code": "GUIDE-0006"
     }
   ],
   "tours": [
     {
       "_id": "000000000000000000000191",
+      "code": "TOUR-0001",
       "title": "Lalibela Rock-Hewn Churches",
       "destination": {
         "_id": "00000000000000000000012d",
         "name": "Lalibela",
         "region": "Amhara",
-        "description": "Explore Lalibela\u2019s remarkable rock-hewn churches, quiet passageways, and living traditions with a local storyteller.",
+        "description": "Explore Lalibela’s remarkable rock-hewn churches, quiet passageways, and living traditions with a local storyteller.",
         "image": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1400&q=85"
       },
-      "description": "Explore Lalibela\u2019s remarkable rock-hewn churches, quiet passageways, and living traditions with a local storyteller.",
+      "description": "Explore Lalibela’s remarkable rock-hewn churches, quiet passageways, and living traditions with a local storyteller.",
       "price": 240,
       "duration": 2,
       "difficulty": "Easy",
@@ -236,7 +251,7 @@
           "name": "Solomon Bekele",
           "role": "guide"
         },
-        "bio": "I\u2019m Solomon, a local storyteller who loves sharing Ethiopia through thoughtful journeys, good conversation, and a fresh cup of coffee. My tours balance well-known landmarks with space to slow down and connect.",
+        "bio": "I’m Solomon, a local storyteller who loves sharing Ethiopia through thoughtful journeys, good conversation, and a fresh cup of coffee. My tours balance well-known landmarks with space to slow down and connect.",
         "languages": [
           "English",
           "Amharic"
@@ -267,6 +282,7 @@
     },
     {
       "_id": "000000000000000000000192",
+      "code": "TOUR-0002",
       "title": "Simien Mountains Trek",
       "destination": {
         "_id": "00000000000000000000012e",
@@ -314,7 +330,7 @@
           "name": "Hana Tesfaye",
           "role": "guide"
         },
-        "bio": "I\u2019m Hana, a local storyteller who loves sharing Ethiopia through thoughtful journeys, good conversation, and a fresh cup of coffee. My tours balance well-known landmarks with space to slow down and connect.",
+        "bio": "I’m Hana, a local storyteller who loves sharing Ethiopia through thoughtful journeys, good conversation, and a fresh cup of coffee. My tours balance well-known landmarks with space to slow down and connect.",
         "languages": [
           "English",
           "Amharic",
@@ -346,6 +362,7 @@
     },
     {
       "_id": "000000000000000000000193",
+      "code": "TOUR-0003",
       "title": "Danakil Depression Expedition",
       "destination": {
         "_id": "00000000000000000000012f",
@@ -388,7 +405,7 @@
           "name": "Dawit Alemu",
           "role": "guide"
         },
-        "bio": "I\u2019m Dawit, a local storyteller who loves sharing Ethiopia through thoughtful journeys, good conversation, and a fresh cup of coffee. My tours balance well-known landmarks with space to slow down and connect.",
+        "bio": "I’m Dawit, a local storyteller who loves sharing Ethiopia through thoughtful journeys, good conversation, and a fresh cup of coffee. My tours balance well-known landmarks with space to slow down and connect.",
         "languages": [
           "English",
           "Afar",
@@ -420,6 +437,7 @@
     },
     {
       "_id": "000000000000000000000194",
+      "code": "TOUR-0004",
       "title": "Harar Old City Walk",
       "destination": {
         "_id": "000000000000000000000130",
@@ -457,7 +475,7 @@
           "name": "Sara Mohammed",
           "role": "guide"
         },
-        "bio": "I\u2019m Sara, a local storyteller who loves sharing Ethiopia through thoughtful journeys, good conversation, and a fresh cup of coffee. My tours balance well-known landmarks with space to slow down and connect.",
+        "bio": "I’m Sara, a local storyteller who loves sharing Ethiopia through thoughtful journeys, good conversation, and a fresh cup of coffee. My tours balance well-known landmarks with space to slow down and connect.",
         "languages": [
           "English",
           "Harari",
@@ -489,6 +507,7 @@
     },
     {
       "_id": "000000000000000000000195",
+      "code": "TOUR-0005",
       "title": "Omo Valley Cultural Journey",
       "destination": {
         "_id": "000000000000000000000131",
@@ -541,7 +560,7 @@
           "name": "Mekdes Tadesse",
           "role": "guide"
         },
-        "bio": "I\u2019m Mekdes, a local storyteller who loves sharing Ethiopia through thoughtful journeys, good conversation, and a fresh cup of coffee. My tours balance well-known landmarks with space to slow down and connect.",
+        "bio": "I’m Mekdes, a local storyteller who loves sharing Ethiopia through thoughtful journeys, good conversation, and a fresh cup of coffee. My tours balance well-known landmarks with space to slow down and connect.",
         "languages": [
           "English",
           "Oromo",
@@ -573,6 +592,7 @@
     },
     {
       "_id": "000000000000000000000196",
+      "code": "TOUR-0006",
       "title": "Bale Mountains Escape",
       "destination": {
         "_id": "000000000000000000000132",
@@ -615,7 +635,7 @@
           "name": "Mekdes Tadesse",
           "role": "guide"
         },
-        "bio": "I\u2019m Mekdes, a local storyteller who loves sharing Ethiopia through thoughtful journeys, good conversation, and a fresh cup of coffee. My tours balance well-known landmarks with space to slow down and connect.",
+        "bio": "I’m Mekdes, a local storyteller who loves sharing Ethiopia through thoughtful journeys, good conversation, and a fresh cup of coffee. My tours balance well-known landmarks with space to slow down and connect.",
         "languages": [
           "English",
           "Oromo",
@@ -647,6 +667,7 @@
     },
     {
       "_id": "000000000000000000000197",
+      "code": "TOUR-0007",
       "title": "Gondar Royal Castles",
       "destination": {
         "_id": "000000000000000000000133",
@@ -684,7 +705,7 @@
           "name": "Yonas Girma",
           "role": "guide"
         },
-        "bio": "I\u2019m Yonas, a local storyteller who loves sharing Ethiopia through thoughtful journeys, good conversation, and a fresh cup of coffee. My tours balance well-known landmarks with space to slow down and connect.",
+        "bio": "I’m Yonas, a local storyteller who loves sharing Ethiopia through thoughtful journeys, good conversation, and a fresh cup of coffee. My tours balance well-known landmarks with space to slow down and connect.",
         "languages": [
           "English",
           "German",
@@ -716,15 +737,16 @@
     },
     {
       "_id": "000000000000000000000198",
+      "code": "TOUR-0008",
       "title": "Addis Ababa City Tour",
       "destination": {
         "_id": "000000000000000000000134",
         "name": "Addis Ababa",
         "region": "Addis Ababa",
-        "description": "Get to know Ethiopia\u2019s capital through its museums, neighborhoods, coffee culture, and local food.",
+        "description": "Get to know Ethiopia’s capital through its museums, neighborhoods, coffee culture, and local food.",
         "image": "https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?auto=format&fit=crop&w=1400&q=85"
       },
-      "description": "Get to know Ethiopia\u2019s capital through its museums, neighborhoods, coffee culture, and local food.",
+      "description": "Get to know Ethiopia’s capital through its museums, neighborhoods, coffee culture, and local food.",
       "price": 85,
       "duration": 1,
       "difficulty": "Easy",
@@ -748,7 +770,7 @@
           "name": "Solomon Bekele",
           "role": "guide"
         },
-        "bio": "I\u2019m Solomon, a local storyteller who loves sharing Ethiopia through thoughtful journeys, good conversation, and a fresh cup of coffee. My tours balance well-known landmarks with space to slow down and connect.",
+        "bio": "I’m Solomon, a local storyteller who loves sharing Ethiopia through thoughtful journeys, good conversation, and a fresh cup of coffee. My tours balance well-known landmarks with space to slow down and connect.",
         "languages": [
           "English",
           "Amharic"
@@ -803,7 +825,7 @@
     },
     {
       "_id": "0000000000000000000001f7",
-      "tour": "000000000000000000000193",
+      "tour": "000000000000000000000197",
       "user": {
         "_id": "0000000000000000000000fa",
         "name": "Alex Morgan"
@@ -814,7 +836,7 @@
     },
     {
       "_id": "0000000000000000000001f8",
-      "tour": "000000000000000000000194",
+      "tour": "000000000000000000000193",
       "user": {
         "_id": "0000000000000000000000fa",
         "name": "Alex Morgan"
@@ -825,7 +847,7 @@
     },
     {
       "_id": "0000000000000000000001f9",
-      "tour": "000000000000000000000195",
+      "tour": "000000000000000000000194",
       "user": {
         "_id": "0000000000000000000000fa",
         "name": "Alex Morgan"
@@ -846,8 +868,8 @@
       "createdAt": "2026-01-12T12:00:00.000Z"
     },
     {
-      "_id": "0000000000000000000001fb",
-      "tour": "000000000000000000000197",
+      "_id": "691234567890abcdef123456",
+      "tour": "000000000000000000000195",
       "user": {
         "_id": "0000000000000000000000fa",
         "name": "Alex Morgan"
