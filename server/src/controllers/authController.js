@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt';
 import User from '../models/User.js';
 import Guide from '../models/Guide.js';
+import { normalizeSlug, uniqueSlug, nextCode } from '../services/identifiers.js';
 import { ApiError } from '../middleware/errors.js';
 import { issueSession, clearSession } from '../services/session.js';
 const dummyHash = bcrypt.hashSync('not-a-user-password', 12);
@@ -10,12 +11,39 @@ export async function publicUser(user) {
 }
 export async function register(req, res) {
   const { name, email, password, role } = req.validated;
-  if (await User.exists({ email })) throw new ApiError(409, 'An account with this email already exists.');
+
+  if (await User.exists({ email })) {
+    throw new ApiError(409, 'An account with this email already exists.');
+  }
+
   const user = await User.create({ name, email, password, role });
-  try { if (role === 'guide') await Guide.create({ user: user._id, status: 'pending' }); }
-  catch (error) { await User.deleteOne({ _id: user._id }); throw error; }
+
+  try {
+    if (role === 'guide') {
+      const slugBase = normalizeSlug(`${name} guide`) || 'local-guide';
+      const slug = await uniqueSlug(Guide, `${name} guide`, slugBase);
+      const code = await nextCode('guide');
+
+      await Guide.create({
+        user: user._id,
+        slug,
+        code,
+        status: 'pending'
+      });
+    }
+  } catch (error) {
+    await User.deleteOne({ _id: user._id });
+    throw error;
+  }
+
   issueSession(res, user);
-  res.status(201).json({ data: { user: await publicUser(user) }, message: role === 'guide' ? 'Account created. Your guide application is pending admin approval.' : 'Welcome to Guzoye.' });
+
+  res.status(201).json({
+    data: { user: await publicUser(user) },
+    message: role === 'guide'
+      ? 'Account created. Your guide application is pending admin approval.'
+      : 'Welcome to Guzoye.'
+  });
 }
 export async function login(req, res) {
   const { email, password } = req.validated;

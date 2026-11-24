@@ -1,5 +1,8 @@
 import mongoose from 'mongoose';
-import GuideRequest, { GUIDE_REQUEST_TYPES } from '../models/GuideRequest.js';
+import GuideRequest, {
+  GUIDE_REQUEST_TYPES,
+  GUIDE_REQUEST_STATUSES
+} from '../models/GuideRequest.js';
 import Guide from '../models/Guide.js';
 import Tour from '../models/Tour.js';
 import Destination from '../models/Destination.js';

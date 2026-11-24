@@ -7,7 +7,7 @@ import Button from '../../components/Button';
 import '../../admin.css';
 export default function AdminGuides() {
   const [search, setSearch] = useState('');
-  const [status, setStatus] = useState('approved');
+  const [status, setStatus] = useState('pending');
   const [destination, setDestination] = useState('');
   const [page, setPage] = useState(1);
   const [selected, setSelected] = useState(null);
@@ -26,7 +26,8 @@ export default function AdminGuides() {
       guides.retry(); setSelected(null);
     } catch (problem) { setError(problem.message); } finally { setBusy(false); }
   }
-  return <div className="admin-page"><PageHeader eyebrow="People" title="Guides" description="Review applications, inspect performance, and manage guide access." />
+  return <div className="admin-page"><PageHeader eyebrow="People" title="Guide Applications & Management" description="Review new guide applications, approve or reject applicants, and manage existing guides." />
+
     <section className="admin-panel"><div className="admin-filter-row">
       <input type="search" placeholder="Search name or email" value={search} onChange={event => setSearch(event.target.value)} aria-label="Search guides" />
       <select value={status} onChange={event => { setStatus(event.target.value); setPage(1); }} aria-label="Filter by status">{['pending', 'approved', 'rejected'].map(value => <option key={value}>{value}</option>)}</select>
