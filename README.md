@@ -24,7 +24,35 @@ Guzoye aims to make that experience easier through:
 
 ---
 
-## Platform Workspaces
+---
+
+## Application Screenshots
+
+Explore the Guzoye interface and its different workspaces.
+
+### Public Experience
+
+| Homepage | Tour Discovery |
+|---|---|
+| ![Guzoye Homepage](screenshots/image.png) | ![Tour Discovery](screenshots/explore.png) |
+
+### Tours and Guides
+
+| Tour Details | Local Guides |
+|---|---|
+| ![Tour Details](screenshots/tours-detail.png) | ![Guides](screenshots/guides-details.png) |
+
+### Platform Workspaces
+
+| Traveler Dashboard | Guide Dashboard |
+|---|---|
+| ![Traveler Dashboard](screenshots/user.png) | ![Guide Dashboard](screenshots/guides-page.png) |
+
+| Admin Dashboard |
+|---|
+| ![Admin Dashboard](screenshots/admin.png) |
+
+
 
 ### Traveler Experience
 
